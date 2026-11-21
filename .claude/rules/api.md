@@ -36,7 +36,8 @@ paths:
 - Each file is one hand-authored, Synthea-style R4 `Bundle` (`type: "collection"` or `"transaction"`) for one patient: a `Patient` plus that patient's `Encounter`, `Condition` and `Observation` resources.
 - Only the fixture repository service (`src/fhir/`) reads the file system. It loads every bundle once at startup, flattens `entry[].resource`, and serves the resources to the rest of the app. Feature services depend on it, never on `fs`.
 - Resolve the data directory from `FHIR_DATA_DIR`, defaulting to `join(process.cwd(), '../../data/fhir')` (scripts run with cwd `apps/api`).
-- References come in two forms, `"Patient/<id>"` and `"urn:uuid:<id>"` (matching an entry's `fullUrl`). Index entries under both, and resolve through one helper. An unresolvable reference maps to `null`.
+- Type parsed bundles as `Bundle<FhirResource>`. A bare `Bundle` defaults to the base `Resource` type and loses every resource-specific field.
+- References come in two forms. `"Patient/<id>"` uses the readable `Resource.id`. `"urn:uuid:<uuid>"` matches an entry's `fullUrl`, and the uuid differs from `Resource.id`. Index entries under both, and resolve through one helper. An unresolvable reference maps to `null`.
 - Fixtures use real code systems (LOINC for Observations, SNOMED CT for Conditions, `http://terminology.hl7.org` for categories) and stable, readable ids. Tests assert on those ids.
 
 ## Testing (Vitest 4)

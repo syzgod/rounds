@@ -1,0 +1,328 @@
+{
+  "resourceType": "Bundle",
+  "id": "bundle-priya-natarajan",
+  "type": "collection",
+  "entry": [
+    {
+      "fullUrl": "http://fhir.example.org/Patient/pat-priya-natarajan",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "pat-priya-natarajan",
+        "identifier": [
+          {
+            "use": "usual",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MR",
+                  "display": "Medical record number"
+                }
+              ]
+            },
+            "system": "http://hospital.example.org/mrn",
+            "value": "MRN-100003"
+          }
+        ],
+        "name": [
+          {
+            "text": "Priya Natarajan"
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1992-08-30"
+      }
+    },
+    {
+      "fullUrl": "http://fhir.example.org/Encounter/enc-priya-2024-03-05",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "enc-priya-2024-03-05",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "390906007",
+                "display": "Follow-up encounter (procedure)"
+              }
+            ],
+            "text": "Asthma review"
+          }
+        ],
+        "subject": {
+          "reference": "Patient/pat-priya-natarajan"
+        },
+        "period": {
+          "start": "2024-03-05T08:30:00Z",
+          "end": "2024-03-05T09:00:00Z"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://fhir.example.org/Encounter/enc-priya-2024-09-17",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "enc-priya-2024-09-17",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "11429006",
+                "display": "Consultation (procedure)"
+              }
+            ],
+            "text": "Allergy consultation"
+          }
+        ],
+        "subject": {
+          "reference": "Patient/pat-priya-natarajan"
+        },
+        "period": {
+          "start": "2024-09-17T13:00:00Z",
+          "end": "2024-09-17T13:40:00Z"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://fhir.example.org/Condition/cond-priya-asthma",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "cond-priya-asthma",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "problem-list-item",
+                "display": "Problem List Item"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "195967001",
+              "display": "Asthma (disorder)"
+            }
+          ],
+          "text": "Asthma"
+        },
+        "subject": {
+          "reference": "Patient/pat-priya-natarajan"
+        },
+        "onsetDateTime": "2004-06-01",
+        "recordedDate": "2004-06-01"
+      }
+    },
+    {
+      "fullUrl": "http://fhir.example.org/Condition/cond-priya-allergic-rhinitis",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "cond-priya-allergic-rhinitis",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "encounter-diagnosis",
+                "display": "Encounter Diagnosis"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "367498001",
+              "display": "Seasonal allergic rhinitis (disorder)"
+            }
+          ],
+          "text": "Seasonal allergic rhinitis"
+        },
+        "subject": {
+          "reference": "Patient/pat-priya-natarajan"
+        },
+        "encounter": {
+          "reference": "Encounter/enc-priya-2024-09-17"
+        },
+        "onsetDateTime": "2016-04",
+        "recordedDate": "2024-09-17"
+      }
+    },
+    {
+      "fullUrl": "http://fhir.example.org/Observation/obs-priya-peak-flow-2024-03-05",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-priya-peak-flow-2024-03-05",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "19935-6",
+              "display": "Maximum expiratory gas flow Respiratory system airway by Peak flow meter"
+            }
+          ],
+          "text": "Peak expiratory flow"
+        },
+        "subject": {
+          "reference": "Patient/pat-priya-natarajan"
+        },
+        "encounter": {
+          "reference": "Encounter/enc-priya-2024-03-05"
+        },
+        "effectiveDateTime": "2024-03-05T08:40:00Z",
+        "valueQuantity": {
+          "value": 380,
+          "unit": "L/min",
+          "system": "http://unitsofmeasure.org",
+          "code": "L/min"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://fhir.example.org/Observation/obs-priya-heart-rate-2024-03-05",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-priya-heart-rate-2024-03-05",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8867-4",
+              "display": "Heart rate"
+            }
+          ],
+          "text": "Heart rate"
+        },
+        "subject": {
+          "reference": "Patient/pat-priya-natarajan"
+        },
+        "encounter": {
+          "reference": "Encounter/enc-priya-2024-03-05"
+        },
+        "effectiveDateTime": "2024-03-05T08:40:00Z",
+        "valueQuantity": {
+          "value": 76,
+          "unit": "/min",
+          "system": "http://unitsofmeasure.org",
+          "code": "/min"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://fhir.example.org/Observation/obs-priya-peak-flow-2024-09-17",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-priya-peak-flow-2024-09-17",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "19935-6",
+              "display": "Maximum expiratory gas flow Respiratory system airway by Peak flow meter"
+            }
+          ],
+          "text": "Peak expiratory flow"
+        },
+        "subject": {
+          "reference": "Patient/pat-priya-natarajan"
+        },
+        "encounter": {
+          "reference": "Encounter/enc-priya-2024-09-17"
+        },
+        "effectiveDateTime": "2024-09-17T13:10:00Z",
+        "valueQuantity": {
+          "value": 420,
+          "unit": "L/min",
+          "system": "http://unitsofmeasure.org",
+          "code": "L/min"
+        }
+      }
+    }
+  ]
+}

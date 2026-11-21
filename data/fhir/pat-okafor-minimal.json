@@ -1,0 +1,19 @@
+{
+  "resourceType": "Bundle",
+  "id": "bundle-okafor-minimal",
+  "type": "collection",
+  "entry": [
+    {
+      "fullUrl": "http://fhir.example.org/Patient/pat-okafor-minimal",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "pat-okafor-minimal",
+        "name": [
+          {
+            "family": "Okafor"
+          }
+        ]
+      }
+    }
+  ]
+}

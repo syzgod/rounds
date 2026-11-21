@@ -1,0 +1,302 @@
+{
+  "resourceType": "Bundle",
+  "id": "bundle-tomasz-kowalczyk",
+  "type": "transaction",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:60c2878e-e18c-5759-be45-10f8ca392972",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "pat-tomasz-kowalczyk",
+        "identifier": [
+          {
+            "use": "usual",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MR",
+                  "display": "Medical record number"
+                }
+              ]
+            },
+            "system": "http://hospital.example.org/mrn",
+            "value": "MRN-100004"
+          }
+        ],
+        "name": [
+          {
+            "use": "official",
+            "family": "Kowalczyk",
+            "given": [
+              "Tomasz"
+            ]
+          }
+        ],
+        "gender": "male",
+        "birthDate": "1979-01-15"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Patient"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:b81ef5b5-13f5-5d4d-8275-7dca11a28937",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "enc-tomasz-2024-05-11",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "EMER",
+          "display": "emergency"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "50849002",
+                "display": "Emergency room admission (procedure)"
+              }
+            ],
+            "text": "Emergency visit"
+          }
+        ],
+        "subject": {
+          "reference": "urn:uuid:60c2878e-e18c-5759-be45-10f8ca392972"
+        },
+        "period": {
+          "start": "2024-05-11T16:40:00Z",
+          "end": "2024-05-11T18:05:00Z"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Encounter"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:d8cfe889-59af-52b2-a1d2-c2d89bd877b3",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "enc-tomasz-2024-05-25",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "390906007",
+                "display": "Follow-up encounter (procedure)"
+              }
+            ],
+            "text": "Injury follow-up"
+          }
+        ],
+        "subject": {
+          "reference": "urn:uuid:60c2878e-e18c-5759-be45-10f8ca392972"
+        },
+        "period": {
+          "start": "2024-05-25T11:00:00Z",
+          "end": "2024-05-25T11:20:00Z"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Encounter"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:23cc979f-cbd8-5fbd-b348-f3a71ce47a6d",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "cond-tomasz-ankle-sprain",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "resolved"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "encounter-diagnosis",
+                "display": "Encounter Diagnosis"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "44465007",
+              "display": "Sprain of ankle (disorder)"
+            }
+          ],
+          "text": "Sprained left ankle"
+        },
+        "subject": {
+          "reference": "urn:uuid:60c2878e-e18c-5759-be45-10f8ca392972"
+        },
+        "encounter": {
+          "reference": "urn:uuid:b81ef5b5-13f5-5d4d-8275-7dca11a28937"
+        },
+        "onsetDateTime": "2024-05-11T15:30:00Z",
+        "abatementDateTime": "2024-06-08",
+        "recordedDate": "2024-05-11"
+      },
+      "request": {
+        "method": "POST",
+        "url": "Condition"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:27ed0a7b-9816-59d3-a5a8-39f1b8498f86",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-tomasz-pain-2024-05-11",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "survey",
+                "display": "Survey"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "72514-3",
+              "display": "Pain severity - 0-10 verbal numeric rating [Score] - Reported"
+            }
+          ],
+          "text": "Pain score (0-10)"
+        },
+        "subject": {
+          "reference": "urn:uuid:60c2878e-e18c-5759-be45-10f8ca392972"
+        },
+        "encounter": {
+          "reference": "urn:uuid:b81ef5b5-13f5-5d4d-8275-7dca11a28937"
+        },
+        "effectiveDateTime": "2024-05-11T16:50:00Z",
+        "valueInteger": 7
+      },
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:e8e6a9ee-445a-504d-85c7-b94f07de9f2e",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-tomasz-heart-rate-2024-05-11",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8867-4",
+              "display": "Heart rate"
+            }
+          ],
+          "text": "Heart rate"
+        },
+        "subject": {
+          "reference": "urn:uuid:60c2878e-e18c-5759-be45-10f8ca392972"
+        },
+        "encounter": {
+          "reference": "urn:uuid:b81ef5b5-13f5-5d4d-8275-7dca11a28937"
+        },
+        "effectiveDateTime": "2024-05-11T16:50:00Z",
+        "valueQuantity": {
+          "value": 92,
+          "unit": "/min",
+          "system": "http://unitsofmeasure.org",
+          "code": "/min"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:58103752-d42c-5c98-bea4-e6130d3ee952",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-tomasz-pain-2024-05-25",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "survey",
+                "display": "Survey"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "72514-3",
+              "display": "Pain severity - 0-10 verbal numeric rating [Score] - Reported"
+            }
+          ],
+          "text": "Pain score (0-10)"
+        },
+        "subject": {
+          "reference": "urn:uuid:60c2878e-e18c-5759-be45-10f8ca392972"
+        },
+        "encounter": {
+          "reference": "urn:uuid:d8cfe889-59af-52b2-a1d2-c2d89bd877b3"
+        },
+        "effectiveDateTime": "2024-05-25T11:05:00Z",
+        "valueInteger": 2
+      },
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      }
+    }
+  ]
+}

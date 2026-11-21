@@ -1,0 +1,483 @@
+{
+  "resourceType": "Bundle",
+  "id": "bundle-jonah-reyes",
+  "type": "collection",
+  "entry": [
+    {
+      "fullUrl": "http://fhir.example.org/Patient/pat-jonah-reyes",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "pat-jonah-reyes",
+        "identifier": [
+          {
+            "use": "usual",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MR",
+                  "display": "Medical record number"
+                }
+              ]
+            },
+            "system": "http://hospital.example.org/mrn",
+            "value": "MRN-100002"
+          }
+        ],
+        "name": [
+          {
+            "use": "official",
+            "family": "Reyes",
+            "given": [
+              "Jonah",
+              "Miguel"
+            ]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "555-0102",
+            "use": "home"
+          }
+        ],
+        "gender": "male",
+        "birthDate": "1958-04-22"
+      }
+    },
+    {
+      "fullUrl": "http://fhir.example.org/Encounter/enc-jonah-2023-11-02",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "enc-jonah-2023-11-02",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "390906007",
+                "display": "Follow-up encounter (procedure)"
+              }
+            ],
+            "text": "COPD review"
+          }
+        ],
+        "subject": {
+          "reference": "Patient/pat-jonah-reyes"
+        },
+        "period": {
+          "start": "2023-11-02T10:00:00Z",
+          "end": "2023-11-02T10:30:00Z"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://fhir.example.org/Encounter/enc-jonah-2024-12-18-emergency",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "enc-jonah-2024-12-18-emergency",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "EMER",
+          "display": "emergency"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "50849002",
+                "display": "Emergency room admission (procedure)"
+              }
+            ],
+            "text": "Emergency visit"
+          }
+        ],
+        "subject": {
+          "reference": "Patient/pat-jonah-reyes"
+        },
+        "period": {
+          "start": "2024-12-18T03:15:00Z",
+          "end": "2024-12-18T07:40:00Z"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://fhir.example.org/Encounter/enc-jonah-2024-12-18-inpatient",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "enc-jonah-2024-12-18-inpatient",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "IMP",
+          "display": "inpatient encounter"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "32485007",
+                "display": "Hospital admission (procedure)"
+              }
+            ],
+            "text": "Hospital admission"
+          }
+        ],
+        "subject": {
+          "reference": "Patient/pat-jonah-reyes"
+        },
+        "period": {
+          "start": "2024-12-18T07:40:00Z",
+          "end": "2024-12-22T11:00:00Z"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://fhir.example.org/Condition/cond-jonah-copd",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "cond-jonah-copd",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "problem-list-item",
+                "display": "Problem List Item"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "13645005",
+              "display": "Chronic obstructive lung disease (disorder)"
+            }
+          ],
+          "text": "COPD"
+        },
+        "subject": {
+          "reference": "Patient/pat-jonah-reyes"
+        },
+        "onsetDateTime": "2015-09-10",
+        "recordedDate": "2015-09-10"
+      }
+    },
+    {
+      "fullUrl": "http://fhir.example.org/Condition/cond-jonah-copd-exacerbation",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "cond-jonah-copd-exacerbation",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "resolved"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "encounter-diagnosis",
+                "display": "Encounter Diagnosis"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "195951007",
+              "display": "Acute exacerbation of chronic obstructive airways disease (disorder)"
+            }
+          ],
+          "text": "COPD exacerbation"
+        },
+        "subject": {
+          "reference": "Patient/pat-jonah-reyes"
+        },
+        "encounter": {
+          "reference": "Encounter/enc-jonah-2024-12-18-emergency"
+        },
+        "onsetDateTime": "2024-12-18T03:15:00Z",
+        "abatementDateTime": "2024-12-22T11:00:00Z",
+        "recordedDate": "2024-12-18"
+      }
+    },
+    {
+      "fullUrl": "http://fhir.example.org/Observation/obs-jonah-smoking-status",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-jonah-smoking-status",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history",
+                "display": "Social History"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "72166-2",
+              "display": "Tobacco smoking status"
+            }
+          ],
+          "text": "Tobacco smoking status"
+        },
+        "subject": {
+          "reference": "Patient/pat-jonah-reyes"
+        },
+        "encounter": {
+          "reference": "Encounter/enc-jonah-2023-11-02"
+        },
+        "effectiveDateTime": "2023-11-02T10:05:00Z",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "8517006",
+              "display": "Ex-smoker (finding)"
+            }
+          ],
+          "text": "Former smoker"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://fhir.example.org/Observation/obs-jonah-spo2-2023-11-02",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-jonah-spo2-2023-11-02",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "59408-5",
+              "display": "Oxygen saturation in Arterial blood by Pulse oximetry"
+            }
+          ],
+          "text": "Oxygen saturation"
+        },
+        "subject": {
+          "reference": "Patient/pat-jonah-reyes"
+        },
+        "encounter": {
+          "reference": "Encounter/enc-jonah-2023-11-02"
+        },
+        "effectiveDateTime": "2023-11-02T10:10:00Z",
+        "valueQuantity": {
+          "value": 94,
+          "unit": "%",
+          "system": "http://unitsofmeasure.org",
+          "code": "%"
+        }
+      }
+    },
+    {
+      "fullUrl": "http://fhir.example.org/Observation/obs-jonah-spo2-2024-12-18",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-jonah-spo2-2024-12-18",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "59408-5",
+              "display": "Oxygen saturation in Arterial blood by Pulse oximetry"
+            }
+          ],
+          "text": "Oxygen saturation"
+        },
+        "subject": {
+          "reference": "Patient/pat-jonah-reyes"
+        },
+        "encounter": {
+          "reference": "Encounter/enc-jonah-2024-12-18-emergency"
+        },
+        "effectiveDateTime": "2024-12-18T03:25:00Z",
+        "valueQuantity": {
+          "value": 86,
+          "unit": "%",
+          "system": "http://unitsofmeasure.org",
+          "code": "%"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "L",
+                "display": "Low"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://fhir.example.org/Observation/obs-jonah-resp-rate-2024-12-18",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-jonah-resp-rate-2024-12-18",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "9279-1",
+              "display": "Respiratory rate"
+            }
+          ],
+          "text": "Respiratory rate"
+        },
+        "subject": {
+          "reference": "Patient/pat-jonah-reyes"
+        },
+        "encounter": {
+          "reference": "Encounter/enc-jonah-2024-12-18-emergency"
+        },
+        "effectiveDateTime": "2024-12-18T03:25:00Z",
+        "valueQuantity": {
+          "value": 28,
+          "unit": "/min",
+          "system": "http://unitsofmeasure.org",
+          "code": "/min"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "H",
+                "display": "High"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "http://fhir.example.org/Observation/obs-jonah-spo2-2024-12-22",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-jonah-spo2-2024-12-22",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "59408-5",
+              "display": "Oxygen saturation in Arterial blood by Pulse oximetry"
+            }
+          ],
+          "text": "Oxygen saturation"
+        },
+        "subject": {
+          "reference": "Patient/pat-jonah-reyes"
+        },
+        "encounter": {
+          "reference": "Encounter/enc-jonah-2024-12-18-inpatient"
+        },
+        "effectiveDateTime": "2024-12-22T09:00:00Z",
+        "valueQuantity": {
+          "value": 92,
+          "unit": "%",
+          "system": "http://unitsofmeasure.org",
+          "code": "%"
+        }
+      }
+    }
+  ]
+}

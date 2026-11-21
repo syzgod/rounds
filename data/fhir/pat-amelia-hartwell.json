@@ -1,0 +1,659 @@
+{
+  "resourceType": "Bundle",
+  "id": "bundle-amelia-hartwell",
+  "type": "transaction",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:f1f98097-a101-4a7d-b587-59d09c35fb4d",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "pat-amelia-hartwell",
+        "identifier": [
+          {
+            "use": "usual",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MR",
+                  "display": "Medical record number"
+                }
+              ]
+            },
+            "system": "http://hospital.example.org/mrn",
+            "value": "MRN-100001"
+          }
+        ],
+        "name": [
+          { "use": "nickname", "given": ["Amy"] },
+          {
+            "use": "official",
+            "family": "Hartwell",
+            "given": ["Amelia", "Rose"],
+            "prefix": ["Ms."]
+          }
+        ],
+        "telecom": [{ "system": "phone", "value": "555-0101", "use": "mobile" }],
+        "gender": "female",
+        "birthDate": "1985-12-10",
+        "address": [
+          {
+            "line": ["12 Example Street"],
+            "city": "Springfield",
+            "postalCode": "00001",
+            "country": "US"
+          }
+        ]
+      },
+      "request": { "method": "POST", "url": "Patient" }
+    },
+    {
+      "fullUrl": "urn:uuid:da1624cf-c27a-46bf-9756-b1d23bfeba86",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "enc-amelia-2023-03-14",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "185349003",
+                "display": "Encounter for check up (procedure)"
+              }
+            ],
+            "text": "Annual check-up"
+          }
+        ],
+        "subject": { "reference": "urn:uuid:f1f98097-a101-4a7d-b587-59d09c35fb4d" },
+        "period": { "start": "2023-03-14T09:00:00Z", "end": "2023-03-14T09:45:00Z" }
+      },
+      "request": { "method": "POST", "url": "Encounter" }
+    },
+    {
+      "fullUrl": "urn:uuid:3275b764-2b56-494b-bf75-579dcfc80576",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "enc-amelia-2024-01-09",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "390906007",
+                "display": "Follow-up encounter (procedure)"
+              }
+            ],
+            "text": "Diabetes follow-up"
+          }
+        ],
+        "subject": { "reference": "urn:uuid:f1f98097-a101-4a7d-b587-59d09c35fb4d" },
+        "period": { "start": "2024-01-09T14:30:00Z", "end": "2024-01-09T15:00:00Z" }
+      },
+      "request": { "method": "POST", "url": "Encounter" }
+    },
+    {
+      "fullUrl": "urn:uuid:07017887-f580-4434-a48f-e4cde953f146",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "enc-amelia-2024-07-22",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "390906007",
+                "display": "Follow-up encounter (procedure)"
+              }
+            ],
+            "text": "Diabetes follow-up"
+          }
+        ],
+        "subject": { "reference": "urn:uuid:f1f98097-a101-4a7d-b587-59d09c35fb4d" },
+        "period": { "start": "2024-07-22T10:15:00Z", "end": "2024-07-22T10:40:00Z" }
+      },
+      "request": { "method": "POST", "url": "Encounter" }
+    },
+    {
+      "fullUrl": "urn:uuid:9f327d16-c490-4715-af0f-9d4289e4a48c",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "enc-amelia-2025-02-03",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "EMER",
+          "display": "emergency"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "50849002",
+                "display": "Emergency room admission (procedure)"
+              }
+            ],
+            "text": "Emergency visit"
+          }
+        ],
+        "subject": { "reference": "urn:uuid:f1f98097-a101-4a7d-b587-59d09c35fb4d" },
+        "period": { "start": "2025-02-03T21:10:00Z", "end": "2025-02-04T01:30:00Z" }
+      },
+      "request": { "method": "POST", "url": "Encounter" }
+    },
+    {
+      "fullUrl": "urn:uuid:b845917d-b329-4e4b-ab3f-deb096e3c954",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "cond-amelia-t2dm",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "problem-list-item",
+                "display": "Problem List Item"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "44054006",
+              "display": "Diabetes mellitus type 2 (disorder)"
+            }
+          ],
+          "text": "Type 2 diabetes mellitus"
+        },
+        "subject": { "reference": "urn:uuid:f1f98097-a101-4a7d-b587-59d09c35fb4d" },
+        "onsetDateTime": "2019-05-02",
+        "recordedDate": "2019-05-02"
+      },
+      "request": { "method": "POST", "url": "Condition" }
+    },
+    {
+      "fullUrl": "urn:uuid:68fe84f1-37c0-484d-b934-296f469d5594",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "cond-amelia-hypertension",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "encounter-diagnosis",
+                "display": "Encounter Diagnosis"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "59621000",
+              "display": "Essential hypertension (disorder)"
+            }
+          ],
+          "text": "Essential hypertension"
+        },
+        "subject": { "reference": "urn:uuid:f1f98097-a101-4a7d-b587-59d09c35fb4d" },
+        "encounter": { "reference": "urn:uuid:3275b764-2b56-494b-bf75-579dcfc80576" },
+        "recordedDate": "2024-01-09"
+      },
+      "request": { "method": "POST", "url": "Condition" }
+    },
+    {
+      "fullUrl": "urn:uuid:5636c79c-039f-44f2-a9e9-c5d130d9145a",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "cond-amelia-hypoglycemia",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "resolved"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "encounter-diagnosis",
+                "display": "Encounter Diagnosis"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "302866003",
+              "display": "Hypoglycemia (disorder)"
+            }
+          ],
+          "text": "Hypoglycemia"
+        },
+        "subject": { "reference": "urn:uuid:f1f98097-a101-4a7d-b587-59d09c35fb4d" },
+        "encounter": { "reference": "urn:uuid:9f327d16-c490-4715-af0f-9d4289e4a48c" },
+        "onsetDateTime": "2025-02-03T21:10:00Z",
+        "abatementDateTime": "2025-02-04T01:30:00Z",
+        "recordedDate": "2025-02-03"
+      },
+      "request": { "method": "POST", "url": "Condition" }
+    },
+    {
+      "fullUrl": "urn:uuid:fbc9204f-bdbe-4653-bc98-5df9bd2f8a23",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-amelia-hba1c-2023-03-14",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "4548-4",
+              "display": "Hemoglobin A1c/Hemoglobin.total in Blood"
+            }
+          ],
+          "text": "Hemoglobin A1c"
+        },
+        "subject": { "reference": "urn:uuid:f1f98097-a101-4a7d-b587-59d09c35fb4d" },
+        "encounter": { "reference": "urn:uuid:da1624cf-c27a-46bf-9756-b1d23bfeba86" },
+        "effectiveDateTime": "2023-03-14T09:20:00Z",
+        "issued": "2023-03-14T16:00:00Z",
+        "valueQuantity": {
+          "value": 7.8,
+          "unit": "%",
+          "system": "http://unitsofmeasure.org",
+          "code": "%"
+        }
+      },
+      "request": { "method": "POST", "url": "Observation" }
+    },
+    {
+      "fullUrl": "urn:uuid:92570b81-462c-45bf-9849-25e908f9530f",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-amelia-bmi-2023-03-14",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "39156-5",
+              "display": "Body mass index (BMI) [Ratio]"
+            }
+          ],
+          "text": "BMI"
+        },
+        "subject": { "reference": "urn:uuid:f1f98097-a101-4a7d-b587-59d09c35fb4d" },
+        "encounter": { "reference": "urn:uuid:da1624cf-c27a-46bf-9756-b1d23bfeba86" },
+        "effectiveDateTime": "2023-03-14T09:10:00Z",
+        "valueQuantity": {
+          "value": 31.4,
+          "unit": "kg/m2",
+          "system": "http://unitsofmeasure.org",
+          "code": "kg/m2"
+        }
+      },
+      "request": { "method": "POST", "url": "Observation" }
+    },
+    {
+      "fullUrl": "urn:uuid:c8027bf7-c68f-482c-a7d4-12e70d591d12",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-amelia-smoking-status",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "social-history",
+                "display": "Social History"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "72166-2",
+              "display": "Tobacco smoking status"
+            }
+          ],
+          "text": "Tobacco smoking status"
+        },
+        "subject": { "reference": "urn:uuid:f1f98097-a101-4a7d-b587-59d09c35fb4d" },
+        "encounter": { "reference": "urn:uuid:da1624cf-c27a-46bf-9756-b1d23bfeba86" },
+        "issued": "2023-03-14T09:40:00Z",
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "266919005",
+              "display": "Never smoked tobacco (finding)"
+            }
+          ],
+          "text": "Never smoker"
+        }
+      },
+      "request": { "method": "POST", "url": "Observation" }
+    },
+    {
+      "fullUrl": "urn:uuid:8952d156-7208-4072-9df3-4ea5fd41b6ff",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-amelia-bp-2024-01-09",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "85354-9",
+              "display": "Blood pressure panel with all children optional"
+            }
+          ],
+          "text": "Blood pressure"
+        },
+        "subject": { "reference": "urn:uuid:f1f98097-a101-4a7d-b587-59d09c35fb4d" },
+        "encounter": { "reference": "urn:uuid:3275b764-2b56-494b-bf75-579dcfc80576" },
+        "effectiveDateTime": "2024-01-09T14:35:00Z",
+        "component": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "8480-6",
+                  "display": "Systolic blood pressure"
+                }
+              ]
+            },
+            "valueQuantity": {
+              "value": 142,
+              "unit": "mmHg",
+              "system": "http://unitsofmeasure.org",
+              "code": "mm[Hg]"
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "8462-4",
+                  "display": "Diastolic blood pressure"
+                }
+              ]
+            },
+            "valueQuantity": {
+              "value": 91,
+              "unit": "mmHg",
+              "system": "http://unitsofmeasure.org",
+              "code": "mm[Hg]"
+            }
+          }
+        ]
+      },
+      "request": { "method": "POST", "url": "Observation" }
+    },
+    {
+      "fullUrl": "urn:uuid:1597fd2d-ea37-4edf-ad9e-3fe27129e69d",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-amelia-bp-2024-07-22",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "85354-9",
+              "display": "Blood pressure panel with all children optional"
+            }
+          ],
+          "text": "Blood pressure"
+        },
+        "subject": { "reference": "urn:uuid:f1f98097-a101-4a7d-b587-59d09c35fb4d" },
+        "encounter": { "reference": "urn:uuid:07017887-f580-4434-a48f-e4cde953f146" },
+        "effectiveDateTime": "2024-07-22T10:20:00Z",
+        "component": [
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "8480-6",
+                  "display": "Systolic blood pressure"
+                }
+              ]
+            },
+            "valueQuantity": {
+              "value": 128,
+              "unit": "mmHg",
+              "system": "http://unitsofmeasure.org",
+              "code": "mm[Hg]"
+            }
+          },
+          {
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "8462-4",
+                  "display": "Diastolic blood pressure"
+                }
+              ]
+            },
+            "valueQuantity": {
+              "value": 82,
+              "unit": "mmHg",
+              "system": "http://unitsofmeasure.org",
+              "code": "mm[Hg]"
+            }
+          }
+        ]
+      },
+      "request": { "method": "POST", "url": "Observation" }
+    },
+    {
+      "fullUrl": "urn:uuid:cc15c86e-9ef7-4b81-b6f1-ba61609ba2db",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-amelia-hba1c-2024-07-22",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "4548-4",
+              "display": "Hemoglobin A1c/Hemoglobin.total in Blood"
+            }
+          ],
+          "text": "Hemoglobin A1c"
+        },
+        "subject": { "reference": "urn:uuid:f1f98097-a101-4a7d-b587-59d09c35fb4d" },
+        "encounter": { "reference": "urn:uuid:07017887-f580-4434-a48f-e4cde953f146" },
+        "effectiveDateTime": "2024-07-22T10:25:00Z",
+        "issued": "2024-07-22T17:00:00Z",
+        "valueQuantity": {
+          "value": 7.1,
+          "unit": "%",
+          "system": "http://unitsofmeasure.org",
+          "code": "%"
+        }
+      },
+      "request": { "method": "POST", "url": "Observation" }
+    },
+    {
+      "fullUrl": "urn:uuid:524fc1d7-0041-48f1-9142-c8f3446a7591",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-amelia-glucose-2025-02-03",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2339-0",
+              "display": "Glucose [Mass/volume] in Blood"
+            }
+          ],
+          "text": "Blood glucose"
+        },
+        "subject": { "reference": "urn:uuid:f1f98097-a101-4a7d-b587-59d09c35fb4d" },
+        "encounter": { "reference": "urn:uuid:9f327d16-c490-4715-af0f-9d4289e4a48c" },
+        "effectiveDateTime": "2025-02-03T21:25:00Z",
+        "valueQuantity": {
+          "value": 52,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "L",
+                "display": "Low"
+              }
+            ]
+          }
+        ]
+      },
+      "request": { "method": "POST", "url": "Observation" }
+    }
+  ]
+}
