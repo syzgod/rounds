@@ -5,7 +5,7 @@ A 3-day interview MVP. Each milestone ends in a working app that can be checked 
 | # | Milestone | Day | Status |
 |---|---|---|---|
 | M1 | Apollo health check | 1 | ✅ |
-| M2 | FHIR fixtures + Patient Directory | 1 | ⬜ |
+| M2 | FHIR fixtures + Patient Directory | 1 | ✅ |
 | M3 | Patient Details timeline | 2 | ⬜ |
 | M4 | FHIR Resource Inspector | 2 | ⬜ |
 | M5 | Tests + polish | 3 | ⬜ |
@@ -22,7 +22,7 @@ Proves the whole chain works: the web app (Apollo Client v4) calls the API (Nest
 - [x] `health: String!` is in `apps/api/src/schema.gql`, and the query returns `"ok"`. Covered by `src/health/health.resolver.spec.ts` and `test/health.e2e-spec.ts`.
 - [x] The header badge shows loading, connected, and error with a Retry button. Covered by `src/components/health-status.test.tsx`.
 
-## M2: FHIR fixtures + Patient Directory
+## M2: FHIR fixtures + Patient Directory ✅
 
 **Data:** `data/fhir/*.json` holds 6 patient Bundles. Each contains 1 Patient and roughly 3–6 each of Encounter, Condition and Observation. Ids are stable and readable (`pat-ada-lovelace`), and both reference forms appear (`Patient/<id>` and `urn:uuid:<id>`). One patient has only the minimum fields (no birth date, a single name part) to exercise the null handling.
 
@@ -39,8 +39,8 @@ Proves the whole chain works: the web app (Apollo Client v4) calls the API (Nest
 - [x] Mapper specs pass for a full patient, a minimal patient and a malformed one (a missing `resourceType` is rejected by the type guard). `src/patients/patient.mapper.spec.ts`
 - [x] Repository spec: loads all 6 bundles, resolves both reference forms, and returns `null` for an unknown reference. `src/fhir/fhir-repository.service.spec.ts`
 - [x] E2E: `{ patients { id displayName } }` returns the 6 fixture ids, and `patient(id: "nope")` returns `null` with no `errors`. `test/patients.e2e-spec.ts`
-- [ ] Web tests: the list renders from `MockedProvider`, typing filters by name, and ArrowDown + Enter selects a patient without the mouse.
-- [ ] `pnpm dev` shows the 6 patients in the browser.
+- [x] Web tests: the list renders from `MockedProvider`, typing filters by name, and ArrowDown + Enter selects a patient without the mouse. `src/components/patient-directory.test.tsx`
+- [x] `pnpm dev` shows the 6 patients in the browser.
 
 ## M3: Patient Details timeline
 
