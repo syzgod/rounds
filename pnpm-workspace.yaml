@@ -1,0 +1,8 @@
+packages:
+  - 'apps/*'
+
+allowBuilds:
+  # Postinstall only bootstraps protobufjs' optional CLI deps; not needed at runtime.
+  '@apollo/protobufjs': false
+  esbuild: true
+  msw: false

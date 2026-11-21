@@ -1,0 +1,8 @@
+# Normalize all text to LF in the repo and in working trees on every OS
+# (matches Prettier's endOfLine "lf" and apps/api/.gitattributes).
+* text=auto eol=lf
+
+# Windows-only scripts must keep CRLF.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf

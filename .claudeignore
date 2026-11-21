@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Lockfile (large, machine-generated; edit via pnpm only)
+pnpm-lock.yaml
+
+# Build output
+dist/
+dist-ssr/
+build/
+*.tsbuildinfo
+.vite/
+
+# Test output
+coverage/
+
+# Logs
+*.log
+
+# Local env (may hold secrets)
+.env
+.env.*.local
+.env.local

@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+dist-ssr/
+*.tsbuildinfo
+
+# Test output
+coverage/
+
+# Logs
+*.log
+pnpm-debug.log*
+
+# Env (commit .env.example only)
+.env
+.env.local
+.env.*.local
+
+# Editor / OS
+.idea/
+.DS_Store
+*.suo
+*.sw?
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# Agent skills: .agents/skills is the committed copy (pinned by skills-lock.json).
+# These .claude/skills entries are machine-local symlinks into it (absolute paths),
+# recreated by the skills installer; committing them would duplicate every file.
+/.claude/skills/apollo-client
+/.claude/skills/apollo-connectors
+/.claude/skills/apollo-federation
+/.claude/skills/apollo-ios
+/.claude/skills/apollo-kotlin
+/.claude/skills/apollo-mcp-server
+/.claude/skills/apollo-router
+/.claude/skills/apollo-router-plugin-creator
+/.claude/skills/apollo-server
+/.claude/skills/graphos-factory
+/.claude/skills/graphql-operations
+/.claude/skills/graphql-schema
+/.claude/skills/rover
+/.claude/skills/rust-best-practices
+/.claude/skills/shadcn
+/.claude/skills/skill-creator
