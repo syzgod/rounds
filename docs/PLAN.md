@@ -57,9 +57,9 @@ Proves the whole chain works: the web app (Apollo Client v4) calls the API (Nest
 - Loading, error and empty-timeline states.
 
 **Done when**
-- [ ] Each mapper has full, minimal and malformed specs, and the BP Observation maps to `"120/80 mmHg"`.
-- [ ] A sort spec covers newest-first order and undated events last.
-- [ ] E2E: the timeline for a fixture patient returns the expected event ids in the expected order.
+- [x] Each mapper has full, minimal and malformed specs, and the BP Observation maps to `"120/80 mmHg"`. `src/timeline/timeline.mapper.spec.ts`
+- [x] A sort spec covers newest-first order and undated events last. `src/timeline/timeline.mapper.spec.ts`
+- [x] E2E: the timeline for a fixture patient returns the expected event ids in the expected order. `test/timeline.e2e-spec.ts`
 - [ ] Web tests: events render grouped by date, the kind filter hides and shows events, and the empty state shows for the minimal patient.
 
 ## M4: FHIR Resource Inspector

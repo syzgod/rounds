@@ -3,8 +3,10 @@ import { join } from 'node:path';
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import type { FhirResource, Patient, Reference } from 'fhir/r4.js';
 import {
+  type ClinicalResource,
   type Identified,
   isBundle,
+  isClinicalResource,
   isIdentifiedResource,
   isPatient,
 } from './fhir-guards.js';
@@ -51,6 +53,19 @@ export class FhirRepositoryService implements OnModuleInit {
   getPatient(id: string): Identified<Patient> | null {
     const resource = this.byKey.get(`Patient/${id}`);
     return isPatient(resource) ? resource : null;
+  }
+
+  /** Encounters, Conditions and Observations whose `subject` resolves to the patient. */
+  getClinicalResources(patientId: string): ClinicalResource[] {
+    const result: ClinicalResource[] = [];
+    for (const resource of this.resources) {
+      if (!isClinicalResource(resource)) continue;
+      const subject = this.resolve(resource.subject);
+      if (subject?.resourceType === 'Patient' && subject.id === patientId) {
+        result.push(resource);
+      }
+    }
+    return result;
   }
 
   /** Resolves `Type/id`, `urn:uuid:<uuid>` or an absolute `fullUrl`; `null` when unknown. */

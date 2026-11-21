@@ -6,6 +6,7 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { HealthModule } from './health/health.module.js';
 import { PatientsModule } from './patients/patients.module.js';
+import { TimelineModule } from './timeline/timeline.module.js';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { PatientsModule } from './patients/patients.module.js';
     }),
     HealthModule,
     PatientsModule,
+    TimelineModule,
   ],
   controllers: [AppController],
   providers: [AppService],

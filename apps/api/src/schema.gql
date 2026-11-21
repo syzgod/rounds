@@ -10,6 +10,13 @@ enum Gender {
   UNKNOWN
 }
 
+"""Out-of-range result flag derived from Observation.interpretation."""
+enum ObservationFlag {
+  ABNORMAL
+  HIGH
+  LOW
+}
+
 """A patient, flattened from a FHIR R4 Patient resource."""
 type Patient {
   """FHIR date: YYYY, YYYY-MM or YYYY-MM-DD."""
@@ -24,6 +31,11 @@ type Patient {
 
   """Medical record number (identifier of type MR)."""
   mrn: String
+
+  """
+  The patient's Encounters, Conditions and Observations, newest first; undated events last.
+  """
+  timeline: [TimelineEvent!]!
 }
 
 type Query {
@@ -35,4 +47,49 @@ type Query {
 
   """All patients, sorted by display name."""
   patients: [Patient!]!
+}
+
+"""
+One clinical event (Encounter, Condition or Observation), flattened for display.
+"""
+type TimelineEvent {
+  """
+  Encounter class, Condition category or Observation category, e.g. "Emergency" or "Vital signs".
+  """
+  category: String
+
+  """
+  FHIR date or dateTime the event is placed at (Encounter.period.start, Condition onset/recorded, Observation effective/issued).
+  """
+  date: String
+
+  """Formatted result for Observations, e.g. "7.8 %" or "120/80 mmHg"."""
+  detail: String
+
+  """
+  End of the event when known (Encounter.period.end, Condition.abatementDateTime).
+  """
+  endDate: String
+  flag: ObservationFlag
+
+  """
+  "<ResourceType>/<id>", unique across resource types for cache normalization.
+  """
+  id: ID!
+  kind: TimelineEventKind!
+
+  """
+  FHIR status code: Encounter.status, Condition clinical status, Observation.status.
+  """
+  status: String
+
+  """Human-readable name of the event."""
+  title: String!
+}
+
+"""The FHIR resource type behind a timeline event."""
+enum TimelineEventKind {
+  CONDITION
+  ENCOUNTER
+  OBSERVATION
 }

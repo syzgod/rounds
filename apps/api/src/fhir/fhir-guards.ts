@@ -1,4 +1,11 @@
-import type { Bundle, FhirResource, Patient } from 'fhir/r4.js';
+import type {
+  Bundle,
+  Condition,
+  Encounter,
+  FhirResource,
+  Observation,
+  Patient,
+} from 'fhir/r4.js';
 
 /** A FHIR resource whose optional `id` is known to be present. */
 export type Identified<T extends FhirResource> = T & { id: string };
@@ -29,4 +36,25 @@ export function isBundle(value: unknown): value is Bundle<FhirResource> {
 
 export function isPatient(value: unknown): value is Patient {
   return isRecord(value) && value.resourceType === 'Patient';
+}
+
+export function isEncounter(value: unknown): value is Encounter {
+  return isRecord(value) && value.resourceType === 'Encounter';
+}
+
+export function isCondition(value: unknown): value is Condition {
+  return isRecord(value) && value.resourceType === 'Condition';
+}
+
+export function isObservation(value: unknown): value is Observation {
+  return isRecord(value) && value.resourceType === 'Observation';
+}
+
+/** The resource types that make up the patient timeline. */
+export type ClinicalResource = Identified<Encounter | Condition | Observation>;
+
+export function isClinicalResource(
+  value: Identified<FhirResource>,
+): value is ClinicalResource {
+  return isEncounter(value) || isCondition(value) || isObservation(value);
 }
