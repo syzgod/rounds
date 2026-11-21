@@ -2,7 +2,37 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+"""FHIR R4 administrative gender."""
+enum Gender {
+  FEMALE
+  MALE
+  OTHER
+  UNKNOWN
+}
+
+"""A patient, flattened from a FHIR R4 Patient resource."""
+type Patient {
+  """FHIR date: YYYY, YYYY-MM or YYYY-MM-DD."""
+  birthDate: String
+
+  """Display-ready full name (official name preferred, prefixes omitted)."""
+  displayName: String!
+  gender: Gender
+
+  """FHIR Patient.id."""
+  id: ID!
+
+  """Medical record number (identifier of type MR)."""
+  mrn: String
+}
+
 type Query {
   """Liveness probe used by the web client status badge."""
   health: String!
+
+  """One patient by FHIR id; null when no such patient exists."""
+  patient(id: ID!): Patient
+
+  """All patients, sorted by display name."""
+  patients: [Patient!]!
 }

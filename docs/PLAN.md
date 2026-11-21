@@ -36,9 +36,9 @@ Proves the whole chain works: the web app (Apollo Client v4) calls the API (Nest
 - Empty-search, loading and error states.
 
 **Done when**
-- [ ] Mapper specs pass for a full patient, a minimal patient and a malformed one (a missing `resourceType` is rejected by the type guard).
-- [ ] Repository spec: loads all 6 bundles, resolves both reference forms, and returns `null` for an unknown reference.
-- [ ] E2E: `{ patients { id displayName } }` returns the 6 fixture ids, and `patient(id: "nope")` returns `null` with no `errors`.
+- [x] Mapper specs pass for a full patient, a minimal patient and a malformed one (a missing `resourceType` is rejected by the type guard). `src/patients/patient.mapper.spec.ts`
+- [x] Repository spec: loads all 6 bundles, resolves both reference forms, and returns `null` for an unknown reference. `src/fhir/fhir-repository.service.spec.ts`
+- [x] E2E: `{ patients { id displayName } }` returns the 6 fixture ids, and `patient(id: "nope")` returns `null` with no `errors`. `test/patients.e2e-spec.ts`
 - [ ] Web tests: the list renders from `MockedProvider`, typing filters by name, and ArrowDown + Enter selects a patient without the mouse.
 - [ ] `pnpm dev` shows the 6 patients in the browser.
 
