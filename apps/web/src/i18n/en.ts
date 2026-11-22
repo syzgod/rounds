@@ -32,6 +32,12 @@ const messages = {
     keyOpen: "open",
     keyTheme: "theme",
   },
+  textSize: {
+    label: "Text size",
+    normal: "Normal text",
+    large: "Large text",
+    larger: "Larger text",
+  },
   theme: {
     toLight: "Light",
     toDark: "Dark",

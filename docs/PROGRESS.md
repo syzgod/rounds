@@ -49,6 +49,7 @@ Kept short. Read this at the start of a session and update it at the end. Milest
 
 ## Fixed
 
+- Readability: root text grows with the screen (100/112.5/125%), A/A+/A++ text size control, two columns from 1024 px, patient names wrap instead of truncating.
 - Bundle: libraries split into react/apollo/ui chunks; app code is 58 kB. No size warning.
 - Polish: "Sep" not "Sept"; theme toggle has a text label; dialog close label is translated; header tagline hidden on phones (it overflowed).
 - Error boundaries around the chart strip and the app (#24).
