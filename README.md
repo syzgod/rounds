@@ -20,7 +20,7 @@
 
 The demo is keyboard only. The app opens in German when the browser language is German; switch with **DE/EN** in the header.
 
-1. **Who needs attention? (30 s)** The patient list shows "1 auffällig" next to Amelia Hartwell and Leilani Kahale.
+1. **Who needs attention? (30 s)** Patients whose latest results are out of range carry an "auffällig" badge with a count, for example Amelia Hartwell.
 2. **Open a record (45 s)**
    - Press <kbd>/</kbd>, type `Ame`, press <kbd>↓</kbd> <kbd>Enter</kbd>.
    - The header shows active diagnoses (hypertension, type 2 diabetes).
