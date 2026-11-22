@@ -57,6 +57,18 @@ test("clinician demo works by keyboard alone, in German", async ({ page }) => {
   await expect(trends.getByText("Blutdruck").first()).toBeVisible()
   await expect(trends.getByText(/\/\d+.*mmHg/).first()).toBeVisible()
 
+  // Trend detail dialog: open with Enter, close with Escape, focus returns.
+  const details = trends.getByRole("button", { name: "Details: HbA1c" })
+  await tabTo(page, details)
+  await page.keyboard.press("Enter")
+  const detail = page.getByRole("dialog", { name: "HbA1c" })
+  await expect(detail).toBeVisible()
+  await expect(detail.getByRole("table")).toBeVisible()
+  await expect(detail).toContainText("Normbereich")
+  await page.keyboard.press("Escape")
+  await expect(detail).toBeHidden()
+  await expect(details).toBeFocused()
+
   // Timeline filter: arrow keys + Space.
   const count = page.getByRole("status").filter({ hasText: /Einträge/ })
   await expect(count).toHaveText(/^\d+ Einträge$/)

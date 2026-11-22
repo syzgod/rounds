@@ -3,12 +3,26 @@ import type { MockLink } from "@apollo/client/testing"
 import { print } from "graphql"
 import { cleanup, render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { describe, expect, it } from "vitest"
+import { cloneElement, type ReactElement } from "react"
+import { describe, expect, it, vi } from "vitest"
 
 import { PatientTrends } from "@/components/patient-trends"
 import { PATIENT_TRENDS_QUERY, type Trend } from "@/graphql/trends"
 import type { Locale } from "@/i18n/messages"
 import { TestLocale } from "@/test/i18n"
+
+// jsdom has no layout, so ResponsiveContainer renders nothing; give charts a fixed size.
+vi.mock("recharts", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("recharts")>()
+  return {
+    ...actual,
+    ResponsiveContainer: ({
+      children,
+    }: {
+      children: ReactElement<{ width?: number; height?: number }>
+    }) => cloneElement(children, { width: 480, height: 200 }),
+  }
+})
 
 const HBA1C: Trend = {
   __typename: "Trend",
@@ -16,6 +30,10 @@ const HBA1C: Trend = {
   code: "4548-4",
   title: "Hemoglobin A1c",
   unit: "%",
+  referenceLow: 4,
+  referenceHigh: 5.6,
+  secondaryReferenceLow: null,
+  secondaryReferenceHigh: null,
   points: [
     {
       __typename: "TrendPoint",
@@ -50,6 +68,10 @@ const BP: Trend = {
   code: "85354-9",
   title: "Blood pressure",
   unit: "mmHg",
+  referenceLow: 90,
+  referenceHigh: 120,
+  secondaryReferenceLow: 60,
+  secondaryReferenceHigh: 80,
   points: [
     {
       __typename: "TrendPoint",
@@ -127,6 +149,91 @@ describe("PatientTrends", () => {
     expect(screen.getByText("128/82 mmHg")).toBeInTheDocument()
   })
 
+  it("shows min, max, date span and the norm footer without hovering", async () => {
+    renderTrends([mock([HBA1C, BP])])
+    const [hba1c, bp] = await screen.findAllByRole("listitem")
+    expect(within(hba1c!).getByText("Mar 2023 – Jun 2025")).toBeInTheDocument()
+    expect(within(hba1c!).getByText("Normal 4.0–5.6 %")).toBeInTheDocument()
+    expect(within(hba1c!).getByText("7.8")).toBeInTheDocument()
+    expect(
+      within(hba1c!).getByText("6.6", { selector: "text *" })
+    ).toBeInTheDocument()
+    expect(hba1c!.querySelector(".recharts-reference-area")).not.toBeNull()
+    expect(
+      within(bp!).getByText("Normal 90–120/60–80 mmHg")
+    ).toBeInTheDocument()
+  })
+
+  it("localizes the norm footer and date span in German", async () => {
+    renderTrends([mock([HBA1C])], "de")
+    expect(await screen.findByText("Norm 4,0–5,6 %")).toBeInTheDocument()
+    expect(screen.getByText("03.2023 – 06.2025")).toBeInTheDocument()
+  })
+
+  it("omits band and footer when there is no range", async () => {
+    const noRange: Trend = {
+      ...HBA1C,
+      referenceLow: null,
+      referenceHigh: null,
+    }
+    renderTrends([mock([noRange])])
+    const [item] = await screen.findAllByRole("listitem")
+    expect(item!.querySelector(".recharts-reference-area")).toBeNull()
+    expect(within(item!).queryByText(/^Normal /)).not.toBeInTheDocument()
+  })
+
+  it("opens Details by keyboard with a dated table and returns focus on Escape", async () => {
+    const user = userEvent.setup()
+    renderTrends([mock([HBA1C, BP])])
+    const button = (
+      await screen.findAllByRole("button", { name: /^Details/ })
+    )[0]!
+    expect(button).toHaveAccessibleName("Details: HbA1c")
+    button.focus()
+    await user.keyboard("{Enter}")
+    const dialog = await screen.findByRole("dialog", { name: "HbA1c" })
+    const table = within(dialog).getByRole("table")
+    const rows = within(table).getAllByRole("row").slice(1)
+    expect(rows).toHaveLength(3)
+    expect(within(rows[0]!).getByText("17 Jun 2025")).toBeInTheDocument()
+    expect(within(rows[0]!).getByText("6.6 %")).toBeInTheDocument()
+    expect(within(rows[0]!).getByText("High")).toBeInTheDocument()
+    expect(within(rows[1]!).getByText("—")).toBeInTheDocument()
+    expect(
+      within(dialog).getByText("Normal range: 4.0–5.6 %")
+    ).toBeInTheDocument()
+    expect(within(dialog).getByText("Normal range")).toBeInTheDocument()
+    await user.keyboard("{Escape}")
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+    expect(button).toHaveFocus()
+  })
+
+  it("shows em dash when no range and a legend for blood pressure", async () => {
+    const user = userEvent.setup()
+    renderTrends(
+      [
+        mock([
+          {
+            ...BP,
+            referenceLow: null,
+            referenceHigh: null,
+            secondaryReferenceLow: null,
+            secondaryReferenceHigh: null,
+          },
+        ]),
+      ],
+      "de"
+    )
+    await user.click(await screen.findByRole("button", { name: /^Details/ }))
+    const dialog = await screen.findByRole("dialog", { name: "Blutdruck" })
+    expect(within(dialog).getByText("Systolisch")).toBeInTheDocument()
+    expect(within(dialog).getByText("Diastolisch")).toBeInTheDocument()
+    expect(within(dialog).getAllByText("—")).toHaveLength(2)
+    expect(
+      within(dialog).getByRole("columnheader", { name: "Bewertung" })
+    ).toBeInTheDocument()
+  })
+
   it("gives each chart a text alternative", async () => {
     renderTrends([mock([HBA1C])])
     expect(
@@ -190,9 +297,10 @@ describe("PatientTrends", () => {
     expect(window.localStorage.getItem("trends-visible")).toBe("false")
     cleanup()
     renderTrends([mock([HBA1C])])
-    expect(
-      await screen.findByRole("button", { name: "Show" })
-    ).toHaveAttribute("aria-expanded", "false")
+    expect(await screen.findByRole("button", { name: "Show" })).toHaveAttribute(
+      "aria-expanded",
+      "false"
+    )
     expect(screen.getByText("1 measurement hidden")).toBeInTheDocument()
   })
 

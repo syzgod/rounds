@@ -139,9 +139,11 @@ export function formatTimeRange(
 export function formatNumber(
   value: number,
   locale: Locale,
-  digits = 1
+  digits = 1,
+  minDigits = 0
 ): string {
   return new Intl.NumberFormat(INTL_LOCALE[locale], {
+    minimumFractionDigits: minDigits,
     maximumFractionDigits: digits,
   }).format(value)
 }
