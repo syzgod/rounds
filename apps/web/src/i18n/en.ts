@@ -9,6 +9,7 @@ const messages = {
   common: {
     retry: "Retry",
     reload: "Reload",
+    close: "Close",
     unexpectedError: "Something went wrong.",
     notRecorded: "Not recorded",
     undated: "Undated",
@@ -32,8 +33,8 @@ const messages = {
     keyTheme: "theme",
   },
   theme: {
-    toLight: "Switch to light theme",
-    toDark: "Switch to dark theme",
+    toLight: "Light",
+    toDark: "Dark",
     toggle: "Toggle theme",
   },
   health: {

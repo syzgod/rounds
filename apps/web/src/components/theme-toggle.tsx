@@ -25,15 +25,17 @@ export function ThemeToggle() {
         render={
           <Button
             variant="ghost"
-            size="icon"
-            aria-label={
-              isDark ? t.theme.toLight : t.theme.toDark
-            }
+            size="sm"
             onClick={() => setTheme(isDark ? "light" : "dark")}
           />
         }
       >
-        {isDark ? <SunIcon /> : <MoonIcon />}
+        {isDark ? (
+          <SunIcon data-icon="inline-start" />
+        ) : (
+          <MoonIcon data-icon="inline-start" />
+        )}
+        {isDark ? t.theme.toLight : t.theme.toDark}
       </TooltipTrigger>
       <TooltipContent>
         {t.theme.toggle} <Kbd>D</Kbd>
