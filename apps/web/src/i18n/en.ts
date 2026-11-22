@@ -160,6 +160,13 @@ const messages = {
     ): string =>
       `${title}, ${count} values from ${from} to ${to}, latest ${latest}, range ${range}`,
   },
+  triage: {
+    activeDiagnoses: "Active diagnoses",
+    none: "None",
+    abnormalShort: (n: number): string => `${n} abnormal`,
+    abnormalLabel: (n: number): string =>
+      n === 1 ? "1 abnormal result" : `${n} abnormal results`,
+  },
 }
 
 export type Messages = Widen<typeof messages>

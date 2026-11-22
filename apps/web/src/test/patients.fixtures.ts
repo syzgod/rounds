@@ -9,6 +9,8 @@ export const PATIENTS: PatientSummary[] = [
     gender: "FEMALE",
     birthDate: "1985-12-10",
     mrn: "MRN-100001",
+    activeDiagnoses: ["Type 2 diabetes mellitus", "Essential hypertension"],
+    abnormalResultCount: 2,
   },
   {
     __typename: "Patient",
@@ -17,6 +19,8 @@ export const PATIENTS: PatientSummary[] = [
     gender: "MALE",
     birthDate: "1958-04-22",
     mrn: "MRN-100002",
+    activeDiagnoses: ["Chronic obstructive pulmonary disease"],
+    abnormalResultCount: 1,
   },
   {
     __typename: "Patient",
@@ -25,6 +29,8 @@ export const PATIENTS: PatientSummary[] = [
     gender: null,
     birthDate: null,
     mrn: null,
+    activeDiagnoses: [],
+    abnormalResultCount: 0,
   },
   {
     __typename: "Patient",
@@ -33,5 +39,7 @@ export const PATIENTS: PatientSummary[] = [
     gender: "FEMALE",
     birthDate: "1992-08-30",
     mrn: "MRN-100003",
+    activeDiagnoses: ["Asthma"],
+    abnormalResultCount: 0,
   },
 ]

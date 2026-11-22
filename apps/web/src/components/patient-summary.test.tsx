@@ -87,6 +87,42 @@ describe("PatientSummaryPanel", () => {
     expect(screen.queryByText(amelia.id)).not.toBeInTheDocument()
   })
 
+  it("lists active diagnoses in the header, or 'None'", async () => {
+    const amelia = fixture("pat-amelia-hartwell")
+    renderSummary(amelia.id, [patientMock(amelia.id, amelia)])
+    expect(
+      await screen.findByText("Active diagnoses")
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText("Type 2 diabetes mellitus, Essential hypertension")
+    ).toBeInTheDocument()
+  })
+
+  it("says 'None' when there are no active diagnoses", async () => {
+    const okafor = fixture("pat-okafor-minimal")
+    renderSummary(okafor.id, [patientMock(okafor.id, okafor)])
+    await screen.findByText("Active diagnoses")
+    expect(screen.getByText("None")).toBeInTheDocument()
+  })
+
+  it("shows the German diagnoses label and 'Keine'", async () => {
+    const okafor = fixture("pat-okafor-minimal")
+    render(
+      <TestLocale locale="de">
+        <MockedProvider
+          mocks={[patientMock(okafor.id, okafor), trendsMock(okafor.id)]}
+        >
+          <PatientSummaryPanel
+            patientId={okafor.id}
+            onClearSelection={vi.fn()}
+          />
+        </MockedProvider>
+      </TestLocale>
+    )
+    expect(await screen.findByText("Aktive Diagnosen")).toBeInTheDocument()
+    expect(screen.getByText("Keine")).toBeInTheDocument()
+  })
+
   it("labels every missing fact 'Not recorded' for the minimal patient", async () => {
     const okafor = fixture("pat-okafor-minimal")
     renderSummary(okafor.id, [patientMock(okafor.id, okafor)])

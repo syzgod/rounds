@@ -147,4 +147,11 @@ export const de: Messages = {
     summary: (title, count, from, to, latest, range) =>
       `${title}, ${count} Werte vom ${from} bis ${to}, zuletzt ${latest}, Bereich ${range}`,
   },
+  triage: {
+    activeDiagnoses: "Aktive Diagnosen",
+    none: "Keine",
+    abnormalShort: (n) => `${n} auffällig`,
+    abnormalLabel: (n) =>
+      n === 1 ? "1 auffälliger Wert" : `${n} auffällige Werte`,
+  },
 }

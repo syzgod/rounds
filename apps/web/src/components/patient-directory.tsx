@@ -4,6 +4,7 @@ import { AlertCircleIcon, RotateCwIcon } from "lucide-react"
 
 import { Alert, AlertAction, AlertTitle } from "@/components/ui/alert"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Command,
@@ -189,6 +190,16 @@ export function PatientDirectory({
                       {patientMeta(patient, t)}
                     </span>
                   </span>
+                  {patient.abnormalResultCount > 0 ? (
+                    <Badge variant="warning" className="ml-auto">
+                      <span aria-hidden="true">
+                        {t.triage.abnormalShort(patient.abnormalResultCount)}
+                      </span>
+                      <span className="sr-only">
+                        {t.triage.abnormalLabel(patient.abnormalResultCount)}
+                      </span>
+                    </Badge>
+                  ) : null}
                 </CommandItem>
               ))}
             </CommandGroup>

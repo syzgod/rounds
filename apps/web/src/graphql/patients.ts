@@ -12,6 +12,10 @@ export type PatientSummary = {
   gender: Gender | null
   birthDate: string | null
   mrn: string | null
+  /** Labels of active conditions, newest first. */
+  activeDiagnoses: string[]
+  /** Distinct measurements whose latest value is flagged. */
+  abnormalResultCount: number
 }
 
 export const PATIENT_SUMMARY_FIELDS = gql`
@@ -21,6 +25,8 @@ export const PATIENT_SUMMARY_FIELDS = gql`
     gender
     birthDate
     mrn
+    activeDiagnoses
+    abnormalResultCount
   }
 `
 
