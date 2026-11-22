@@ -28,6 +28,12 @@ export const de: Messages = {
     keyOpen: "öffnen",
     keyTheme: "Design",
   },
+  textSize: {
+    label: "Schriftgröße",
+    normal: "Normale Schrift",
+    large: "Große Schrift",
+    larger: "Sehr große Schrift",
+  },
   theme: {
     toLight: "Hell",
     toDark: "Dunkel",
