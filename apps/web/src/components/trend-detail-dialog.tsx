@@ -1,9 +1,11 @@
-import type { ReactElement, ReactNode } from "react"
+import { useState, type ReactElement, type ReactNode } from "react"
 import {
   CartesianGrid,
   Line,
   LineChart,
   ReferenceArea,
+  ReferenceDot,
+  ReferenceLine,
   XAxis,
   YAxis,
 } from "recharts"
@@ -12,6 +14,9 @@ import {
   allValues,
   BLOOD_PRESSURE,
   FLAG_META,
+  makeDot,
+  niceTicks,
+  TrendTooltip,
   formatBand,
   formatDay,
   formatReading,
@@ -22,7 +27,11 @@ import {
   type Band,
 } from "@/components/trend-shared"
 import { Badge } from "@/components/ui/badge"
-import { ChartContainer, type ChartConfig } from "@/components/ui/chart"
+import {
+  ChartContainer,
+  ChartTooltip,
+  type ChartConfig,
+} from "@/components/ui/chart"
 import {
   Dialog,
   DialogContent,
@@ -35,6 +44,7 @@ import type { Trend } from "@/graphql/trends"
 import { useI18n } from "@/i18n/locale-provider"
 import type { Messages } from "@/i18n/messages"
 import { formatNumber } from "@/lib/format"
+import { cn } from "@/lib/utils"
 
 function LegendSwatch({ dashed }: { dashed: boolean }) {
   return (
@@ -52,7 +62,13 @@ function LegendSwatch({ dashed }: { dashed: boolean }) {
   )
 }
 
-function DetailChart({ trend }: { trend: Trend }) {
+type DetailChartProps = {
+  trend: Trend
+  /** Point to mark on the chart (the hovered table row). */
+  highlightId: string | null
+}
+
+function DetailChart({ trend, highlightId }: DetailChartProps) {
   const { locale, t } = useI18n()
   const data = trend.points.map(toDatum)
   const isPressure = trend.code === BLOOD_PRESSURE
@@ -63,8 +79,13 @@ function DetailChart({ trend }: { trend: Trend }) {
   const values = [...allValues(data), ...bandEdges]
   const lo = Math.min(...values)
   const hi = Math.max(...values)
-  const pad = (hi - lo) * 0.15 || Math.abs(hi) * 0.05 || 1
-  const domain: [number, number] = [lo - pad, hi + pad]
+  // Small pad so points do not sit on the axis edge, then round ticks.
+  const pad = (hi - lo) * 0.05
+  const ticks = niceTicks(lo - pad, hi + pad)
+  const domain: [number, number] = [ticks[0] ?? lo, ticks.at(-1) ?? hi]
+  const lastIndex = data.length - 1
+  const highlighted = trend.points.find((p) => p.id === highlightId)
+  const mark = highlighted ? toDatum(highlighted) : null
   const config: ChartConfig = {
     value: { label: t.trends.systolic, color: "var(--observation)" },
     secondary: { label: t.trends.diastolic, color: "var(--observation)" },
@@ -131,6 +152,7 @@ function DetailChart({ trend }: { trend: Trend }) {
           />
           <YAxis
             domain={domain}
+            ticks={ticks}
             tickFormatter={(v: number) => formatNumber(v, locale)}
             tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
             tickLine={false}
@@ -150,13 +172,24 @@ function DetailChart({ trend }: { trend: Trend }) {
           />
           {band(primary, "primary", bandLabel(t.trends.systolic))}
           {band(secondary, "secondary", bandLabel(t.trends.diastolic))}
+          <ChartTooltip
+            isAnimationActive={false}
+            content={<TrendTooltip trend={trend} />}
+          />
+          {mark ? (
+            <ReferenceLine
+              x={mark.time}
+              stroke="var(--muted-foreground)"
+              strokeDasharray="3 3"
+            />
+          ) : null}
           <Line
             dataKey="value"
             type="monotone"
             stroke="var(--color-value)"
             strokeWidth={2}
             isAnimationActive={false}
-            dot={{ r: 3 }}
+            dot={makeDot({ secondary: false, lastIndex, everyPoint: true })}
             activeDot={{ r: 5 }}
           />
           {isPressure ? (
@@ -167,8 +200,28 @@ function DetailChart({ trend }: { trend: Trend }) {
               strokeWidth={2}
               strokeDasharray="5 3"
               isAnimationActive={false}
-              dot={{ r: 3 }}
+              dot={makeDot({ secondary: true, lastIndex, everyPoint: true })}
               activeDot={{ r: 5 }}
+            />
+          ) : null}
+          {mark ? (
+            <ReferenceDot
+              x={mark.time}
+              y={mark.value}
+              r={7}
+              fill="none"
+              stroke="var(--foreground)"
+              strokeWidth={2}
+            />
+          ) : null}
+          {mark && mark.secondary !== null ? (
+            <ReferenceDot
+              x={mark.time}
+              y={mark.secondary}
+              r={7}
+              fill="none"
+              stroke="var(--foreground)"
+              strokeWidth={2}
             />
           ) : null}
         </LineChart>
@@ -202,7 +255,14 @@ function assessment(
   return inside ? t.trends.inRange : t.trends.noAssessment
 }
 
-function DetailTable({ trend }: { trend: Trend }) {
+type DetailTableProps = {
+  trend: Trend
+  highlightId: string | null
+  /** Hovering a row marks its point on the chart. */
+  onHighlight: (id: string | null) => void
+}
+
+function DetailTable({ trend, highlightId, onHighlight }: DetailTableProps) {
   const { locale, t } = useI18n()
   const rows = [...trend.points].reverse()
   return (
@@ -229,7 +289,12 @@ function DetailTable({ trend }: { trend: Trend }) {
         </thead>
         <tbody>
           {rows.map((point) => (
-            <tr key={point.id} className="border-t">
+            <tr
+              key={point.id}
+              className={cn("border-t", point.id === highlightId && "bg-muted")}
+              onMouseEnter={() => onHighlight(point.id)}
+              onMouseLeave={() => onHighlight(null)}
+            >
               <td className="px-3 py-1.5 tabular-nums">
                 {formatDay(point.date, locale)}
               </td>
@@ -259,6 +324,7 @@ export function TrendDetailDialog({
   children,
 }: TrendDetailDialogProps) {
   const { locale, t } = useI18n()
+  const [highlightId, setHighlightId] = useState<string | null>(null)
   const { primary, secondary } = trendBands(trend)
   const norm = primary ? formatBand(primary, locale) : null
   const second = secondary ? formatBand(secondary, locale) : null
@@ -279,8 +345,12 @@ export function TrendDetailDialog({
               : t.trends.tableLabel}
           </DialogDescription>
         </DialogHeader>
-        <DetailChart trend={trend} />
-        <DetailTable trend={trend} />
+        <DetailChart trend={trend} highlightId={highlightId} />
+        <DetailTable
+          trend={trend}
+          highlightId={highlightId}
+          onHighlight={setHighlightId}
+        />
       </DialogContent>
     </Dialog>
   )

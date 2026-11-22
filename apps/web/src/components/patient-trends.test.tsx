@@ -208,6 +208,22 @@ describe("PatientTrends", () => {
     expect(button).toHaveFocus()
   })
 
+  it("marks the hovered table row", async () => {
+    const user = userEvent.setup()
+    renderTrends([mock([HBA1C, BP])])
+    await user.click(
+      (await screen.findAllByRole("button", { name: /^Details/ }))[0]!
+    )
+    const dialog = await screen.findByRole("dialog", { name: "HbA1c" })
+    const row = within(within(dialog).getByRole("table")).getAllByRole(
+      "row"
+    )[1]!
+    await user.hover(row)
+    expect(row).toHaveClass("bg-muted")
+    await user.unhover(row)
+    expect(row).not.toHaveClass("bg-muted")
+  })
+
   it("shows em dash when no range and a legend for blood pressure", async () => {
     const user = userEvent.setup()
     renderTrends(

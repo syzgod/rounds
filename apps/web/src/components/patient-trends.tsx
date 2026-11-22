@@ -8,6 +8,8 @@ import {
   allValues,
   BLOOD_PRESSURE,
   FLAG_META,
+  makeDot,
+  TrendTooltip,
   formatDay,
   formatMonth,
   formatNorm,
@@ -17,7 +19,6 @@ import {
   trendTitle,
   withUnit,
   type Band,
-  type Datum,
 } from "@/components/trend-shared"
 import { TrendDetailDialog } from "@/components/trend-detail-dialog"
 import { Alert, AlertAction, AlertTitle } from "@/components/ui/alert"
@@ -53,76 +54,6 @@ function summarize(trend: Trend, t: Messages, locale: Locale): string {
   )
 }
 
-type DotProps = {
-  cx?: number
-  cy?: number
-  index?: number
-  payload?: Datum
-  stroke?: string
-}
-
-/** Dot only on the latest point and on flagged points; a flagged point is a diamond in the flag colour. */
-function makeDot(secondary: boolean, lastIndex: number) {
-  return function Dot({ cx, cy, index, payload, stroke }: DotProps) {
-    if (cx === undefined || cy === undefined) return <g />
-    const flag = payload?.flag ?? null
-    if (flag) {
-      return (
-        <rect
-          x={cx - 4.5}
-          y={cy - 4.5}
-          width={9}
-          height={9}
-          transform={`rotate(45 ${cx} ${cy})`}
-          fill={FLAG_META[flag].color}
-          stroke="var(--background)"
-          strokeWidth={1.5}
-        />
-      )
-    }
-    if (index !== lastIndex) return <g />
-    return (
-      <circle
-        cx={cx}
-        cy={cy}
-        r={3}
-        fill={secondary ? "var(--background)" : stroke}
-        stroke={stroke}
-        strokeWidth={1.5}
-      />
-    )
-  }
-}
-
-type TooltipBodyProps = {
-  active?: boolean
-  payload?: ReadonlyArray<{ payload?: Datum }>
-  trend: Trend
-}
-
-function TrendTooltip({ active, payload, trend }: TooltipBodyProps) {
-  const { locale, t } = useI18n()
-  const datum = payload?.[0]?.payload
-  if (!active || !datum) return null
-  return (
-    <div className="grid gap-1 rounded-lg border bg-background px-2.5 py-1.5 text-xs shadow-xl">
-      <div className="text-muted-foreground">
-        {formatDay(datum.date, locale)}
-      </div>
-      <div className="font-medium tabular-nums">
-        {formatReading(
-          trend,
-          { value: datum.value, secondaryValue: datum.secondary },
-          locale
-        )}
-      </div>
-      {datum.flag ? (
-        <div className="font-medium">{t.timeline.flag[datum.flag]}</div>
-      ) : null}
-    </div>
-  )
-}
-
 function TrendChart({ trend }: { trend: Trend }) {
   const { locale, t } = useI18n()
   const data = trend.points.map(toDatum)
@@ -143,8 +74,8 @@ function TrendChart({ trend }: { trend: Trend }) {
     secondary: { label: t.trends.diastolic, color: "var(--observation)" },
   }
   const lastIndex = data.length - 1
-  const SystolicDot = makeDot(false, lastIndex)
-  const DiastolicDot = makeDot(true, lastIndex)
+  const SystolicDot = makeDot({ secondary: false, lastIndex })
+  const DiastolicDot = makeDot({ secondary: true, lastIndex })
   const first = trend.points[0]
   const last = trend.points[lastIndex]
   const band = (b: Band | null, key: string) =>
