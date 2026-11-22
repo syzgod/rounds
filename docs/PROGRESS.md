@@ -24,7 +24,7 @@ Kept short. Read this at the start of a session and update it at the end. Milest
 
 ## Start here (next session)
 
-1. **Localize timeline text** (optional): titles and categories come from FHIR in English ("Laboratory", "Vital signs") inside the German UI. Trend names already use a LOINC → German map.
+1. **Chart dialog polish:** round y-axis ticks and show the flag diamonds as on the cards.
 2. **Clean up** the leftover worktrees `D:/Developer/Projects/rounds-wt-contrast` and `rounds-wt-ranges` (both merged and clean).
 
 ## Next
@@ -38,6 +38,7 @@ Kept short. Read this at the start of a session and update it at the end. Milest
 
 ## Fixed
 
+- German timeline: measurement names, categories and encounter classes are translated from codes (`code`, `categoryCode` on TimelineEvent). Visit names and SNOMED diagnoses stay as recorded.
 - Visual check done (dark mode, chart dialog, source viewer, phone/tablet/desktop). Fixed: alert Retry covered German text; JSON overflowed the dialog at 375 px; timeline filters overflowed; offline header overflowed on phones.
 - API coverage pass (M5): 51 → 71 unit tests; 99.6% lines, 94.8% branches. Notes for untested branches in PLAN.md.
 - Readability: root text grows with the screen (100/112.5/125%), A/A+/A++ text size control, two columns from 1024 px, patient names wrap instead of truncating.
@@ -52,10 +53,8 @@ Kept short. Read this at the start of a session and update it at the end. Milest
 
 ## Suggestions
 
-- Chart dialog: round y-axis ticks (now 8,4/7,4/5,4) and show the flag diamonds as on the cards.
 - A long diagnosis list is untested: the fixtures have at most 2 active diagnoses.
 - Have a German clinician sanity-check the terms (Verlauf, Befunde, Erhöht/Erniedrigt, auffällig).
 - GraphQL Code Generator instead of hand-written client types.
-- Reference ranges in the charts.
 - Index resources by subject, or add DataLoader, if the data grows.
 - PR preview deploys on Render. These need the API to accept preview origins for CORS.

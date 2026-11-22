@@ -1,15 +1,17 @@
 import type {
-  CodeableConcept,
   Observation,
   ObservationComponent,
   Quantity,
   Range,
 } from 'fhir/r4.js';
 import type { Identified } from '../fhir/fhir-guards.js';
-import { conceptLabel, observationFlag } from '../timeline/timeline.mapper.js';
+import {
+  conceptLabel,
+  loincCode,
+  observationFlag,
+} from '../timeline/timeline.mapper.js';
 import type { TrendDto, TrendPointDto } from './dto/trend.dto.js';
 
-const LOINC = 'http://loinc.org';
 const LOINC_SYSTOLIC = '8480-6';
 const LOINC_DIASTOLIC = '8462-4';
 const BLOOD_PRESSURE_UNIT = 'mmHg';
@@ -58,10 +60,6 @@ function referenceBounds(
   const high = quantityValue(range.high, unit);
   if (low === null && high === null) return null;
   return { low, high };
-}
-
-function loincCode(concept: CodeableConcept | undefined): string | undefined {
-  return concept?.coding?.find((c) => c.system === LOINC && c.code)?.code;
 }
 
 function findComponent(
@@ -190,6 +188,7 @@ export function buildTrends(
   const latestTime = (trend: TrendDto): number =>
     timeOf(trend.points[trend.points.length - 1]?.date ?? '');
   return trends.sort(
-    (a, b) => latestTime(b) - latestTime(a) || a.title.localeCompare(b.title, 'en'),
+    (a, b) =>
+      latestTime(b) - latestTime(a) || a.title.localeCompare(b.title, 'en'),
   );
 }

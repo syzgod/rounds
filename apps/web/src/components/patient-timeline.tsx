@@ -31,7 +31,13 @@ import {
   type TimelineEventKind,
 } from "@/graphql/timeline"
 import { useI18n } from "@/i18n/locale-provider"
-import { isKnownStatus, type Locale, type Messages } from "@/i18n/messages"
+import {
+  isKnownCategoryCode,
+  isKnownMeasurementCode,
+  isKnownStatus,
+  type Locale,
+  type Messages,
+} from "@/i18n/messages"
 import { dayKey, formatFhirDate, formatTimeRange } from "@/lib/format"
 import { cn } from "@/lib/utils"
 
@@ -104,6 +110,22 @@ function statusLabel(code: string, t: Messages): string {
   return isKnownStatus(code) ? t.timeline.status[code] : sentence(code)
 }
 
+/**
+ * Coded text in the UI language. Free text (visit names) and SNOMED diagnoses
+ * stay as recorded; a terminology server would supply their translations.
+ */
+function eventTitle(event: TimelineEvent, t: Messages): string {
+  return event.code && isKnownMeasurementCode(event.code)
+    ? t.measurements[event.code]
+    : event.title
+}
+
+function eventCategory(event: TimelineEvent, t: Messages): string | null {
+  return event.categoryCode && isKnownCategoryCode(event.categoryCode)
+    ? t.timeline.category[event.categoryCode]
+    : event.category
+}
+
 function dayLabel(key: string, locale: Locale, t: Messages): string {
   if (key === "undated") return t.common.undated
   return formatFhirDate(key, locale) ?? key
@@ -112,6 +134,7 @@ function dayLabel(key: string, locale: Locale, t: Messages): string {
 function TimelineItem({ event }: { event: TimelineEvent }) {
   const { locale, t } = useI18n()
   const meta = KIND_META[event.kind]
+  const title = eventTitle(event, t)
   const Icon = meta.icon
   const flag = event.flag ? FLAG_META[event.flag] : null
   const showStatus = event.status !== null && !HIDDEN_STATUSES.has(event.status)
@@ -123,7 +146,7 @@ function TimelineItem({ event }: { event: TimelineEvent }) {
           )
         : null
       : formatTimeRange(event.date, event.endDate, locale, t)
-  const details = [event.category, when].filter(
+  const details = [eventCategory(event, t), when].filter(
     (part): part is string => part !== null && part !== ""
   )
 
@@ -140,7 +163,7 @@ function TimelineItem({ event }: { event: TimelineEvent }) {
       </span>
       <div className="flex min-w-0 flex-1 flex-col gap-0.5 pt-0.5">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <p className="text-sm font-medium">{event.title}</p>
+          <p className="text-sm font-medium">{title}</p>
           {event.detail ? (
             <span className="text-sm tabular-nums">{event.detail}</span>
           ) : null}
@@ -166,9 +189,9 @@ function TimelineItem({ event }: { event: TimelineEvent }) {
       </div>
       <SourceDialog
         target={{ kind: "timelineEvent", id: event.id }}
-        name={event.title}
+        name={title}
         label={t.source.rowButton}
-        ariaLabel={t.source.openRow(event.title)}
+        ariaLabel={t.source.openRow(title)}
         variant="ghost"
         size="xs"
         className="shrink-0 self-start text-muted-foreground"
