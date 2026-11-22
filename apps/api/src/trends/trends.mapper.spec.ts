@@ -296,3 +296,22 @@ describe('buildTrends', () => {
     ]);
   });
 });
+
+describe('buildTrends unit text', () => {
+  it('shows a readable unit but groups by the raw unit', () => {
+    const reading = (id: string, date: string): TrendReading => ({
+      code: '33914-3',
+      title: 'eGFR',
+      unit: 'mL/min/{1.73_m2}',
+      point: { id, date, value: 60.7369, secondaryValue: null, flag: null },
+      reference: null,
+      secondaryReference: null,
+    });
+    const trends = buildTrends('p1', [
+      reading('Observation/a', '2020-01-01'),
+      reading('Observation/b', '2021-01-01'),
+    ]);
+    expect(trends[0]).toMatchObject({ unit: 'mL/min/1.73 m²' });
+    expect(trends[0]?.points[0]?.value).toBe(60.7369);
+  });
+});

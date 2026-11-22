@@ -10,6 +10,7 @@ import {
   loincCode,
   observationFlag,
 } from '../timeline/timeline.mapper.js';
+import { displayUnit } from '../timeline/display-value.js';
 import type { TrendDto, TrendPointDto } from './dto/trend.dto.js';
 
 const LOINC_SYSTOLIC = '8480-6';
@@ -177,7 +178,7 @@ export function buildTrends(
       id: `${patientId}/${first.code}`,
       code: first.code,
       title: first.title,
-      unit: first.unit,
+      unit: displayUnit(first.unit ?? undefined),
       referenceLow: latest?.reference?.low ?? null,
       referenceHigh: latest?.reference?.high ?? null,
       secondaryReferenceLow: latest?.secondaryReference?.low ?? null,
