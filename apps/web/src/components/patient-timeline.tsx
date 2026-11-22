@@ -128,9 +128,19 @@ function eventCategory(event: TimelineEvent, t: Messages): string | null {
     : event.category
 }
 
-/** Lower-case text the timeline search matches: title, value and category. */
+/**
+ * Lower-case text the timeline search matches: the shown title and category,
+ * the value, and the recorded FHIR title and category (e.g. "Glucose" when
+ * the German UI shows "Blutzucker").
+ */
 function searchText(event: TimelineEvent, t: Messages): string {
-  return [eventTitle(event, t), event.detail, eventCategory(event, t)]
+  return [
+    eventTitle(event, t),
+    event.title,
+    event.detail,
+    eventCategory(event, t),
+    event.category,
+  ]
     .filter(Boolean)
     .join(" ")
     .toLowerCase()
@@ -142,7 +152,13 @@ function dayLabel(key: string, locale: Locale, t: Messages): string {
 }
 
 /** One timeline row; also used for the open results on the overview. */
-export function TimelineItem({ event }: { event: TimelineEvent }) {
+type TimelineItemProps = {
+  event: TimelineEvent
+  /** Show the date too (lists without day headings, such as open results). */
+  withDate?: boolean
+}
+
+export function TimelineItem({ event, withDate = false }: TimelineItemProps) {
   const { locale, t } = useI18n()
   const meta = KIND_META[event.kind]
   const title = eventTitle(event, t)
@@ -157,7 +173,9 @@ export function TimelineItem({ event }: { event: TimelineEvent }) {
           )
         : null
       : formatTimeRange(event.date, event.endDate, locale, t)
-  const details = [eventCategory(event, t), when].filter(
+  const day =
+    withDate && event.date ? formatFhirDate(dayKey(event.date), locale) : null
+  const details = [eventCategory(event, t), day, when].filter(
     (part): part is string => part !== null && part !== ""
   )
 

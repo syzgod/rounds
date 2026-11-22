@@ -33,7 +33,7 @@ export function OpenResults({ patientId }: { patientId: string }) {
       ) : (
         <ol className="flex flex-col">
           {open.map((event) => (
-            <TimelineItem key={event.id} event={event} />
+            <TimelineItem key={event.id} event={event} withDate />
           ))}
         </ol>
       )}

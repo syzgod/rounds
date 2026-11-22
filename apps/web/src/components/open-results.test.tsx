@@ -55,6 +55,8 @@ describe("OpenResults", () => {
       name: "Offene Befunde",
     })
     expect(await within(section).findAllByRole("listitem")).toHaveLength(1)
+    // No day headings here, so each row carries its date.
+    expect(within(section).getByText(/17\.06\.2025/)).toBeInTheDocument()
     expect(
       within(section).getByRole("button", { name: /^Kenntnis nehmen/ })
     ).toBeInTheDocument()

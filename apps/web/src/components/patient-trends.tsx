@@ -289,7 +289,8 @@ export function PatientTrends({ patientId, view }: PatientTrendsProps) {
   const query = search.trim().toLowerCase()
   const matches = query
     ? trends.filter((trend) =>
-        trendTitle(trend, t).toLowerCase().includes(query)
+        // Shown name and recorded name ("Blutzucker" and "Glucose").
+        `${trendTitle(trend, t)} ${trend.title}`.toLowerCase().includes(query)
       )
     : trends
   return (

@@ -250,6 +250,11 @@ describe("PatientTimeline", () => {
     await user.type(search, "laboratory")
     expect(items()).toHaveLength(1)
 
+    // The recorded FHIR title matches too, not only the translated one.
+    await user.clear(search)
+    await user.type(search, "glucose")
+    expect(items()).toHaveLength(1)
+
     await user.clear(search)
     await user.type(search, "nothing like this")
     expect(screen.getByText("No matching entries")).toBeInTheDocument()
