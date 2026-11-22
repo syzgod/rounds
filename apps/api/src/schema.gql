@@ -152,6 +152,11 @@ type TimelineEvent {
   kind: TimelineEventKind!
 
   """
+  True for an open result: the latest reading of its measurement, flagged and not acknowledged.
+  """
+  needsAcknowledgement: Boolean!
+
+  """
   The original FHIR resource as JSON. For the Resource Inspector only; do not read business fields from it.
   """
   rawJson: String

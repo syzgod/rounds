@@ -57,17 +57,17 @@ function measurementCode(concept: CodeableConcept | undefined): string | null {
 }
 
 /**
- * Number of distinct observation codes whose latest dated Observation is
- * flagged high, low or abnormal and not acknowledged. Undated Observations
- * are ignored.
+ * Open results: per observation code, the latest dated Observation when it is
+ * flagged high, low or abnormal and not acknowledged. Returns their timeline
+ * event ids ("Observation/<id>"). Undated Observations are ignored.
  */
-export function abnormalResultCount(
+export function openResultIds(
   observations: readonly Identified<Observation>[],
   isAcknowledged: (eventId: string) => boolean = () => false,
-): number {
+): Set<string> {
   const latest = new Map<
     string,
-    { time: number; flagged: boolean; id: string }
+    { time: number; observation: Observation & { id: string } }
   >();
   for (const observation of observations) {
     const code = measurementCode(observation.code);
@@ -78,18 +78,25 @@ export function abnormalResultCount(
       !current ||
       time > current.time ||
       (time === current.time &&
-        observation.id.localeCompare(current.id, 'en') > 0)
+        observation.id.localeCompare(current.observation.id, 'en') > 0)
     ) {
-      latest.set(code, {
-        time,
-        flagged:
-          observationFlag(observation) !== null &&
-          !isAcknowledged(`Observation/${observation.id}`),
-        id: observation.id,
-      });
+      latest.set(code, { time, observation });
     }
   }
-  let count = 0;
-  for (const { flagged } of latest.values()) if (flagged) count += 1;
-  return count;
+  const open = new Set<string>();
+  for (const { observation } of latest.values()) {
+    const id = `Observation/${observation.id}`;
+    if (observationFlag(observation) !== null && !isAcknowledged(id)) {
+      open.add(id);
+    }
+  }
+  return open;
+}
+
+/** Number of open results (see `openResultIds`): the triage badge. */
+export function abnormalResultCount(
+  observations: readonly Identified<Observation>[],
+  isAcknowledged: (eventId: string) => boolean = () => false,
+): number {
+  return openResultIds(observations, isAcknowledged).size;
 }

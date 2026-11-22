@@ -107,6 +107,12 @@ export class TimelineEventDto {
   })
   acknowledgedBy!: string | null;
 
+  @Field(() => Boolean, {
+    description:
+      'True for an open result: the latest reading of its measurement, flagged and not acknowledged.',
+  })
+  needsAcknowledgement!: boolean;
+
   @Field(() => String, {
     nullable: true,
     description:

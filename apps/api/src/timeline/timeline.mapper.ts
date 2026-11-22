@@ -165,6 +165,7 @@ export function encounterToEvent(
     flag: null,
     acknowledgedAt: null,
     acknowledgedBy: null,
+    needsAcknowledgement: false,
     rawJson: JSON.stringify(encounter),
   };
 }
@@ -186,6 +187,7 @@ export function conditionToEvent(
     flag: null,
     acknowledgedAt: null,
     acknowledgedBy: null,
+    needsAcknowledgement: false,
     rawJson: JSON.stringify(condition),
   };
 }
@@ -207,6 +209,7 @@ export function observationToEvent(
     flag: observationFlag(observation),
     acknowledgedAt: null,
     acknowledgedBy: null,
+    needsAcknowledgement: false,
     rawJson: JSON.stringify(observation),
   };
 }

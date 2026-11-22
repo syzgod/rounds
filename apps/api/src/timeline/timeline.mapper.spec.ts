@@ -79,6 +79,7 @@ describe('encounterToEvent', () => {
       flag: null,
       acknowledgedAt: null,
       acknowledgedBy: null,
+      needsAcknowledgement: false,
       rawJson: JSON.stringify(encounter),
     });
   });
@@ -231,6 +232,7 @@ describe('observationToEvent', () => {
       flag: ObservationFlag.LOW,
       acknowledgedAt: null,
       acknowledgedBy: null,
+      needsAcknowledgement: false,
       rawJson: JSON.stringify(glucose),
     });
   });
@@ -337,6 +339,7 @@ describe('compareTimelineEvents', () => {
     flag: null,
     acknowledgedAt: null,
     acknowledgedBy: null,
+    needsAcknowledgement: false,
     rawJson: null,
   });
 

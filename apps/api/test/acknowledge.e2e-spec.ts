@@ -6,8 +6,10 @@ import { AppModule } from './../src/app.module.js';
 
 const GLUCOSE = 'Observation/obs-amelia-glucose-2025-02-03';
 const ACK = `mutation Ack($id: ID!, $initials: String!) {
-  acknowledgeResult(id: $id, initials: $initials) { id flag acknowledgedAt acknowledgedBy }
+  acknowledgeResult(id: $id, initials: $initials) { id flag acknowledgedAt acknowledgedBy needsAcknowledgement }
 }`;
+const EVENT = `query Event($id: ID!) { timelineEvent(id: $id) { needsAcknowledgement } }`;
+const OLD_HBA1C = 'Observation/obs-amelia-hba1c-2025-01-14';
 const PATIENT = `{ patient(id: "pat-amelia-hartwell") {
   abnormalResultCount
   auditLog { id action resourceId by at }
@@ -51,12 +53,21 @@ describe('Acknowledge results GraphQL (e2e)', () => {
       auditLog: [],
     });
 
+    // Only the latest flagged reading of a measurement is open.
+    expect((await gql(EVENT, { id: GLUCOSE })).data?.timelineEvent).toEqual({
+      needsAcknowledgement: true,
+    });
+    expect((await gql(EVENT, { id: OLD_HBA1C })).data?.timelineEvent).toEqual({
+      needsAcknowledgement: false,
+    });
+
     const first = await gql(ACK, { id: GLUCOSE, initials: 'VB' });
     expect(first.errors).toBeUndefined();
     expect(first.data?.acknowledgeResult).toMatchObject({
       id: GLUCOSE,
       flag: 'LOW',
       acknowledgedBy: 'VB',
+      needsAcknowledgement: false,
     });
     await gql(ACK, { id: GLUCOSE, initials: 'XY' });
 

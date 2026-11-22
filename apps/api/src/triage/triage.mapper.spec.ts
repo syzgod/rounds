@@ -1,6 +1,10 @@
 import type { Condition, Observation } from 'fhir/r4.js';
 import type { Identified } from '../fhir/fhir-guards.js';
-import { abnormalResultCount, activeDiagnosisLabels } from './triage.mapper.js';
+import {
+  abnormalResultCount,
+  activeDiagnosisLabels,
+  openResultIds,
+} from './triage.mapper.js';
 
 const LOINC = 'http://loinc.org';
 const subject = { reference: 'Patient/pat-1' };
@@ -159,6 +163,15 @@ describe('abnormalResultCount', () => {
     expect(
       abnormalResultCount(observations, (id) => id === 'Observation/a1'),
     ).toBe(1);
+  });
+
+  it('returns the event ids of open results only', () => {
+    const ids = openResultIds([
+      observation('old', '1', '2023-01-01', 'H'),
+      observation('new', '1', '2024-01-01', 'H'),
+      observation('normal', '2', '2024-01-01', 'N'),
+    ]);
+    expect([...ids]).toEqual(['Observation/new']);
   });
 
   it('returns 0 for no observations', () => {
