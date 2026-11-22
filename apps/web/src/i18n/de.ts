@@ -133,6 +133,10 @@ export const de: Messages = {
     loadError: "Messwerte konnten nicht geladen werden.",
     systolic: "Systolisch",
     diastolic: "Diastolisch",
+    hide: "Ausblenden",
+    show: "Einblenden",
+    hidden: (n) =>
+      n === 1 ? "1 Messwert ausgeblendet" : `${n} Messwerte ausgeblendet`,
     names: {
       "4548-4": "HbA1c",
       "85354-9": "Blutdruck",

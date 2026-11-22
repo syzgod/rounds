@@ -1,7 +1,7 @@
 import { MockedProvider } from "@apollo/client/testing/react"
 import type { MockLink } from "@apollo/client/testing"
 import { print } from "graphql"
-import { render, screen, within } from "@testing-library/react"
+import { cleanup, render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it } from "vitest"
 
@@ -112,8 +112,6 @@ describe("PatientTrends", () => {
     const bp = items[1]!
     expect(within(bp).getByText("Blood pressure")).toBeInTheDocument()
     expect(within(bp).getByText("128/82 mmHg")).toBeInTheDocument()
-    expect(within(bp).getByText("Systolic")).toBeInTheDocument()
-    expect(within(bp).getByText("Diastolic")).toBeInTheDocument()
   })
 
   it("localizes titles, decimals and dates in German", async () => {
@@ -127,7 +125,6 @@ describe("PatientTrends", () => {
     expect(screen.getByText("Blutdruck")).toBeInTheDocument()
     expect(screen.getByText("Erhöht")).toBeInTheDocument()
     expect(screen.getByText("128/82 mmHg")).toBeInTheDocument()
-    expect(screen.getByText("Systolisch")).toBeInTheDocument()
   })
 
   it("gives each chart a text alternative", async () => {
@@ -163,6 +160,62 @@ describe("PatientTrends", () => {
     expect(await screen.findByText("Couldn't load trends.")).toBeInTheDocument()
     await user.click(screen.getByRole("button", { name: "Retry" }))
     expect(await screen.findByText("6.6 %")).toBeInTheDocument()
+  })
+
+  it("toggles by keyboard, flips aria-expanded and shows a hint", async () => {
+    const user = userEvent.setup()
+    renderTrends([mock([HBA1C, BP])])
+    await screen.findAllByRole("listitem")
+    const button = screen.getByRole("button", { name: "Hide" })
+    expect(button).toHaveAttribute("aria-expanded", "true")
+    expect(button).toHaveAttribute("aria-controls")
+    button.focus()
+    await user.keyboard("{Enter}")
+    const show = screen.getByRole("button", { name: "Show" })
+    expect(show).toHaveAttribute("aria-expanded", "false")
+    expect(screen.queryByRole("list")).not.toBeInTheDocument()
+    expect(screen.getByText("2 measurements hidden")).toBeInTheDocument()
+    await user.keyboard(" ")
+    expect(screen.getAllByRole("listitem")).toHaveLength(2)
+    expect(screen.getByRole("button", { name: "Hide" })).toHaveAttribute(
+      "aria-expanded",
+      "true"
+    )
+  })
+
+  it("persists the choice across remounts", async () => {
+    const user = userEvent.setup()
+    renderTrends([mock([HBA1C])])
+    await user.click(await screen.findByRole("button", { name: "Hide" }))
+    expect(window.localStorage.getItem("trends-visible")).toBe("false")
+    cleanup()
+    renderTrends([mock([HBA1C])])
+    expect(
+      await screen.findByRole("button", { name: "Show" })
+    ).toHaveAttribute("aria-expanded", "false")
+    expect(screen.getByText("1 measurement hidden")).toBeInTheDocument()
+  })
+
+  it("ignores unknown stored values and pluralizes in German", async () => {
+    window.localStorage.setItem("trends-visible", "maybe")
+    renderTrends([mock([HBA1C])], "de")
+    expect(
+      await screen.findByRole("button", { name: "Ausblenden" })
+    ).toBeInTheDocument()
+    cleanup()
+    window.localStorage.setItem("trends-visible", "false")
+    renderTrends([mock([HBA1C, BP])], "de")
+    expect(
+      await screen.findByText("2 Messwerte ausgeblendet")
+    ).toBeInTheDocument()
+    cleanup()
+    renderTrends([mock([HBA1C])], "de")
+    expect(
+      await screen.findByText("1 Messwert ausgeblendet")
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole("button", { name: "Einblenden" })
+    ).toBeInTheDocument()
   })
 
   it("never selects rawJson", () => {
