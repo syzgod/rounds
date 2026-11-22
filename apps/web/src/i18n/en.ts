@@ -62,6 +62,7 @@ const messages = {
     searchLabel: "Search patients by name or MRN",
     searchPlaceholder: "Search by name or MRN…",
     loading: "Loading patients",
+    loadingLive: "Loading patients from the test server…",
     loadError: "Couldn't load patients.",
     noDetails: "No details recorded",
     noMatch: (query: string): string => `No patients match “${query}”.`,
@@ -71,6 +72,7 @@ const messages = {
   },
   patient: {
     loading: "Loading patient",
+    loadingLive: "Loading the record from the test server…",
     loadError: "Couldn't load this patient.",
     notFound: "Patient not found",
     backToList: "Back to patient list",

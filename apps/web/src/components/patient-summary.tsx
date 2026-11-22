@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react"
 import { useQuery } from "@apollo/client/react"
 import { AlertCircleIcon, RotateCwIcon, UserXIcon } from "lucide-react"
 
+import { LoadingNote } from "@/components/loading-note"
 import { OpenResults } from "@/components/open-results"
 import { SourceDialog } from "@/components/source-dialog"
 import { PatientTimeline } from "@/components/patient-timeline"
@@ -223,7 +224,16 @@ export function PatientSummaryPanel({
     )
   }
 
-  if (loading && !data) return <PatientHeaderSkeleton />
+  if (loading && !data) {
+    return (
+      <div className="flex flex-col gap-4">
+        <LoadingNote
+          text={patientId.startsWith("live-") ? t.patient.loadingLive : null}
+        />
+        <PatientHeaderSkeleton />
+      </div>
+    )
+  }
 
   const patient = data?.patient
   if (!patient) {

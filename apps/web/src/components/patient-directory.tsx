@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/command"
 import { Kbd } from "@/components/ui/kbd"
 import { Skeleton } from "@/components/ui/skeleton"
+import { LoadingNote } from "@/components/loading-note"
 import { DataSourceSwitch } from "@/components/data-source-switch"
 import type { DataSource } from "@/graphql/__generated__/graphql"
 import { PATIENTS_QUERY, type PatientSummary } from "@/graphql/patients"
@@ -113,6 +114,9 @@ export function PatientDirectory({
       ? t.directory.count(patients.length)
       : t.directory.countFiltered(visible.length, patients.length)
   const announcedCount = useDebouncedValue(resultCount, 500)
+
+  const liveLoadingText =
+    loading && !data && source === "LIVE" ? t.directory.loadingLive : null
 
   return (
     <nav
@@ -220,6 +224,7 @@ export function PatientDirectory({
         )}
       </Command>
 
+      <LoadingNote text={liveLoadingText} announce={false} />
       {data ? (
         <p className="px-1 text-xs text-muted-foreground" aria-hidden="true">
           {resultCount}
@@ -227,7 +232,7 @@ export function PatientDirectory({
       ) : null}
       {/* Always mounted; announces the count once typing pauses, not per keystroke. */}
       <p className="sr-only" role="status" aria-live="polite">
-        {data ? announcedCount : ""}
+        {data ? announcedCount : (liveLoadingText ?? "")}
       </p>
     </nav>
   )
