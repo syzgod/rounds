@@ -12,6 +12,7 @@ import {
   type LucideIcon,
 } from "lucide-react"
 
+import { SourceDialog } from "@/components/source-dialog"
 import { Alert, AlertAction, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -165,6 +166,15 @@ function TimelineItem({ event }: { event: TimelineEvent }) {
           {details.join(" · ")}
         </p>
       </div>
+      <SourceDialog
+        target={{ kind: "timelineEvent", id: event.id }}
+        name={event.title}
+        label={t.source.rowButton}
+        ariaLabel={t.source.openRow(event.title)}
+        variant="ghost"
+        size="xs"
+        className="shrink-0 self-start text-muted-foreground"
+      />
     </li>
   )
 }

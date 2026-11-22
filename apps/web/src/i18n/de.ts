@@ -58,6 +58,17 @@ export const de: Messages = {
     birthDate: "Geburtsdatum",
     mrn: "Patientennummer",
   },
+  source: {
+    title: "FHIR-Quelldaten",
+    open: "FHIR-Rohdaten anzeigen",
+    openRow: (title) => `FHIR-Rohdaten anzeigen: ${title}`,
+    rowButton: "FHIR",
+    copy: "Kopieren",
+    copied: "Kopiert",
+    loading: "FHIR-Quelldaten werden geladen",
+    loadError: "Die FHIR-Quelldaten konnten nicht geladen werden.",
+    notFound: "Keine FHIR-Quelldaten gefunden.",
+  },
   sex: {
     FEMALE: "Weiblich",
     MALE: "Männlich",

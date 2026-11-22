@@ -63,6 +63,17 @@ const messages = {
     birthDate: "Date of birth",
     mrn: "MRN",
   },
+  source: {
+    title: "FHIR source",
+    open: "View FHIR JSON",
+    openRow: (title: string): string => `View FHIR JSON: ${title}`,
+    rowButton: "FHIR",
+    copy: "Copy",
+    copied: "Copied",
+    loading: "Loading FHIR source",
+    loadError: "Couldn't load the FHIR source.",
+    notFound: "No FHIR source found.",
+  },
   sex: {
     FEMALE: "Female",
     MALE: "Male",
