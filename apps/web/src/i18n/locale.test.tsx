@@ -67,10 +67,13 @@ function renderApp() {
     <TestLocale locale="en">
       <MockedProvider mocks={mocks}>
         <ThemeProvider defaultTheme="light">
-        <TooltipProvider>
-          <AppHeader />
-          <PatientSummaryPanel patientId={amelia.id} onClearSelection={vi.fn()} />
-        </TooltipProvider>
+          <TooltipProvider>
+            <AppHeader />
+            <PatientSummaryPanel
+              patientId={amelia.id}
+              onClearSelection={vi.fn()}
+            />
+          </TooltipProvider>
         </ThemeProvider>
       </MockedProvider>
     </TestLocale>
@@ -125,12 +128,18 @@ describe("language switch", () => {
     expect(
       within(filters).getByRole("button", { name: /^Diagnosen/ })
     ).toBeInTheDocument()
-    expect(within(filters).getByRole("button", { name: /^Kontakte/ })).toBeTruthy()
-    expect(within(filters).getByRole("button", { name: /^Befunde/ })).toBeTruthy()
+    expect(
+      within(filters).getByRole("button", { name: /^Kontakte/ })
+    ).toBeTruthy()
+    expect(
+      within(filters).getByRole("button", { name: /^Befunde/ })
+    ).toBeTruthy()
     expect(screen.getByText("Aktiv")).toBeInTheDocument()
     // Unknown status codes fall back to the sentence-cased code.
     expect(screen.getByText("Some-new-code")).toBeInTheDocument()
-    expect(screen.getByRole("heading", { name: "02.05.2019" })).toBeInTheDocument()
+    expect(
+      screen.getByRole("heading", { name: "02.05.2019" })
+    ).toBeInTheDocument()
   })
 
   it("keeps the active language when pressed again", async () => {

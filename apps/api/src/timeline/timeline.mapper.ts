@@ -19,6 +19,7 @@ import {
   type TimelineEventDto,
 } from './dto/timeline-event.dto.js';
 
+const LOINC = 'http://loinc.org';
 const LOINC_SYSTOLIC = '8480-6';
 const LOINC_DIASTOLIC = '8462-4';
 
@@ -45,6 +46,13 @@ const FLAG_BY_INTERPRETATION: Record<string, ObservationFlag> = {
 
 function firstCoding(concept: CodeableConcept | undefined): Coding | undefined {
   return concept?.coding?.[0];
+}
+
+/** The LOINC code of a concept, if it has one. */
+export function loincCode(
+  concept: CodeableConcept | undefined,
+): string | undefined {
+  return concept?.coding?.find((c) => c.system === LOINC && c.code)?.code;
 }
 
 /** `CodeableConcept.text`, then the first coding's display, then its code. */
@@ -75,9 +83,7 @@ export function formatQuantity(quantity: Quantity | undefined): string | null {
 }
 
 function componentCode(component: ObservationComponent): string | undefined {
-  return component.code.coding?.find(
-    (coding) => coding.system === 'http://loinc.org',
-  )?.code;
+  return component.code.coding?.find((coding) => coding.system === LOINC)?.code;
 }
 
 /** Blood pressure as "120/80 mmHg"; other component sets as "Label: value; …". */
@@ -153,6 +159,8 @@ export function encounterToEvent(
     category:
       (classCode ? ENCOUNTER_CLASS_LABELS[classCode] : undefined) ??
       sentenceCase(encounter.class?.display ?? null),
+    code: null,
+    categoryCode: classCode ?? null,
     status: encounter.status ?? null,
     flag: null,
     rawJson: JSON.stringify(encounter),
@@ -170,6 +178,8 @@ export function conditionToEvent(
     title: conceptLabel(condition.code) ?? 'Condition',
     detail: null,
     category: sentenceCase(conceptLabel(condition.category?.[0])),
+    code: null,
+    categoryCode: firstCoding(condition.category?.[0])?.code ?? null,
     status: firstCoding(condition.clinicalStatus)?.code ?? null,
     flag: null,
     rawJson: JSON.stringify(condition),
@@ -187,6 +197,8 @@ export function observationToEvent(
     title: conceptLabel(observation.code) ?? 'Observation',
     detail: formatObservationValue(observation),
     category: sentenceCase(conceptLabel(observation.category?.[0])),
+    code: loincCode(observation.code) ?? null,
+    categoryCode: firstCoding(observation.category?.[0])?.code ?? null,
     status: observation.status,
     flag: observationFlag(observation),
     rawJson: JSON.stringify(observation),

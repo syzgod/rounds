@@ -72,6 +72,20 @@ export class TimelineEventDto {
   @Field(() => String, {
     nullable: true,
     description:
+      'LOINC code of an Observation, so clients can translate `title`. Null for Encounters and Conditions.',
+  })
+  code!: string | null;
+
+  @Field(() => String, {
+    nullable: true,
+    description:
+      'Code behind `category`: Encounter class (e.g. "EMER") or Condition/Observation category (e.g. "vital-signs"), so clients can translate it.',
+  })
+  categoryCode!: string | null;
+
+  @Field(() => String, {
+    nullable: true,
+    description:
       'FHIR status code: Encounter.status, Condition clinical status, Observation.status.',
   })
   status!: string | null;

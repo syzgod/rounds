@@ -7,7 +7,11 @@ import {
 
 import type { ObservationFlag } from "@/graphql/timeline"
 import type { Trend, TrendPoint } from "@/graphql/trends"
-import { isKnownTrendCode, type Locale, type Messages } from "@/i18n/messages"
+import {
+  isKnownMeasurementCode,
+  type Locale,
+  type Messages,
+} from "@/i18n/messages"
 import { dayKey, formatFhirDate, formatNumber } from "@/lib/format"
 
 export const BLOOD_PRESSURE = "85354-9"
@@ -40,7 +44,9 @@ export type Datum = {
 export type Band = { low: number | null; high: number | null }
 
 export function trendTitle(trend: Trend, t: Messages): string {
-  return isKnownTrendCode(trend.code) ? t.trends.names[trend.code] : trend.title
+  return isKnownMeasurementCode(trend.code)
+    ? t.measurements[trend.code]
+    : trend.title
 }
 
 export function toDatum(point: TrendPoint): Datum {
