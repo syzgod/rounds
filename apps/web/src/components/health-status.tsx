@@ -33,7 +33,13 @@ export function HealthStatus() {
       ) : (
         <>
           <Badge variant="destructive">{t.health.offline}</Badge>
-          <Button size="sm" variant="outline" onClick={() => void refetch()}>
+          {/* Hidden on phones: no room, and each error alert has its own retry. */}
+          <Button
+            size="sm"
+            variant="outline"
+            className="hidden sm:inline-flex"
+            onClick={() => void refetch()}
+          >
             {t.common.retry}
           </Button>
         </>

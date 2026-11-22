@@ -154,7 +154,8 @@ function SourceBody({ target }: { target: SourceTarget }) {
 
   const formatted = formatRawJson(raw)
   return (
-    <div className="flex flex-col gap-3">
+    // min-w-0: a grid child would otherwise grow to the widest JSON line.
+    <div className="flex min-w-0 flex-col gap-3">
       <div className="flex items-center gap-2">
         <CopyButton text={formatted} />
       </div>

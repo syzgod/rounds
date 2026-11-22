@@ -67,6 +67,25 @@ describe('FhirRepositoryService (fixtures)', () => {
     expect(repository.getPatient('enc-amelia-2023-03-14')).toBeNull();
     expect(repository.getPatient('nope')).toBeNull();
   });
+
+  // Amelia's bundle uses urn:uuid subjects; Jonah's uses Patient/<id>.
+  it.each(['pat-amelia-hartwell', 'pat-jonah-reyes'])(
+    'returns only the clinical resources of %s',
+    (patientId) => {
+      const resources = repository.getClinicalResources(patientId);
+      expect(resources.length).toBeGreaterThan(0);
+      for (const resource of resources) {
+        expect(['Encounter', 'Condition', 'Observation']).toContain(
+          resource.resourceType,
+        );
+        expect(repository.resolve(resource.subject)?.id).toBe(patientId);
+      }
+    },
+  );
+
+  it('returns no clinical resources for an unknown patient', () => {
+    expect(repository.getClinicalResources('nope')).toEqual([]);
+  });
 });
 
 describe('FhirRepositoryService (malformed bundles)', () => {

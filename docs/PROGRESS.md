@@ -24,24 +24,13 @@ Kept short. Read this at the start of a session and update it at the end. Milest
 
 ## Start here (next session)
 
-1. **Release:** merge `develop` into `main` (deploys to Render).
-2. **Visual check with the Playwright MCP** (`.mcp.json`), running `pnpm dev` locally or using the live demo. No one has looked at the UI in a real browser yet. Check, in light and dark mode, German and English, and at narrow and wide widths:
-   - **Charts:**
-     - Do the min/max labels line up when the normal band widens the y-range?
-     - Are the dialog and card chart sizes right?
-     - Does blood pressure show two bands, a legend and a dashed diastolic line?
-     - Are the flag diamonds visible?
-   - **Measurement strip:** card density at 3 per row, and the position of "Ausblenden".
-   - **Triage:** badge wrapping on narrow rows, warning colour contrast, a long diagnosis list.
-   - **Source viewer:** how noisy the "FHIR" row buttons are, the header button on narrow widths, the dialog in dark mode, a real clipboard copy.
-3. **Clean up** the leftover worktrees `D:/Developer/Projects/rounds-wt-contrast` and `rounds-wt-ranges` (both merged and clean).
+1. **Localize timeline text** (optional): titles and categories come from FHIR in English ("Laboratory", "Vital signs") inside the German UI. Trend names already use a LOINC → German map.
+2. **Clean up** the leftover worktrees `D:/Developer/Projects/rounds-wt-contrast` and `rounds-wt-ranges` (both merged and clean).
 
 ## Next
 
-1. A small polish PR with the open bugs below.
-2. A coverage pass over the API mappers and services (M5 bullet).
-3. Optional: one small write feature, such as acknowledging an abnormal result, with an audit log (see PRODUCT.md, Scope).
-4. Trim the `.md` files the agents load.
+1. Optional: one small write feature, such as acknowledging an abnormal result, with an audit log (see PRODUCT.md, Scope).
+2. Trim the `.md` files the agents load.
 
 ## Bugs found (open)
 
@@ -49,6 +38,8 @@ Kept short. Read this at the start of a session and update it at the end. Milest
 
 ## Fixed
 
+- Visual check done (dark mode, chart dialog, source viewer, phone/tablet/desktop). Fixed: alert Retry covered German text; JSON overflowed the dialog at 375 px; timeline filters overflowed; offline header overflowed on phones.
+- API coverage pass (M5): 51 → 71 unit tests; 99.6% lines, 94.8% branches. Notes for untested branches in PLAN.md.
 - Readability: root text grows with the screen (100/112.5/125%), A/A+/A++ text size control, two columns from 1024 px, patient names wrap instead of truncating.
 - Bundle: libraries split into react/apollo/ui chunks; app code is 58 kB. No size warning.
 - Polish: "Sep" not "Sept"; theme toggle has a text label; dialog close label is translated; header tagline hidden on phones (it overflowed).
@@ -61,6 +52,8 @@ Kept short. Read this at the start of a session and update it at the end. Milest
 
 ## Suggestions
 
+- Chart dialog: round y-axis ticks (now 8,4/7,4/5,4) and show the flag diamonds as on the cards.
+- A long diagnosis list is untested: the fixtures have at most 2 active diagnoses.
 - Have a German clinician sanity-check the terms (Verlauf, Befunde, Erhöht/Erniedrigt, auffällig).
 - GraphQL Code Generator instead of hand-written client types.
 - Reference ranges in the charts.

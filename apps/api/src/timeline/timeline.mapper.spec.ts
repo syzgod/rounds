@@ -12,6 +12,7 @@ import {
   formatObservationValue,
   formatQuantity,
   observationToEvent,
+  toTimelineEvent,
 } from './timeline.mapper.js';
 
 const LOINC = 'http://loinc.org';
@@ -173,6 +174,27 @@ describe('observationToEvent', () => {
     expect(observationToEvent(bp(120, 80)).detail).toBe('120/80 mmHg');
   });
 
+  it('uses the diastolic unit, or none, when the systolic has no unit', () => {
+    const reading = bp(120, 80);
+    const [systolic, diastolic] = reading.component ?? [];
+    if (!systolic?.valueQuantity || !diastolic?.valueQuantity) {
+      throw new Error('bp() must return two quantity components');
+    }
+    const withoutSystolicUnit = {
+      ...reading,
+      component: [{ ...systolic, valueQuantity: { value: 120 } }, diastolic],
+    };
+    expect(formatObservationValue(withoutSystolicUnit)).toBe('120/80 mmHg');
+    const withoutUnits = {
+      ...reading,
+      component: [
+        { ...systolic, valueQuantity: { value: 120 } },
+        { ...diastolic, valueQuantity: { value: 80 } },
+      ],
+    };
+    expect(formatObservationValue(withoutUnits)).toBe('120/80');
+  });
+
   it('maps quantity, category and a Low interpretation flag', () => {
     const glucose: Identified<Observation> = {
       resourceType: 'Observation',
@@ -228,6 +250,7 @@ describe('observationToEvent', () => {
       'Trace',
     );
     expect(formatObservationValue({ ...base, valueBoolean: false })).toBe('No');
+    expect(formatObservationValue({ ...base, valueBoolean: true })).toBe('Yes');
     expect(formatQuantity({ value: 28, unit: '/min' })).toBe('28/min');
     expect(formatQuantity({ value: 3 })).toBe('3');
     expect(formatQuantity({ unit: 'kg' })).toBeNull();
@@ -236,6 +259,49 @@ describe('observationToEvent', () => {
       detail: null,
       date: null,
     });
+  });
+
+  it('lists other components as "label: value", skipping empty ones', () => {
+    const observation: Identified<Observation> = {
+      resourceType: 'Observation',
+      id: 'obs-pupils',
+      status: 'final',
+      code: { text: 'Pupil size' },
+      component: [
+        { code: { text: 'Left' }, valueQuantity: { value: 4, unit: 'mm' } },
+        { code: {}, valueQuantity: { value: 5, unit: 'mm' } },
+        { code: { text: 'No value' } },
+      ],
+    };
+    expect(formatObservationValue(observation)).toBe('Left: 4 mm; 5 mm');
+    expect(
+      formatObservationValue({
+        ...observation,
+        component: [{ code: { text: 'No value' } }],
+      }),
+    ).toBeNull();
+  });
+});
+
+describe('toTimelineEvent', () => {
+  it('maps each clinical resource type to its kind', () => {
+    const encounter: Identified<Encounter> = {
+      resourceType: 'Encounter',
+      id: 'enc-1',
+      status: 'finished',
+      class: { code: 'AMB' },
+      subject,
+    };
+    const condition: Identified<Condition> = {
+      resourceType: 'Condition',
+      id: 'cond-1',
+      subject,
+    };
+    expect(toTimelineEvent(encounter).kind).toBe(TimelineEventKind.ENCOUNTER);
+    expect(toTimelineEvent(condition).kind).toBe(TimelineEventKind.CONDITION);
+    expect(toTimelineEvent(bp(120, 80)).kind).toBe(
+      TimelineEventKind.OBSERVATION,
+    );
   });
 });
 
