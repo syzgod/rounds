@@ -2,6 +2,14 @@
 
 Rounds is a 3-day interview MVP: a read-only explorer for synthetic FHIR R4 patient data. The current milestone and its "Done when" check are in [docs/PLAN.md](docs/PLAN.md). Read [docs/ADR-001-architecture.md](docs/ADR-001-architecture.md) before changing the data flow or the GraphQL contract. Rules for each app load from `.claude/rules/`.
 
+## Users
+
+The users are clinicians doing fast-paced work. Code and its names are for developers; everything a user sees is for clinicians.
+
+- **Wording:** use clinical words, not FHIR or technical ones. Write "Visits", not "Encounters". Never show "API", "GraphQL", "fixtures" or a raw resource id, except in the Inspector.
+- **Minimal UI:** each view does one obvious thing with the fewest controls. The most-used information shows first, without clicks. Leave out anything that doesn't earn its place.
+- **Errors:** messages say what happened and what to do next, such as "Retry", in one line.
+
 ## Commands
 
 Run these from the repo root. Each one delegates to the apps with `pnpm --filter`.
