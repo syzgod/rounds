@@ -1,16 +1,25 @@
 import { useId, useState } from "react"
 import { useQuery } from "@apollo/client/react"
-import {
-  AlertCircleIcon,
-  ArrowDownIcon,
-  ArrowUpIcon,
-  RotateCwIcon,
-  TriangleAlertIcon,
-  type LucideIcon,
-} from "lucide-react"
-import { Line, LineChart, YAxis } from "recharts"
+import { AlertCircleIcon, RotateCwIcon } from "lucide-react"
+import { Line, LineChart, ReferenceArea, YAxis } from "recharts"
 
 import { PatientTrendsSkeleton } from "@/components/patient-trends-skeleton"
+import {
+  allValues,
+  BLOOD_PRESSURE,
+  FLAG_META,
+  formatDay,
+  formatMonth,
+  formatNorm,
+  formatReading,
+  toDatum,
+  trendBands,
+  trendTitle,
+  withUnit,
+  type Band,
+  type Datum,
+} from "@/components/trend-shared"
+import { TrendDetailDialog } from "@/components/trend-detail-dialog"
 import { Alert, AlertAction, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -20,88 +29,10 @@ import {
   ChartTooltip,
   type ChartConfig,
 } from "@/components/ui/chart"
-import type { ObservationFlag } from "@/graphql/timeline"
-import {
-  PATIENT_TRENDS_QUERY,
-  type Trend,
-  type TrendPoint,
-} from "@/graphql/trends"
+import { PATIENT_TRENDS_QUERY, type Trend } from "@/graphql/trends"
 import { useI18n } from "@/i18n/locale-provider"
-import {
-  isKnownTrendCode,
-  type Locale,
-  type Messages,
-} from "@/i18n/messages"
-import { dayKey, formatFhirDate, formatNumber } from "@/lib/format"
-
-const BLOOD_PRESSURE = "85354-9"
-
-const FLAG_META: Record<
-  ObservationFlag,
-  { icon: LucideIcon; variant: "warning" | "destructive"; color: string }
-> = {
-  LOW: { icon: ArrowDownIcon, variant: "warning", color: "var(--warning)" },
-  HIGH: {
-    icon: ArrowUpIcon,
-    variant: "destructive",
-    color: "var(--destructive)",
-  },
-  ABNORMAL: {
-    icon: TriangleAlertIcon,
-    variant: "warning",
-    color: "var(--warning)",
-  },
-}
-
-type Datum = {
-  time: number
-  date: string
-  value: number
-  secondary: number | null
-  flag: ObservationFlag | null
-}
-
-function trendTitle(trend: Trend, t: Messages): string {
-  return isKnownTrendCode(trend.code) ? t.trends.names[trend.code] : trend.title
-}
-
-function toDatum(point: TrendPoint): Datum {
-  return {
-    time: Date.parse(point.date),
-    date: point.date,
-    value: point.value,
-    secondary: point.secondaryValue,
-    flag: point.flag,
-  }
-}
-
-function withUnit(text: string, unit: string | null): string {
-  return unit ? `${text} ${unit}` : text
-}
-
-/** "128/82 mmHg" for blood pressure, "7,1 %" otherwise. */
-function formatReading(
-  trend: Trend,
-  point: Pick<TrendPoint, "value" | "secondaryValue">,
-  locale: Locale
-): string {
-  const main = formatNumber(point.value, locale)
-  const text =
-    trend.code === BLOOD_PRESSURE && point.secondaryValue !== null
-      ? `${main}/${formatNumber(point.secondaryValue, locale)}`
-      : main
-  return withUnit(text, trend.unit)
-}
-
-function formatDay(value: string, locale: Locale): string {
-  return formatFhirDate(dayKey(value), locale) ?? value
-}
-
-function allValues(points: readonly { value: number; secondary: number | null }[]) {
-  return points.flatMap((p) =>
-    p.secondary === null ? [p.value] : [p.value, p.secondary]
-  )
-}
+import type { Locale, Messages } from "@/i18n/messages"
+import { formatNumber } from "@/lib/format"
 
 function summarize(trend: Trend, t: Messages, locale: Locale): string {
   const first = trend.points[0]
@@ -193,13 +124,20 @@ function TrendTooltip({ active, payload, trend }: TooltipBodyProps) {
 }
 
 function TrendChart({ trend }: { trend: Trend }) {
-  const { t } = useI18n()
+  const { locale, t } = useI18n()
   const data = trend.points.map(toDatum)
   const isPressure = trend.code === BLOOD_PRESSURE
+  const { primary, secondary } = trendBands(trend)
   const values = allValues(data)
   const min = Math.min(...values)
   const max = Math.max(...values)
-  const pad = (max - min) * 0.15 || Math.abs(max) * 0.05 || 1
+  const bandEdges = [primary, secondary].flatMap((b) =>
+    b ? [b.low, b.high].filter((v): v is number => v !== null) : []
+  )
+  const lo = Math.min(min, ...bandEdges)
+  const hi = Math.max(max, ...bandEdges)
+  const pad = (hi - lo) * 0.15 || Math.abs(hi) * 0.05 || 1
+  const domain: [number, number] = [lo - pad, hi + pad]
   const config: ChartConfig = {
     value: { label: t.trends.systolic, color: "var(--observation)" },
     secondary: { label: t.trends.diastolic, color: "var(--observation)" },
@@ -207,45 +145,77 @@ function TrendChart({ trend }: { trend: Trend }) {
   const lastIndex = data.length - 1
   const SystolicDot = makeDot(false, lastIndex)
   const DiastolicDot = makeDot(true, lastIndex)
+  const first = trend.points[0]
+  const last = trend.points[lastIndex]
+  const band = (b: Band | null, key: string) =>
+    b ? (
+      <ReferenceArea
+        key={key}
+        y1={b.low ?? domain[0]}
+        y2={b.high ?? domain[1]}
+        fill="var(--observation)"
+        fillOpacity={0.12}
+        stroke="none"
+        ifOverflow="visible"
+      />
+    ) : null
   return (
-    <ChartContainer
-      config={config}
-      className="aspect-auto h-10 w-full"
-      initialDimension={{ width: 240, height: 40 }}
-    >
-      <LineChart
-        accessibilityLayer
-        data={data}
-        margin={{ top: 6, right: 6, bottom: 4, left: 6 }}
+    <div className="flex flex-col gap-0.5">
+      <ChartContainer
+        config={config}
+        className="aspect-auto h-14 w-full"
+        initialDimension={{ width: 240, height: 56 }}
       >
-        <YAxis hide domain={[min - pad, max + pad]} />
-        <ChartTooltip
-          isAnimationActive={false}
-          content={<TrendTooltip trend={trend} />}
-        />
-        <Line
-          dataKey="value"
-          type="monotone"
-          stroke="var(--color-value)"
-          strokeWidth={2}
-          isAnimationActive={false}
-          dot={SystolicDot}
-          activeDot={{ r: 4 }}
-        />
-        {isPressure ? (
-          <Line
-            dataKey="secondary"
-            type="monotone"
-            stroke="var(--color-secondary)"
-            strokeWidth={2}
-            strokeDasharray="5 3"
+        <LineChart
+          accessibilityLayer
+          data={data}
+          margin={{ top: 6, right: 6, bottom: 4, left: 0 }}
+        >
+          <YAxis
+            domain={domain}
+            ticks={min === max ? [min] : [min, max]}
+            tickFormatter={(v: number) => formatNumber(v, locale)}
+            tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
+            tickLine={false}
+            axisLine={false}
+            width={32}
+            interval={0}
+          />
+          {band(primary, "primary")}
+          {band(secondary, "secondary")}
+          <ChartTooltip
             isAnimationActive={false}
-            dot={DiastolicDot}
+            content={<TrendTooltip trend={trend} />}
+          />
+          <Line
+            dataKey="value"
+            type="monotone"
+            stroke="var(--color-value)"
+            strokeWidth={2}
+            isAnimationActive={false}
+            dot={SystolicDot}
             activeDot={{ r: 4 }}
           />
-        ) : null}
-      </LineChart>
-    </ChartContainer>
+          {isPressure ? (
+            <Line
+              dataKey="secondary"
+              type="monotone"
+              stroke="var(--color-secondary)"
+              strokeWidth={2}
+              strokeDasharray="5 3"
+              isAnimationActive={false}
+              dot={DiastolicDot}
+              activeDot={{ r: 4 }}
+            />
+          ) : null}
+        </LineChart>
+      </ChartContainer>
+      {first && last ? (
+        <p className="pl-8 text-[11px] text-muted-foreground tabular-nums">
+          {formatMonth(first.date, locale)} – {formatMonth(last.date, locale)}
+        </p>
+      ) : null}
+    </div>
   )
 }
 
@@ -254,15 +224,30 @@ function TrendCard({ trend }: { trend: Trend }) {
   const latest = trend.points[trend.points.length - 1]
   if (!latest) return null
   const flag = latest.flag ? FLAG_META[latest.flag] : null
+  const norm = formatNorm(trend, locale)
   return (
     <li>
       <Card size="sm" className="h-full">
         <CardContent className="flex flex-col gap-1">
+          <div className="flex items-center justify-between gap-2">
+            <h4 className="text-xs text-muted-foreground">
+              {trendTitle(trend, t)}
+            </h4>
+            <TrendDetailDialog
+              trend={trend}
+              trigger={
+                <Button
+                  size="xs"
+                  variant="ghost"
+                  aria-label={t.trends.detailsLabel(trendTitle(trend, t))}
+                />
+              }
+            >
+              {t.trends.details}
+            </TrendDetailDialog>
+          </div>
           <div className="flex items-start justify-between gap-2">
             <div className="flex min-w-0 flex-col">
-              <h4 className="text-xs text-muted-foreground">
-                {trendTitle(trend, t)}
-              </h4>
               <p className="text-xl leading-tight font-semibold tabular-nums">
                 {formatReading(trend, latest, locale)}
               </p>
@@ -279,6 +264,11 @@ function TrendCard({ trend }: { trend: Trend }) {
           </div>
           <p className="sr-only">{summarize(trend, t, locale)}</p>
           <TrendChart trend={trend} />
+          {norm ? (
+            <p className="text-xs text-muted-foreground tabular-nums">
+              {t.trends.norm(norm)}
+            </p>
+          ) : null}
         </CardContent>
       </Card>
     </li>

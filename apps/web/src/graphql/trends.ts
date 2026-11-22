@@ -22,6 +22,12 @@ export type Trend = {
   code: string
   title: string
   unit: string | null
+  /** Normal range from the latest measurement (systolic for blood pressure); null when unknown. */
+  referenceLow: number | null
+  referenceHigh: number | null
+  /** Normal range of the diastolic pressure; null for other series. */
+  secondaryReferenceLow: number | null
+  secondaryReferenceHigh: number | null
   points: TrendPoint[]
 }
 
@@ -43,6 +49,10 @@ export const PATIENT_TRENDS_QUERY: TypedDocumentNode<
         code
         title
         unit
+        referenceLow
+        referenceHigh
+        secondaryReferenceLow
+        secondaryReferenceHigh
         points {
           id
           date
