@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest"
 
 import { PatientTimeline, groupByDay } from "@/components/patient-timeline"
 import { PATIENT_TIMELINE_QUERY, type TimelineEvent } from "@/graphql/timeline"
+import { TestLocale } from "@/test/i18n"
 
 function event(
   partial: Partial<TimelineEvent> & Pick<TimelineEvent, "id" | "kind">
@@ -84,9 +85,11 @@ function timelineMock(
 
 function renderTimeline(mocks: ReadonlyArray<MockLink.MockedResponse>) {
   render(
-    <MockedProvider mocks={mocks}>
-      <PatientTimeline patientId="pat-amelia-hartwell" />
-    </MockedProvider>
+    <TestLocale>
+      <MockedProvider mocks={mocks}>
+        <PatientTimeline patientId="pat-amelia-hartwell" />
+      </MockedProvider>
+    </TestLocale>
   )
   return userEvent.setup()
 }
@@ -105,7 +108,7 @@ describe("PatientTimeline", () => {
     expect(dayHeadings()).toEqual(["3 Feb 2025", "9 Jan 2024", "2 May 2019"])
     const firstDay = screen.getByRole("list", { name: "3 Feb 2025" })
     expect(within(firstDay).getAllByRole("listitem")).toHaveLength(3)
-    expect(screen.getByRole("status")).toHaveTextContent("5 events")
+    expect(screen.getByRole("status")).toHaveTextContent("5 entries")
   })
 
   it("shows results, flags, statuses and times", async () => {
@@ -115,7 +118,7 @@ describe("PatientTimeline", () => {
 
     expect(within(glucose).getByText("52 mg/dL")).toBeInTheDocument()
     expect(within(glucose).getByText("Low")).toBeInTheDocument()
-    expect(glucose).toHaveTextContent("Observation · Laboratory · 21:25")
+    expect(glucose).toHaveTextContent("Result: Laboratory · 21:25")
     // "final" is the normal state and is not shown as a badge.
     expect(within(glucose).queryByText("Final")).not.toBeInTheDocument()
 
@@ -139,11 +142,11 @@ describe("PatientTimeline", () => {
     const all = within(group).getByRole("button", { name: /^All/ })
     expect(all).toHaveAttribute("aria-pressed", "true")
 
-    // Tab into the toggle group, arrow to "Conditions", press Space.
+    // Tab into the toggle group, arrow to "Diagnoses", press Space.
     all.focus()
     await user.keyboard("{ArrowRight}{ArrowRight}")
     const conditions = within(group).getByRole("button", {
-      name: /^Conditions/,
+      name: /^Diagnoses/,
     })
     expect(conditions).toHaveFocus()
     await user.keyboard(" ")
@@ -151,7 +154,7 @@ describe("PatientTimeline", () => {
     expect(conditions).toHaveAttribute("aria-pressed", "true")
     expect(items()).toHaveLength(2)
     expect(screen.queryByText("Blood glucose")).not.toBeInTheDocument()
-    expect(screen.getByRole("status")).toHaveTextContent("2 of 5 events")
+    expect(screen.getByRole("status")).toHaveTextContent("2 of 5 entries")
 
     // Pressing the active filter again keeps it (single-select, never empty).
     await user.keyboard(" ")
@@ -163,14 +166,14 @@ describe("PatientTimeline", () => {
 
   it("shows the empty state for a patient with no events (minimal patient)", async () => {
     render(
-      <MockedProvider mocks={[timelineMock("pat-okafor-minimal", [])]}>
-        <PatientTimeline patientId="pat-okafor-minimal" />
-      </MockedProvider>
+      <TestLocale>
+        <MockedProvider mocks={[timelineMock("pat-okafor-minimal", [])]}>
+          <PatientTimeline patientId="pat-okafor-minimal" />
+        </MockedProvider>
+      </TestLocale>
     )
 
-    expect(
-      await screen.findByText("No clinical events recorded")
-    ).toBeInTheDocument()
+    expect(await screen.findByText("No entries")).toBeInTheDocument()
     expect(screen.queryByRole("group")).not.toBeInTheDocument()
   })
 
@@ -186,7 +189,7 @@ describe("PatientTimeline", () => {
     ])
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
-      "Couldn’t load the timeline"
+      "Couldn't load the timeline."
     )
     expect(screen.getByRole("button", { name: "Retry" })).toBeEnabled()
   })
@@ -198,11 +201,11 @@ describe("groupByDay", () => {
       ...EVENTS,
       event({ id: "Observation/undated", kind: "OBSERVATION" }),
     ])
-    expect(groups.map((g) => [g.label, g.events.length])).toEqual([
-      ["3 Feb 2025", 3],
-      ["9 Jan 2024", 1],
-      ["2 May 2019", 1],
-      ["Undated", 1],
+    expect(groups.map((g) => [g.key, g.events.length])).toEqual([
+      ["2025-02-03", 3],
+      ["2024-01-09", 1],
+      ["2019-05-02", 1],
+      ["undated", 1],
     ])
   })
 })

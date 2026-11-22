@@ -9,6 +9,7 @@ import {
   filterPatients,
 } from "@/components/patient-directory"
 import { PATIENTS_QUERY } from "@/graphql/patients"
+import { TestLocale } from "@/test/i18n"
 import { PATIENTS } from "@/test/patients.fixtures"
 
 const ok: MockLink.MockedResponse = {
@@ -22,9 +23,11 @@ function renderDirectory(
 ) {
   const onSelect = vi.fn<(id: string) => void>()
   render(
-    <MockedProvider mocks={mocks}>
-      <PatientDirectory selectedId={selectedId} onSelect={onSelect} />
-    </MockedProvider>
+    <TestLocale>
+      <MockedProvider mocks={mocks}>
+        <PatientDirectory selectedId={selectedId} onSelect={onSelect} />
+      </MockedProvider>
+    </TestLocale>
   )
   return { onSelect, user: userEvent.setup() }
 }
@@ -119,7 +122,7 @@ describe("PatientDirectory", () => {
     ])
 
     const alert = await screen.findByRole("alert")
-    expect(alert).toHaveTextContent("Couldn’t load patients")
+    expect(alert).toHaveTextContent("Couldn't load patients.")
     expect(within(alert).getByRole("button", { name: "Retry" })).toBeEnabled()
   })
 })

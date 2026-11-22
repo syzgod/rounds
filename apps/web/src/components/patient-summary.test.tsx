@@ -12,6 +12,7 @@ import {
   type PatientSummary,
 } from "@/graphql/patients"
 import { createCache } from "@/lib/apollo-client"
+import { TestLocale } from "@/test/i18n"
 import { PATIENTS } from "@/test/patients.fixtures"
 
 function fixture(id: string): PatientSummary {
@@ -36,12 +37,14 @@ function renderSummary(
 ) {
   const onClearSelection = vi.fn<() => void>()
   render(
-    <MockedProvider mocks={mocks}>
-      <PatientSummaryPanel
-        patientId={patientId}
-        onClearSelection={onClearSelection}
-      />
-    </MockedProvider>
+    <TestLocale>
+      <MockedProvider mocks={mocks}>
+        <PatientSummaryPanel
+          patientId={patientId}
+          onClearSelection={onClearSelection}
+        />
+      </MockedProvider>
+    </TestLocale>
   )
   return { onClearSelection }
 }
@@ -69,6 +72,9 @@ describe("PatientSummaryPanel", () => {
     expect(screen.getByText("39 years")).toBeInTheDocument()
     expect(screen.getByText("10 Dec 1985")).toBeInTheDocument()
     expect(screen.getByText("MRN-100001")).toBeInTheDocument()
+    expect(screen.getByText("Sex")).toBeInTheDocument()
+    // The raw resource id is not shown.
+    expect(screen.queryByText(amelia.id)).not.toBeInTheDocument()
   })
 
   it("labels every missing fact 'Not recorded' for the minimal patient", async () => {
@@ -87,7 +93,7 @@ describe("PatientSummaryPanel", () => {
     expect(await screen.findByText("Patient not found")).toBeInTheDocument()
     await userEvent
       .setup()
-      .click(screen.getByRole("button", { name: "Back to directory" }))
+      .click(screen.getByRole("button", { name: "Back to patient list" }))
     expect(onClearSelection).toHaveBeenCalledOnce()
   })
 
@@ -100,7 +106,7 @@ describe("PatientSummaryPanel", () => {
     ])
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
-      "Couldn’t load this patient"
+      "Couldn't load this patient."
     )
     expect(screen.getByRole("button", { name: "Retry" })).toBeEnabled()
   })
@@ -115,20 +121,24 @@ describe("PatientSummaryPanel", () => {
     ]
     const cache = createCache()
     const { rerender } = render(
-      <MockedProvider cache={cache} mocks={mocks}>
-        <PatientDirectory selectedId={null} onSelect={vi.fn()} />
-      </MockedProvider>
+      <TestLocale>
+        <MockedProvider cache={cache} mocks={mocks}>
+          <PatientDirectory selectedId={null} onSelect={vi.fn()} />
+        </MockedProvider>
+      </TestLocale>
     )
     await screen.findByText("Jonah Miguel Reyes")
 
     // Same MockedProvider instance, so the same client and cache.
     rerender(
-      <MockedProvider cache={cache} mocks={mocks}>
-        <PatientSummaryPanel
-          patientId="pat-jonah-reyes"
-          onClearSelection={vi.fn()}
-        />
-      </MockedProvider>
+      <TestLocale>
+        <MockedProvider cache={cache} mocks={mocks}>
+          <PatientSummaryPanel
+            patientId="pat-jonah-reyes"
+            onClearSelection={vi.fn()}
+          />
+        </MockedProvider>
+      </TestLocale>
     )
 
     expect(

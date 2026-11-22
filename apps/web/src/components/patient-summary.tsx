@@ -3,18 +3,12 @@ import { AlertCircleIcon, RotateCwIcon, UserXIcon } from "lucide-react"
 
 import { PatientTimeline } from "@/components/patient-timeline"
 
-import {
-  Alert,
-  AlertAction,
-  AlertDescription,
-  AlertTitle,
-} from "@/components/ui/alert"
+import { Alert, AlertAction, AlertTitle } from "@/components/ui/alert"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
   Empty,
   EmptyContent,
-  EmptyDescription,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
@@ -22,6 +16,7 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PATIENT_QUERY, type PatientSummary } from "@/graphql/patients"
+import { useI18n } from "@/i18n/locale-provider"
 import {
   ageInYears,
   formatFhirDate,
@@ -35,13 +30,14 @@ type PatientSummaryPanelProps = {
 }
 
 function Fact({ label, value }: { label: string; value: string | null }) {
+  const { t } = useI18n()
   return (
     <div className="flex min-w-0 flex-col gap-0.5">
       <dt className="text-xs text-muted-foreground">{label}</dt>
       <dd className="truncate text-sm font-medium">
         {value ?? (
           <span className="font-normal text-muted-foreground">
-            Not recorded
+            {t.common.notRecorded}
           </span>
         )}
       </dd>
@@ -50,6 +46,7 @@ function Fact({ label, value }: { label: string; value: string | null }) {
 }
 
 function PatientHeader({ patient }: { patient: PatientSummary }) {
+  const { locale, t } = useI18n()
   const age = ageInYears(patient.birthDate)
   return (
     <header className="flex flex-col gap-5">
@@ -64,27 +61,31 @@ function PatientHeader({ patient }: { patient: PatientSummary }) {
           >
             {patient.displayName}
           </h2>
-          <p className="text-sm text-muted-foreground">
-            Patient · <span className="font-mono">{patient.id}</span>
-          </p>
         </div>
       </div>
       <dl className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <Fact label="Gender" value={formatGender(patient.gender)} />
-        <Fact label="Age" value={age === null ? null : `${age} years`} />
-        <Fact label="Date of birth" value={formatFhirDate(patient.birthDate)} />
-        <Fact label="MRN" value={patient.mrn} />
+        <Fact label={t.patient.sex} value={formatGender(patient.gender, t)} />
+        <Fact
+          label={t.patient.age}
+          value={age === null ? null : t.common.ageYears(age)}
+        />
+        <Fact
+          label={t.patient.birthDate}
+          value={formatFhirDate(patient.birthDate, locale)}
+        />
+        <Fact label={t.patient.mrn} value={patient.mrn} />
       </dl>
     </header>
   )
 }
 
 function PatientHeaderSkeleton() {
+  const { t } = useI18n()
   return (
     <div
       className="flex flex-col gap-5"
       aria-busy="true"
-      aria-label="Loading patient"
+      aria-label={t.patient.loading}
     >
       <div className="flex items-center gap-4">
         <Skeleton className="size-10 rounded-full" />
@@ -109,6 +110,7 @@ export function PatientSummaryPanel({
   patientId,
   onClearSelection,
 }: PatientSummaryPanelProps) {
+  const { t } = useI18n()
   const { data, loading, error, refetch } = useQuery(PATIENT_QUERY, {
     variables: { id: patientId },
   })
@@ -117,12 +119,11 @@ export function PatientSummaryPanel({
     return (
       <Alert variant="destructive">
         <AlertCircleIcon />
-        <AlertTitle>Couldn’t load this patient</AlertTitle>
-        <AlertDescription>Check that the API is running.</AlertDescription>
+        <AlertTitle>{t.patient.loadError}</AlertTitle>
         <AlertAction>
           <Button size="xs" variant="outline" onClick={() => void refetch()}>
             <RotateCwIcon data-icon="inline-start" />
-            Retry
+            {t.common.retry}
           </Button>
         </AlertAction>
       </Alert>
@@ -139,15 +140,11 @@ export function PatientSummaryPanel({
           <EmptyMedia variant="icon">
             <UserXIcon />
           </EmptyMedia>
-          <EmptyTitle>Patient not found</EmptyTitle>
-          <EmptyDescription>
-            No patient with id <span className="font-mono">{patientId}</span>{" "}
-            exists in the fixtures.
-          </EmptyDescription>
+          <EmptyTitle>{t.patient.notFound}</EmptyTitle>
         </EmptyHeader>
         <EmptyContent>
           <Button variant="outline" onClick={onClearSelection}>
-            Back to directory
+            {t.patient.backToList}
           </Button>
         </EmptyContent>
       </Empty>
@@ -160,7 +157,7 @@ export function PatientSummaryPanel({
       <Separator />
       <section className="flex flex-col gap-3">
         <h3 id="timeline-heading" className="text-sm font-medium">
-          Clinical timeline
+          {t.timeline.title}
         </h3>
         <PatientTimeline patientId={patient.id} />
       </section>

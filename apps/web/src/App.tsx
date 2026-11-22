@@ -12,35 +12,35 @@ import {
 } from "@/components/ui/empty"
 import { Kbd, KbdGroup } from "@/components/ui/kbd"
 import { useSelectedPatient } from "@/hooks/use-selected-patient"
+import { useI18n } from "@/i18n/locale-provider"
 
 function NoPatientSelected() {
+  const { t } = useI18n()
   return (
     <Empty className="h-full">
       <EmptyHeader>
         <EmptyMedia variant="icon">
           <UsersIcon />
         </EmptyMedia>
-        <EmptyTitle>Select a patient</EmptyTitle>
-        <EmptyDescription>
-          Choose a patient from the directory to see their record.
-        </EmptyDescription>
+        <EmptyTitle>{t.app.selectPatient}</EmptyTitle>
+        <EmptyDescription>{t.app.selectPatientHint}</EmptyDescription>
       </EmptyHeader>
       <ul className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
         <li className="flex items-center gap-1.5">
-          <Kbd>/</Kbd> search
+          <Kbd>/</Kbd> {t.app.keySearch}
         </li>
         <li className="flex items-center gap-1.5">
           <KbdGroup>
             <Kbd>↑</Kbd>
             <Kbd>↓</Kbd>
           </KbdGroup>{" "}
-          move
+          {t.app.keyMove}
         </li>
         <li className="flex items-center gap-1.5">
-          <Kbd>Enter</Kbd> open
+          <Kbd>Enter</Kbd> {t.app.keyOpen}
         </li>
         <li className="flex items-center gap-1.5">
-          <Kbd>D</Kbd> theme
+          <Kbd>D</Kbd> {t.app.keyTheme}
         </li>
       </ul>
     </Empty>
@@ -48,6 +48,7 @@ function NoPatientSelected() {
 }
 
 export function App() {
+  const { t } = useI18n()
   const [selectedId, setSelectedId] = useSelectedPatient()
 
   return (
@@ -57,7 +58,7 @@ export function App() {
         href="#main-content"
         className="sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:top-2 focus-visible:left-2 focus-visible:z-50 focus-visible:rounded-md focus-visible:bg-background focus-visible:px-3 focus-visible:py-2 focus-visible:text-sm focus-visible:ring-2 focus-visible:ring-ring"
       >
-        Skip to patient record
+        {t.app.skipLink}
       </a>
       <AppHeader />
       <div className="grid min-h-0 flex-1 grid-rows-[minmax(0,16rem)_1fr] md:grid-cols-[20rem_1fr] md:grid-rows-1">

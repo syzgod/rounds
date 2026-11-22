@@ -2,6 +2,7 @@ import { MoonIcon, SunIcon } from "lucide-react"
 
 import { useTheme } from "@/components/theme-provider"
 import { Button } from "@/components/ui/button"
+import { useI18n } from "@/i18n/locale-provider"
 import { Kbd } from "@/components/ui/kbd"
 import {
   Tooltip,
@@ -15,6 +16,7 @@ function prefersDark(): boolean {
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
+  const { t } = useI18n()
   const isDark = theme === "dark" || (theme === "system" && prefersDark())
 
   return (
@@ -25,7 +27,7 @@ export function ThemeToggle() {
             variant="ghost"
             size="icon"
             aria-label={
-              isDark ? "Switch to light theme" : "Switch to dark theme"
+              isDark ? t.theme.toLight : t.theme.toDark
             }
             onClick={() => setTheme(isDark ? "light" : "dark")}
           />
@@ -34,7 +36,7 @@ export function ThemeToggle() {
         {isDark ? <SunIcon /> : <MoonIcon />}
       </TooltipTrigger>
       <TooltipContent>
-        Toggle theme <Kbd>D</Kbd>
+        {t.theme.toggle} <Kbd>D</Kbd>
       </TooltipContent>
     </Tooltip>
   )

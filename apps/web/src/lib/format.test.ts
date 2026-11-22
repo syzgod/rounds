@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest"
 
+import { de } from "@/i18n/de"
+import { en } from "@/i18n/en"
+
 import {
   ageInYears,
   formatFhirDate,
@@ -32,23 +35,32 @@ describe("ageInYears", () => {
 
 describe("formatFhirDate", () => {
   it("formats full, month and year precision", () => {
-    expect(formatFhirDate("1985-12-10")).toBe("10 Dec 1985")
-    expect(formatFhirDate("2016-04")).toBe("Apr 2016")
-    expect(formatFhirDate("1985")).toBe("1985")
-    expect(formatFhirDate(null)).toBeNull()
+    expect(formatFhirDate("1985-12-10", "en")).toBe("10 Dec 1985")
+    expect(formatFhirDate("2016-04", "en")).toBe("Apr 2016")
+    expect(formatFhirDate("1985", "en")).toBe("1985")
+    expect(formatFhirDate(null, "en")).toBeNull()
+  })
+
+  it("formats German as numeric dates", () => {
+    expect(formatFhirDate("1985-12-10", "de")).toBe("10.12.1985")
+    expect(formatFhirDate("2019-05-02", "de")).toBe("02.05.2019")
+    expect(formatFhirDate("2016-04", "de")).toBe("04.2016")
+    expect(formatFhirDate("1985", "de")).toBe("1985")
   })
 
   it("passes through values it cannot parse", () => {
-    expect(formatFhirDate("not-a-date")).toBe("not-a-date")
+    expect(formatFhirDate("not-a-date", "de")).toBe("not-a-date")
     expect(parseFhirDate("not-a-date")).toBeNull()
   })
 })
 
 describe("gender and initials", () => {
   it("labels genders", () => {
-    expect(formatGender("FEMALE")).toBe("Female")
-    expect(formatGenderShort("MALE")).toBe("M")
-    expect(formatGender(null)).toBeNull()
+    expect(formatGender("FEMALE", en)).toBe("Female")
+    expect(formatGender("MALE", de)).toBe("Männlich")
+    expect(formatGenderShort("FEMALE", de)).toBe("W")
+    expect(formatGenderShort("MALE", en)).toBe("M")
+    expect(formatGender(null, en)).toBeNull()
   })
 
   it("takes the first and last initial", () => {
@@ -68,15 +80,27 @@ describe("dayKey / formatTime / formatTimeRange (TZ=UTC in tests)", () => {
   })
 
   it("formats times and ranges", () => {
-    expect(formatTime("2025-02-03T21:25:00Z")).toBe("21:25")
-    expect(formatTime("2019-05-02")).toBeNull()
+    expect(formatTime("2025-02-03T21:25:00Z", "en")).toBe("21:25")
+    expect(formatTime("2025-02-03T21:25:00Z", "de")).toBe("21:25")
+    expect(formatTime("2025-02-03T00:05:00Z", "en")).toBe("00:05")
+    expect(formatTime("2019-05-02", "en")).toBeNull()
     expect(
-      formatTimeRange("2024-01-09T14:30:00Z", "2024-01-09T15:00:00Z")
+      formatTimeRange("2024-01-09T14:30:00Z", "2024-01-09T15:00:00Z", "en", en)
     ).toBe("14:30–15:00")
     expect(
-      formatTimeRange("2025-02-03T21:10:00Z", "2025-02-04T01:30:00Z")
+      formatTimeRange("2025-02-03T21:10:00Z", "2025-02-04T01:30:00Z", "en", en)
     ).toBe("21:10 – 4 Feb 2025 01:30")
-    expect(formatTimeRange("2024-11-18", "2024-12-02")).toBe("until 2 Dec 2024")
-    expect(formatTimeRange("2024-05-11T16:50:00Z", null)).toBe("16:50")
+    expect(
+      formatTimeRange("2025-02-03T21:10:00Z", "2025-02-04T01:30:00Z", "de", de)
+    ).toBe("21:10 – 04.02.2025 01:30")
+    expect(formatTimeRange("2024-11-18", "2024-12-02", "en", en)).toBe(
+      "until 2 Dec 2024"
+    )
+    expect(formatTimeRange("2024-11-18", "2024-12-02", "de", de)).toBe(
+      "bis 02.12.2024"
+    )
+    expect(formatTimeRange("2024-05-11T16:50:00Z", null, "en", en)).toBe(
+      "16:50"
+    )
   })
 })

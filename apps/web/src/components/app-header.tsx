@@ -1,9 +1,12 @@
 import { HeartPulseIcon } from "lucide-react"
 
+import { LocaleSwitch } from "@/components/locale-switch"
 import { HealthStatus } from "@/components/health-status"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { useI18n } from "@/i18n/locale-provider"
 
 export function AppHeader() {
+  const { t } = useI18n()
   return (
     <header className="flex h-14 shrink-0 items-center justify-between gap-4 border-b px-4">
       <div className="flex items-center gap-2.5">
@@ -16,12 +19,13 @@ export function AppHeader() {
         <div className="flex flex-col leading-tight">
           <h1 className="text-sm font-semibold">Rounds</h1>
           <p className="text-xs text-muted-foreground">
-            Patient history at a glance · FHIR R4
+            {t.app.tagline}
           </p>
         </div>
       </div>
       <div className="flex items-center gap-2">
         <HealthStatus />
+        <LocaleSwitch />
         <ThemeToggle />
       </div>
     </header>

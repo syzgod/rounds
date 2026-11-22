@@ -2,12 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { useQuery } from "@apollo/client/react"
 import { AlertCircleIcon, RotateCwIcon } from "lucide-react"
 
-import {
-  Alert,
-  AlertAction,
-  AlertDescription,
-  AlertTitle,
-} from "@/components/ui/alert"
+import { Alert, AlertAction, AlertTitle } from "@/components/ui/alert"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -22,6 +17,8 @@ import { Kbd } from "@/components/ui/kbd"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PATIENTS_QUERY, type PatientSummary } from "@/graphql/patients"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
+import { useI18n } from "@/i18n/locale-provider"
+import type { Messages } from "@/i18n/messages"
 import { ageInYears, formatGenderShort, initials } from "@/lib/format"
 
 type PatientDirectoryProps = {
@@ -43,14 +40,14 @@ export function filterPatients(
   )
 }
 
-function patientMeta(patient: PatientSummary): string {
+function patientMeta(patient: PatientSummary, t: Messages): string {
   const age = ageInYears(patient.birthDate)
   const parts = [
-    formatGenderShort(patient.gender),
-    age === null ? null : `${age} y`,
+    formatGenderShort(patient.gender, t),
+    age === null ? null : t.common.ageShort(age),
     patient.mrn,
   ].filter((part): part is string => part !== null)
-  return parts.length > 0 ? parts.join(" · ") : "No details recorded"
+  return parts.length > 0 ? parts.join(" · ") : t.directory.noDetails
 }
 
 function isEditableTarget(target: EventTarget | null): boolean {
@@ -82,6 +79,7 @@ export function PatientDirectory({
   selectedId,
   onSelect,
 }: PatientDirectoryProps) {
+  const { t } = useI18n()
   const { data, loading, error, refetch } = useQuery(PATIENTS_QUERY)
   const [search, setSearch] = useState("")
   // cmdk's highlighted row; follows the selection (e.g. on Back/Forward).
@@ -102,25 +100,25 @@ export function PatientDirectory({
   )
   const resultCount =
     visible.length === patients.length
-      ? `${patients.length} patients`
-      : `${visible.length} of ${patients.length} patients`
+      ? t.directory.count(patients.length)
+      : t.directory.countFiltered(visible.length, patients.length)
   const announcedCount = useDebouncedValue(resultCount, 500)
 
   return (
     <nav
-      aria-label="Patient directory"
+      aria-label={t.directory.navLabel}
       className="flex min-h-0 flex-col gap-2 p-3"
     >
       <div className="flex items-center justify-between px-1">
-        <h2 className="text-sm font-medium">Patients</h2>
+        <h2 className="text-sm font-medium">{t.directory.title}</h2>
         <span className="flex items-center gap-1 text-xs text-muted-foreground">
-          Search <Kbd>/</Kbd>
+          {t.directory.searchKey} <Kbd>/</Kbd>
         </span>
       </div>
 
       <Command
         // cmdk names its input via aria-labelledby -> this (visually hidden) label.
-        label="Search patients by name or MRN"
+        label={t.directory.searchLabel}
         shouldFilter={false}
         value={highlighted}
         onValueChange={setHighlighted}
@@ -130,15 +128,14 @@ export function PatientDirectory({
           ref={inputRef}
           value={search}
           onValueChange={setSearch}
-          placeholder="Search by name or MRN…"
+          placeholder={t.directory.searchPlaceholder}
           disabled={loading && !data}
         />
 
         {error ? (
           <Alert variant="destructive" className="mt-2">
             <AlertCircleIcon />
-            <AlertTitle>Couldn’t load patients</AlertTitle>
-            <AlertDescription>Check that the API is running.</AlertDescription>
+            <AlertTitle>{t.directory.loadError}</AlertTitle>
             <AlertAction>
               <Button
                 size="xs"
@@ -146,7 +143,7 @@ export function PatientDirectory({
                 onClick={() => void refetch()}
               >
                 <RotateCwIcon data-icon="inline-start" />
-                Retry
+                {t.common.retry}
               </Button>
             </AlertAction>
           </Alert>
@@ -154,7 +151,7 @@ export function PatientDirectory({
           <div
             className="flex flex-col gap-1 p-1"
             aria-busy="true"
-            aria-label="Loading patients"
+            aria-label={t.directory.loading}
           >
             {Array.from({ length: 6 }, (_, index) => (
               <div key={index} className="flex items-center gap-3 px-2 py-2">
@@ -167,8 +164,8 @@ export function PatientDirectory({
             ))}
           </div>
         ) : (
-          <CommandList label="Patients" className="max-h-none flex-1">
-            <CommandEmpty>No patients match “{search.trim()}”.</CommandEmpty>
+          <CommandList label={t.directory.title} className="max-h-none flex-1">
+            <CommandEmpty>{t.directory.noMatch(search.trim())}</CommandEmpty>
             <CommandGroup>
               {visible.map((patient) => (
                 <CommandItem
@@ -189,7 +186,7 @@ export function PatientDirectory({
                       {patient.displayName}
                     </span>
                     <span className="truncate text-xs text-muted-foreground">
-                      {patientMeta(patient)}
+                      {patientMeta(patient, t)}
                     </span>
                   </span>
                 </CommandItem>
