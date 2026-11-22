@@ -11,6 +11,7 @@ import {
   PATIENTS_QUERY,
   type PatientSummary,
 } from "@/graphql/patients"
+import { PATIENT_TRENDS_QUERY } from "@/graphql/trends"
 import { createCache } from "@/lib/apollo-client"
 import { TestLocale } from "@/test/i18n"
 import { PATIENTS } from "@/test/patients.fixtures"
@@ -31,6 +32,14 @@ function patientMock(
   }
 }
 
+/** Patients without trend series, so the trends section stays out of the way. */
+function trendsMock(id: string): MockLink.MockedResponse {
+  return {
+    request: { query: PATIENT_TRENDS_QUERY, variables: { id } },
+    result: { data: { patient: { __typename: "Patient", id, trends: [] } } },
+  }
+}
+
 function renderSummary(
   patientId: string,
   mocks: ReadonlyArray<MockLink.MockedResponse>
@@ -38,7 +47,7 @@ function renderSummary(
   const onClearSelection = vi.fn<() => void>()
   render(
     <TestLocale>
-      <MockedProvider mocks={mocks}>
+      <MockedProvider mocks={[...mocks, trendsMock(patientId)]}>
         <PatientSummaryPanel
           patientId={patientId}
           onClearSelection={onClearSelection}
@@ -72,6 +81,7 @@ describe("PatientSummaryPanel", () => {
     expect(screen.getByText("39 years")).toBeInTheDocument()
     expect(screen.getByText("10 Dec 1985")).toBeInTheDocument()
     expect(screen.getByText("MRN-100001")).toBeInTheDocument()
+    expect(screen.queryByText("Couldn't load trends.")).not.toBeInTheDocument()
     expect(screen.getByText("Sex")).toBeInTheDocument()
     // The raw resource id is not shown.
     expect(screen.queryByText(amelia.id)).not.toBeInTheDocument()
@@ -118,6 +128,7 @@ describe("PatientSummaryPanel", () => {
         request: { query: PATIENTS_QUERY },
         result: { data: { patients: PATIENTS } },
       },
+      trendsMock("pat-jonah-reyes"),
     ]
     const cache = createCache()
     const { rerender } = render(

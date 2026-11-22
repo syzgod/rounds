@@ -9,6 +9,7 @@ import {
 } from "lucide-react"
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
 
+import { PatientTrendsSkeleton } from "@/components/patient-trends-skeleton"
 import { Alert, AlertAction, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -18,7 +19,6 @@ import {
   ChartTooltip,
   type ChartConfig,
 } from "@/components/ui/chart"
-import { Skeleton } from "@/components/ui/skeleton"
 import type { ObservationFlag } from "@/graphql/timeline"
 import {
   PATIENT_TRENDS_QUERY,
@@ -201,8 +201,8 @@ function TrendChart({ trend }: { trend: Trend }) {
   const max = Math.max(...values)
   const pad = (max - min) * 0.15 || Math.abs(max) * 0.05 || 1
   const config: ChartConfig = {
-    value: { label: t.trends.systolic, color: "var(--chart-2)" },
-    secondary: { label: t.trends.diastolic, color: "var(--chart-2)" },
+    value: { label: t.trends.systolic, color: "var(--observation)" },
+    secondary: { label: t.trends.diastolic, color: "var(--observation)" },
   }
   return (
     <ChartContainer
@@ -350,14 +350,7 @@ export function PatientTrends({ patientId }: PatientTrendsProps) {
           </AlertAction>
         </Alert>
       ) : pending ? (
-        <div
-          className="grid gap-3 md:grid-cols-2"
-          aria-busy="true"
-          aria-label={t.trends.loading}
-        >
-          <Skeleton className="h-56 rounded-xl" />
-          <Skeleton className="h-56 rounded-xl" />
-        </div>
+        <PatientTrendsSkeleton />
       ) : (
         <ul className="grid gap-3 md:grid-cols-2">
           {trends.map((trend) => (
