@@ -23,6 +23,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty"
+import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import {
@@ -127,12 +128,21 @@ function eventCategory(event: TimelineEvent, t: Messages): string | null {
     : event.category
 }
 
+/** Lower-case text the timeline search matches: title, value and category. */
+function searchText(event: TimelineEvent, t: Messages): string {
+  return [eventTitle(event, t), event.detail, eventCategory(event, t)]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase()
+}
+
 function dayLabel(key: string, locale: Locale, t: Messages): string {
   if (key === "undated") return t.common.undated
   return formatFhirDate(key, locale) ?? key
 }
 
-function TimelineItem({ event }: { event: TimelineEvent }) {
+/** One timeline row; also used for the open results on the overview. */
+export function TimelineItem({ event }: { event: TimelineEvent }) {
   const { locale, t } = useI18n()
   const meta = KIND_META[event.kind]
   const title = eventTitle(event, t)
@@ -229,6 +239,7 @@ export function PatientTimeline({ patientId }: { patientId: string }) {
     variables: { id: patientId },
   })
   const [filter, setFilter] = useState<KindFilter>("ALL")
+  const [search, setSearch] = useState("")
 
   const events = useMemo(() => data?.patient?.timeline ?? [], [data])
   const counts = useMemo(() => {
@@ -240,13 +251,14 @@ export function PatientTimeline({ patientId }: { patientId: string }) {
     for (const event of events) result[event.kind] += 1
     return result
   }, [events])
-  const visible = useMemo(
-    () =>
-      filter === "ALL"
-        ? events
-        : events.filter((event) => event.kind === filter),
-    [events, filter]
-  )
+  const visible = useMemo(() => {
+    const query = search.trim().toLowerCase()
+    return events.filter(
+      (event) =>
+        (filter === "ALL" || event.kind === filter) &&
+        (!query || searchText(event, t).includes(query))
+    )
+  }, [events, filter, search, t])
   const groups = useMemo(() => groupByDay(visible), [visible])
 
   if (error) {
@@ -281,6 +293,14 @@ export function PatientTimeline({ patientId }: { patientId: string }) {
 
   return (
     <div className="flex flex-col gap-4">
+      <Input
+        type="search"
+        value={search}
+        onChange={(event) => setSearch(event.target.value)}
+        placeholder={t.timeline.searchPlaceholder}
+        aria-label={t.timeline.searchLabel}
+        className="sm:max-w-xs"
+      />
       <div className="flex flex-wrap items-center justify-between gap-2">
         <ToggleGroup
           aria-label={t.timeline.filterLabel}
@@ -323,7 +343,11 @@ export function PatientTimeline({ patientId }: { patientId: string }) {
 
       {groups.length === 0 ? (
         <p className="py-6 text-center text-sm text-muted-foreground">
-          {filter === "ALL" ? t.timeline.empty : t.timeline.noneOfKind[filter]}
+          {search.trim()
+            ? t.timeline.noMatch
+            : filter === "ALL"
+              ? t.timeline.empty
+              : t.timeline.noneOfKind[filter]}
         </p>
       ) : (
         <div className="flex flex-col gap-5">

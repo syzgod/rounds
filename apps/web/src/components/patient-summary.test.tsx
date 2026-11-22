@@ -90,9 +90,7 @@ describe("PatientSummaryPanel", () => {
   it("lists active diagnoses in the header, or 'None'", async () => {
     const amelia = fixture("pat-amelia-hartwell")
     renderSummary(amelia.id, [patientMock(amelia.id, amelia)])
-    expect(
-      await screen.findByText("Active diagnoses")
-    ).toBeInTheDocument()
+    expect(await screen.findByText("Active diagnoses")).toBeInTheDocument()
     expect(
       screen.getByText("Type 2 diabetes mellitus, Essential hypertension")
     ).toBeInTheDocument()

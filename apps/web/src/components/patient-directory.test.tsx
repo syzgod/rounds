@@ -110,18 +110,16 @@ describe("PatientDirectory", () => {
 
     const amelia = screen.getByRole("option", { name: /Amelia/ })
     expect(amelia).toHaveTextContent("2 abnormal")
-    expect(
-      within(amelia).getByText("2 abnormal results")
-    ).toBeInTheDocument()
+    expect(within(amelia).getByText("2 abnormal results")).toBeInTheDocument()
     const jonah = screen.getByRole("option", { name: /Jonah/ })
     expect(jonah).toHaveTextContent("1 abnormal")
     expect(within(jonah).getByText("1 abnormal result")).toBeInTheDocument()
     // Nothing at 0.
     const priya = screen.getByRole("option", { name: /Priya/ })
     expect(priya).not.toHaveTextContent("abnormal")
-    expect(screen.getByRole("option", { name: /Okafor/ })).not.toHaveTextContent(
-      "abnormal"
-    )
+    expect(
+      screen.getByRole("option", { name: /Okafor/ })
+    ).not.toHaveTextContent("abnormal")
   })
 
   it("flags abnormal results in German", async () => {

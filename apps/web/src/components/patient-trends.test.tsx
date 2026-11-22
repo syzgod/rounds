@@ -101,12 +101,13 @@ function mock(trends: Trend[]): MockLink.MockedResponse {
 
 function renderTrends(
   mocks: ReadonlyArray<MockLink.MockedResponse>,
-  locale: Locale = "en"
+  locale: Locale = "en",
+  view: "overview" | "all" = "all"
 ) {
   render(
     <TestLocale locale={locale}>
       <MockedProvider mocks={mocks}>
-        <PatientTrends patientId="p-1" />
+        <PatientTrends patientId="p-1" view={view} />
       </MockedProvider>
     </TestLocale>
   )
@@ -115,7 +116,6 @@ function renderTrends(
 describe("PatientTrends", () => {
   it("shows skeleton cards while loading", () => {
     renderTrends([mock([HBA1C])])
-    expect(screen.getByRole("heading", { name: "Trends" })).toBeInTheDocument()
     expect(screen.getByLabelText("Loading trends")).toHaveAttribute(
       "aria-busy",
       "true"
@@ -139,9 +139,6 @@ describe("PatientTrends", () => {
   it("localizes titles, decimals and dates in German", async () => {
     renderTrends([mock([HBA1C, BP])], "de")
     await screen.findAllByRole("listitem")
-    expect(
-      screen.getByRole("heading", { name: "Messwerte" })
-    ).toBeInTheDocument()
     expect(screen.getByText("6,6 %")).toBeInTheDocument()
     expect(screen.getByText("17.06.2025")).toBeInTheDocument()
     expect(screen.getByText("Blutdruck")).toBeInTheDocument()
@@ -264,11 +261,18 @@ describe("PatientTrends", () => {
     expect(await screen.findByText("Mystery")).toBeInTheDocument()
   })
 
-  it("renders nothing for a patient without trends", async () => {
-    renderTrends([mock([])])
+  it("renders nothing on the overview for a patient without trends", async () => {
+    renderTrends([mock([])], "en", "overview")
     await new Promise((resolve) => setTimeout(resolve, 80))
     expect(screen.queryByRole("heading")).not.toBeInTheDocument()
     expect(screen.queryByRole("list")).not.toBeInTheDocument()
+  })
+
+  it("says so in the Measurements tab for a patient without trends", async () => {
+    renderTrends([mock([])])
+    expect(
+      await screen.findByText("No measurements with at least two values")
+    ).toBeInTheDocument()
   })
 
   it("shows a one-line error and refetches on Retry", async () => {
@@ -285,61 +289,45 @@ describe("PatientTrends", () => {
     expect(await screen.findByText("6.6 %")).toBeInTheDocument()
   })
 
-  it("toggles by keyboard, flips aria-expanded and shows a hint", async () => {
+  it("searches measurements by name", async () => {
+    const user = userEvent.setup()
+    renderTrends([mock([HBA1C, BP])], "de")
+    await screen.findAllByRole("listitem")
+    await user.type(
+      screen.getByRole("searchbox", { name: "Messwerte durchsuchen" }),
+      "blut"
+    )
+    expect(screen.getAllByRole("listitem")).toHaveLength(1)
+    expect(screen.getByText("Blutdruck")).toBeInTheDocument()
+    await user.type(screen.getByRole("searchbox"), "xyz")
+    expect(screen.getByText("Keine passenden Messwerte")).toBeInTheDocument()
+  })
+
+  it("pins charts to the overview, keeping the default pins on first use", async () => {
     const user = userEvent.setup()
     renderTrends([mock([HBA1C, BP])])
-    await screen.findAllByRole("listitem")
-    const button = screen.getByRole("button", { name: "Hide" })
-    expect(button).toHaveAttribute("aria-expanded", "true")
-    expect(button).toHaveAttribute("aria-controls")
-    button.focus()
-    await user.keyboard("{Enter}")
-    const show = screen.getByRole("button", { name: "Show" })
-    expect(show).toHaveAttribute("aria-expanded", "false")
-    expect(screen.queryByRole("list")).not.toBeInTheDocument()
-    expect(screen.getByText("2 measurements hidden")).toBeInTheDocument()
-    await user.keyboard(" ")
-    expect(screen.getAllByRole("listitem")).toHaveLength(2)
-    expect(screen.getByRole("button", { name: "Hide" })).toHaveAttribute(
-      "aria-expanded",
-      "true"
-    )
-  })
+    const hba1cPin = await screen.findByRole("button", {
+      name: "Pin to overview: HbA1c",
+    })
+    // No saved pins yet: both charts are pinned by default.
+    expect(hba1cPin).toHaveAttribute("aria-pressed", "true")
+    await user.click(hba1cPin)
+    expect(hba1cPin).toHaveAttribute("aria-pressed", "false")
+    expect(
+      JSON.parse(window.localStorage.getItem("pinnedCharts") ?? "")
+    ).toEqual(["85354-9"])
 
-  it("persists the choice across remounts", async () => {
-    const user = userEvent.setup()
-    renderTrends([mock([HBA1C])])
-    await user.click(await screen.findByRole("button", { name: "Hide" }))
-    expect(window.localStorage.getItem("trends-visible")).toBe("false")
     cleanup()
-    renderTrends([mock([HBA1C])])
-    expect(await screen.findByRole("button", { name: "Show" })).toHaveAttribute(
-      "aria-expanded",
-      "false"
-    )
-    expect(screen.getByText("1 measurement hidden")).toBeInTheDocument()
-  })
-
-  it("ignores unknown stored values and pluralizes in German", async () => {
-    window.localStorage.setItem("trends-visible", "maybe")
-    renderTrends([mock([HBA1C])], "de")
+    renderTrends([mock([HBA1C, BP])], "en", "overview")
     expect(
-      await screen.findByRole("button", { name: "Ausblenden" })
+      await screen.findByRole("heading", { name: "Pinned measurements" })
     ).toBeInTheDocument()
-    cleanup()
-    window.localStorage.setItem("trends-visible", "false")
-    renderTrends([mock([HBA1C, BP])], "de")
+    expect(screen.getAllByRole("listitem")).toHaveLength(1)
+    expect(screen.getByText("Blood pressure")).toBeInTheDocument()
+    // The overview has no pin toggles.
     expect(
-      await screen.findByText("2 Messwerte ausgeblendet")
-    ).toBeInTheDocument()
-    cleanup()
-    renderTrends([mock([HBA1C])], "de")
-    expect(
-      await screen.findByText("1 Messwert ausgeblendet")
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole("button", { name: "Einblenden" })
-    ).toBeInTheDocument()
+      screen.queryByRole("button", { name: /^Pin to overview/ })
+    ).toBeNull()
   })
 
   it("never selects rawJson", () => {

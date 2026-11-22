@@ -42,6 +42,11 @@ const mocks = [
               category: "Problem list item",
               status: "active",
               flag: null,
+              code: null,
+              categoryCode: null,
+              acknowledgedAt: null,
+              acknowledgedBy: null,
+              needsAcknowledgement: false,
             },
             {
               __typename: "TimelineEvent",
@@ -54,6 +59,11 @@ const mocks = [
               category: null,
               status: "some-new-code",
               flag: null,
+              code: null,
+              categoryCode: null,
+              acknowledgedAt: null,
+              acknowledgedBy: null,
+              needsAcknowledgement: false,
             },
           ],
         },
@@ -119,6 +129,8 @@ describe("language switch", () => {
     expect(screen.getByText("Weiblich")).toBeInTheDocument()
     expect(screen.getByText(/^\d+ J\.$/)).toBeInTheDocument()
 
+    // The timeline lives in its own tab ("Verlauf").
+    await user.click(await screen.findByRole("tab", { name: /^Verlauf/ }))
     const filters = await screen.findByRole("group", {
       name: "Verlauf nach Art filtern",
     })

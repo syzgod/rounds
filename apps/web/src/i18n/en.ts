@@ -95,6 +95,13 @@ const messages = {
     OTHER: "O",
     UNKNOWN: "U",
   },
+  record: {
+    tabsLabel: "Patient record",
+    overview: "Overview",
+    measurements: "Measurements",
+    openResults: "Open results",
+    noOpenResults: "No open results",
+  },
   timeline: {
     title: "Timeline",
     loading: "Loading timeline",
@@ -102,6 +109,9 @@ const messages = {
     empty: "No entries",
     filterLabel: "Filter timeline by type",
     filterAll: "All",
+    searchLabel: "Search timeline",
+    searchPlaceholder: "Search timeline…",
+    noMatch: "No matching entries",
     entryCount: (n: number): string => (n === 1 ? "1 entry" : `${n} entries`),
     entryCountFiltered: (shown: number, total: number): string =>
       `${shown} of ${total} entries`,
@@ -192,10 +202,15 @@ const messages = {
     colAssessment: "Assessment",
     inRange: "Normal",
     noAssessment: "—",
-    hide: "Hide",
-    show: "Show",
-    hidden: (n: number): string =>
-      n === 1 ? "1 measurement hidden" : `${n} measurements hidden`,
+    pinnedTitle: "Pinned measurements",
+    pinnedHint: "Pin or unpin measurements in the Measurements tab.",
+    pin: "Pin",
+    pinned: "Pinned",
+    pinLabel: (title: string): string => `Pin to overview: ${title}`,
+    searchLabel: "Search measurements",
+    searchPlaceholder: "Search measurements…",
+    noMatch: "No matching measurements",
+    none: "No measurements with at least two values",
     summary: (
       title: string,
       count: number,
