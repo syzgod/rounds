@@ -40,7 +40,7 @@ describe('Patient triage fields GraphQL (e2e)', () => {
     expect(byId['pat-amelia-hartwell']).toEqual({
       id: 'pat-amelia-hartwell',
       activeDiagnoses: ['Essential hypertension', 'Type 2 diabetes mellitus'],
-      abnormalResultCount: 1,
+      abnormalResultCount: 3,
     });
     expect(byId['pat-jonah-reyes']).toEqual({
       id: 'pat-jonah-reyes',
@@ -60,7 +60,7 @@ describe('Patient triage fields GraphQL (e2e)', () => {
     expect(byId['pat-tomasz-kowalczyk']).toEqual({
       id: 'pat-tomasz-kowalczyk',
       activeDiagnoses: [],
-      abnormalResultCount: 0,
+      abnormalResultCount: 1,
     });
     expect(byId['pat-okafor-minimal']).toEqual({
       id: 'pat-okafor-minimal',

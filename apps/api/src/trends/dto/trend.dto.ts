@@ -60,6 +60,34 @@ export class TrendDto {
   })
   unit!: string | null;
 
+  @Field(() => Float, {
+    nullable: true,
+    description:
+      'Lower bound of the normal range from the latest measurement (systolic for blood pressure), in the series unit; null when unknown.',
+  })
+  referenceLow!: number | null;
+
+  @Field(() => Float, {
+    nullable: true,
+    description:
+      'Upper bound of the normal range from the latest measurement (systolic for blood pressure), in the series unit; null when unknown.',
+  })
+  referenceHigh!: number | null;
+
+  @Field(() => Float, {
+    nullable: true,
+    description:
+      'Lower bound of the normal range of the diastolic pressure; null for other measurements or when unknown.',
+  })
+  secondaryReferenceLow!: number | null;
+
+  @Field(() => Float, {
+    nullable: true,
+    description:
+      'Upper bound of the normal range of the diastolic pressure; null for other measurements or when unknown.',
+  })
+  secondaryReferenceHigh!: number | null;
+
   @Field(() => [TrendPointDto], {
     description: 'Measurements sorted oldest to newest; at least two.',
   })

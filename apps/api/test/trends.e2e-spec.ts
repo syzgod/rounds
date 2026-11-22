@@ -7,7 +7,7 @@ import { AppModule } from './../src/app.module.js';
 const TRENDS_QUERY = `query Trends($id: ID!) {
   patient(id: $id) {
     id
-    trends { id code title unit points { id date value secondaryValue flag } }
+    trends { id code title unit referenceLow referenceHigh secondaryReferenceLow secondaryReferenceHigh points { id date value secondaryValue flag } }
   }
 }`;
 
@@ -16,6 +16,10 @@ type Trend = {
   code: string;
   title: string;
   unit: string | null;
+  referenceLow: number | null;
+  referenceHigh: number | null;
+  secondaryReferenceLow: number | null;
+  secondaryReferenceHigh: number | null;
   points: {
     id: string;
     date: string;
@@ -60,6 +64,7 @@ describe('Patient trends GraphQL (e2e)', () => {
 
     const hba1c = result[0]!;
     expect(hba1c.unit).toBe('%');
+    expect(hba1c).toMatchObject({ referenceLow: 4, referenceHigh: 5.6 });
     expect(hba1c.points).toHaveLength(6);
     expect(hba1c.points[0]).toMatchObject({
       id: 'Observation/obs-amelia-hba1c-2023-03-14',
@@ -72,6 +77,15 @@ describe('Patient trends GraphQL (e2e)', () => {
 
     const bp = result.find((t) => t.code === '85354-9')!;
     expect(bp.unit).toBe('mmHg');
+    expect(bp).toMatchObject({
+      referenceLow: 90,
+      referenceHigh: 120,
+      secondaryReferenceLow: 60,
+      secondaryReferenceHigh: 80,
+    });
+    const weight = result.find((t) => t.code === '29463-7')!;
+    expect(weight.referenceLow).toBeNull();
+    expect(weight.referenceHigh).toBeNull();
     expect(bp.points.find((p) => p.id.endsWith('bp-2024-01-09'))).toMatchObject(
       { value: 142, secondaryValue: 91 },
     );
