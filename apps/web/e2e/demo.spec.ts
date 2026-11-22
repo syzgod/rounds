@@ -132,3 +132,23 @@ test("minimal patient shows an empty record without trends", async ({
   await page.getByRole("tab", { name: /^Verlauf/ }).click()
   await expect(page.getByText("Keine Einträge")).toBeVisible()
 })
+
+test("the page does not scroll past its content on any tab", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 800 })
+  await openPatient(page, "Hartwell", /Hartwell/)
+  await expect(
+    page.getByRole("region", { name: "Angeheftete Messwerte" })
+  ).toBeVisible()
+  for (const tab of [/^Übersicht/, /^Verlauf/, /^Messwerte/]) {
+    await page.getByRole("tab", { name: tab }).click()
+    // Hidden (sr-only) text must not stretch the document beyond the viewport.
+    const overflow = await page.evaluate(
+      () =>
+        document.documentElement.scrollHeight -
+        document.documentElement.clientHeight
+    )
+    expect(overflow).toBeLessThanOrEqual(1)
+  }
+})
