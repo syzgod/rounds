@@ -25,6 +25,7 @@ export default defineConfig({
       cwd: repoRoot,
       url: "http://localhost:3000/",
       reuseExistingServer: !process.env.CI,
+      gracefulShutdown: { signal: "SIGTERM", timeout: 5_000 },
       timeout: 180_000,
     },
     {
@@ -32,6 +33,7 @@ export default defineConfig({
       cwd: repoRoot,
       url: "http://localhost:5173",
       reuseExistingServer: !process.env.CI,
+      gracefulShutdown: { signal: "SIGTERM", timeout: 5_000 },
       timeout: 120_000,
     },
   ],
