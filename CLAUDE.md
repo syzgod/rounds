@@ -16,6 +16,7 @@ Run these from the repo root. Each one delegates to the apps with `pnpm --filter
 
 - `pnpm dev`: starts the API (`:3000/graphql`) and the web app (`:5173`)
 - `pnpm typecheck` / `pnpm lint` / `pnpm test` / `pnpm test:e2e`
+- `pnpm test:browser`: Playwright keyboard demo plus axe scans. For visual checks, use the Playwright MCP from `.mcp.json` against `pnpm dev`.
 - Add dependencies with `pnpm --filter <api|web> add <pkg>` (`-D` for dev). Run tools with `pnpm exec` or `pnpm dlx`.
 
 **Done** means CI (`.github/workflows/ci.yml`: peers check, typecheck, lint, unit and e2e tests, web build, an up-to-date `schema.gql`) is green on the PR, and the milestone's "Done when" check in `docs/PLAN.md` holds.

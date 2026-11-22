@@ -16,10 +16,21 @@ Kept short. Read this at the start of a session and update it at the end. Milest
 - **Live demo:** https://rounds-web-jsyv.onrender.com, from a Render Blueprint (`render.yaml`) in Frankfurt.
 - **Docs:** README with a demo script, PRODUCT.md, AI-WORKFLOW.md.
 
-## Open PRs
+- **Charts revised:** normal ranges, min/max and date labels on the cards, and a "Details" dialog with labelled axes and a value table (#19, #20).
 
-- #17: contrast fix. CI is green with the axe light-mode checks re-enabled.
-- The docs PR: README, PRODUCT, AI-WORKFLOW, this log and the PLAN status.
+## Start here (next session)
+
+1. **Merge #19, then #20.** #19 is the API reference ranges, with lab flags now consistent with them. Triage counts change: Amelia 3, Tomasz 1. #20 is the web chart context, stacked on #19. CI is green on both.
+2. **Visual check with the Playwright MCP** (`.mcp.json`), running `pnpm dev` locally or using the live demo. No one has looked at the UI in a real browser yet. Check, in light and dark mode, German and English, and at narrow and wide widths:
+   - **Charts:**
+     - Do the min/max labels line up when the normal band widens the y-range?
+     - Are the dialog and card chart sizes right?
+     - Does blood pressure show two bands, a legend and a dashed diastolic line?
+     - Are the flag diamonds visible?
+   - **Measurement strip:** card density at 3 per row, and the position of "Ausblenden".
+   - **Triage:** badge wrapping on narrow rows, warning colour contrast, a long diagnosis list.
+   - **Source viewer:** how noisy the "FHIR" row buttons are, the header button on narrow widths, the dialog in dark mode, a real clipboard copy.
+3. **Clean up** the leftover worktrees `D:/Developer/Projects/rounds-wt-contrast` and `rounds-wt-ranges` once #19 and #20 are merged.
 
 ## Next
 
