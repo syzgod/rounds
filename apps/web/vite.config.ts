@@ -16,6 +16,7 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./src/test/setup.ts"],
     include: ["src/**/*.test.{ts,tsx}"],
+    exclude: ["e2e/**", "node_modules/**"],
     // Timeline times render in local time; pin it so tests match on every machine.
     env: { TZ: "UTC" },
   },
