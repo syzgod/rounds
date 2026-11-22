@@ -24,12 +24,12 @@ Kept short. Read this at the start of a session and update it at the end. Milest
 
 ## Start here (next session)
 
-1. **MVP list done.** Optional: the write feature in "Next" (needs approval).
+1. **MVP list done**, plus the acknowledge feature. Next ideas: real auth for the audit log, persistence.
 2. **Clean up** the leftover worktrees `D:/Developer/Projects/rounds-wt-contrast` and `rounds-wt-ranges` (both merged and clean).
 
 ## Next
 
-1. Optional: one small write feature, such as acknowledging an abnormal result, with an audit log (see PRODUCT.md, Scope).
+1. Optional: persist acknowledgements (needs a store; a database is a non-goal) and verify who acknowledged (needs auth).
 
 ## Bugs found (open)
 
@@ -38,6 +38,7 @@ Kept short. Read this at the start of a session and update it at the end. Milest
 
 ## Fixed
 
+- Acknowledge open results (user-approved write): initials asked once, in-memory store with an append-only audit log (`Patient.auditLog`), badge counts only open results, button only on the latest flagged reading per measurement.
 - Agent docs trimmed: CLAUDE.md + rules 2,191 → 1,291 words, one source per rule, ASD-STE100 style.
 - GraphQL Code Generator: web operation types come from `schema.gql` (`pnpm --filter web codegen`, `typescript-operations` only, no runtime code). CI fails when they are stale.
 - Chart dialog: round y-axis ticks, flag diamonds, hover tooltip, and a hovered table row marks its point on the chart.

@@ -2,6 +2,8 @@ import type { TypedDocumentNode } from "@apollo/client"
 import { gql } from "@apollo/client"
 
 import type {
+  AcknowledgeResultMutation,
+  AcknowledgeResultMutationVariables,
   ObservationFlag,
   PatientTimelineQuery,
   PatientTimelineQueryVariables,
@@ -26,6 +28,9 @@ export const TIMELINE_EVENT_FIELDS = gql`
     categoryCode
     status
     flag
+    acknowledgedAt
+    acknowledgedBy
+    needsAcknowledgement
   }
 `
 
@@ -39,6 +44,19 @@ export const PATIENT_TIMELINE_QUERY: TypedDocumentNode<
       timeline {
         ...TimelineEventFields
       }
+    }
+  }
+  ${TIMELINE_EVENT_FIELDS}
+`
+
+/** Acknowledges a flagged result; the returned event updates the cached row. */
+export const ACKNOWLEDGE_RESULT_MUTATION: TypedDocumentNode<
+  AcknowledgeResultMutation,
+  AcknowledgeResultMutationVariables
+> = gql`
+  mutation AcknowledgeResult($id: ID!, $initials: String!) {
+    acknowledgeResult(id: $id, initials: $initials) {
+      ...TimelineEventFields
     }
   }
   ${TIMELINE_EVENT_FIELDS}

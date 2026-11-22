@@ -12,6 +12,7 @@ import {
   type LucideIcon,
 } from "lucide-react"
 
+import { AcknowledgeResult } from "@/components/acknowledge-result"
 import { SourceDialog } from "@/components/source-dialog"
 import { Alert, AlertAction, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
@@ -186,6 +187,7 @@ function TimelineItem({ event }: { event: TimelineEvent }) {
           <span className="sr-only">{t.timeline.kind[event.kind]}: </span>
           {details.join(" · ")}
         </p>
+        {event.flag ? <AcknowledgeResult event={event} title={title} /> : null}
       </div>
       <SourceDialog
         target={{ kind: "timelineEvent", id: event.id }}
