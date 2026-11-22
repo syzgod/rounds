@@ -15,10 +15,10 @@ The users are clinicians doing fast-paced work. Code and its names are for devel
 Run these from the repo root. Each one delegates to the apps with `pnpm --filter`.
 
 - `pnpm dev`: starts the API (`:3000/graphql`) and the web app (`:5173`)
-- `pnpm typecheck` / `pnpm test` / `pnpm test:e2e`
+- `pnpm typecheck` / `pnpm lint` / `pnpm test` / `pnpm test:e2e`
 - Add dependencies with `pnpm --filter <api|web> add <pkg>` (`-D` for dev). Run tools with `pnpm exec` or `pnpm dlx`.
 
-**Done** means `pnpm typecheck` and `pnpm test` pass and the milestone's "Done when" check in `docs/PLAN.md` holds.
+**Done** means CI (`.github/workflows/ci.yml`: peers check, typecheck, lint, unit and e2e tests, web build, an up-to-date `schema.gql`) is green on the PR, and the milestone's "Done when" check in `docs/PLAN.md` holds.
 
 ## Hard boundaries
 
@@ -39,6 +39,7 @@ Run these from the repo root. Each one delegates to the apps with `pnpm --filter
 - Prefer scripts, MCP tools and skills to manual, multi-step token-heavy work.
 - Now and then, trim the `.md` files the agents load (`CLAUDE.md`, `.claude/rules/**`) to cut tokens.
 - Keep PRs small, with a short description: a summary of 1–3 bullets and how it was tested.
+- Locally, run only the checks for what you changed (`pnpm typecheck` plus the affected test files). The full suite runs in CI: push, then `gh pr checks <n> --watch`, and fix the PR until it is green.
 
 ## Non-goals
 
