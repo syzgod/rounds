@@ -4,10 +4,11 @@ import { useQuery } from "@apollo/client/react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import type {
+  HealthQuery,
+  HealthQueryVariables,
+} from "@/graphql/__generated__/graphql"
 import { useI18n } from "@/i18n/locale-provider"
-
-type HealthQuery = { health: string }
-type HealthQueryVariables = Record<string, never>
 
 export const HEALTH_QUERY: TypedDocumentNode<
   HealthQuery,

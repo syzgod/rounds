@@ -192,6 +192,18 @@ export const de: Messages = {
     summary: (title, count, from, to, latest, range) =>
       `${title}, ${count} Werte vom ${from} bis ${to}, zuletzt ${latest}, Bereich ${range}`,
   },
+  acknowledge: {
+    action: "Kenntnis nehmen",
+    actionLabel: (title) => `Kenntnis nehmen: ${title}`,
+    done: (by, when) => `Kenntnis genommen · ${by} · ${when}`,
+    initialsTitle: "Ihr Kürzel",
+    initialsLabel: "Kürzel",
+    initialsHint:
+      "Wird im Protokoll gespeichert. Die Demo setzt Kenntnisnahmen beim Neustart zurück.",
+    initialsInvalid: "1–8 Buchstaben eingeben.",
+    confirm: "Bestätigen",
+    saveError: "Kenntnisnahme konnte nicht gespeichert werden.",
+  },
   triage: {
     activeDiagnoses: "Aktive Diagnosen",
     none: "Keine",

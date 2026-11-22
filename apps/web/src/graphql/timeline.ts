@@ -1,29 +1,19 @@
 import type { TypedDocumentNode } from "@apollo/client"
 import { gql } from "@apollo/client"
 
-/** Mirrors `enum TimelineEventKind` in apps/api/src/schema.gql. */
-export type TimelineEventKind = "ENCOUNTER" | "CONDITION" | "OBSERVATION"
+import type {
+  AcknowledgeResultMutation,
+  AcknowledgeResultMutationVariables,
+  ObservationFlag,
+  PatientTimelineQuery,
+  PatientTimelineQueryVariables,
+  TimelineEventFieldsFragment,
+  TimelineEventKind,
+} from "@/graphql/__generated__/graphql"
 
-/** Mirrors `enum ObservationFlag` in apps/api/src/schema.gql. */
-export type ObservationFlag = "LOW" | "HIGH" | "ABNORMAL"
-
-/** Mirrors `type TimelineEvent` in apps/api/src/schema.gql (no rawJson: Inspector only). */
-export type TimelineEvent = {
-  __typename: "TimelineEvent"
-  id: string
-  kind: TimelineEventKind
-  date: string | null
-  endDate: string | null
-  title: string
-  detail: string | null
-  category: string | null
-  /** LOINC code of an Observation; translates `title`. */
-  code: string | null
-  /** Code behind `category` (Encounter class or category code); translates it. */
-  categoryCode: string | null
-  status: string | null
-  flag: ObservationFlag | null
-}
+export type { ObservationFlag, TimelineEventKind }
+/** One timeline row (no rawJson: Inspector only). */
+export type TimelineEvent = TimelineEventFieldsFragment
 
 export const TIMELINE_EVENT_FIELDS = gql`
   fragment TimelineEventFields on TimelineEvent {
@@ -38,18 +28,15 @@ export const TIMELINE_EVENT_FIELDS = gql`
     categoryCode
     status
     flag
+    acknowledgedAt
+    acknowledgedBy
+    needsAcknowledgement
   }
 `
 
 export const PATIENT_TIMELINE_QUERY: TypedDocumentNode<
-  {
-    patient: {
-      __typename: "Patient"
-      id: string
-      timeline: TimelineEvent[]
-    } | null
-  },
-  { id: string }
+  PatientTimelineQuery,
+  PatientTimelineQueryVariables
 > = gql`
   query PatientTimeline($id: ID!) {
     patient(id: $id) {
@@ -57,6 +44,19 @@ export const PATIENT_TIMELINE_QUERY: TypedDocumentNode<
       timeline {
         ...TimelineEventFields
       }
+    }
+  }
+  ${TIMELINE_EVENT_FIELDS}
+`
+
+/** Acknowledges a flagged result; the returned event updates the cached row. */
+export const ACKNOWLEDGE_RESULT_MUTATION: TypedDocumentNode<
+  AcknowledgeResultMutation,
+  AcknowledgeResultMutationVariables
+> = gql`
+  mutation AcknowledgeResult($id: ID!, $initials: String!) {
+    acknowledgeResult(id: $id, initials: $initials) {
+      ...TimelineEventFields
     }
   }
   ${TIMELINE_EVENT_FIELDS}

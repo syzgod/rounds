@@ -206,6 +206,19 @@ const messages = {
     ): string =>
       `${title}, ${count} values from ${from} to ${to}, latest ${latest}, range ${range}`,
   },
+  acknowledge: {
+    action: "Acknowledge",
+    actionLabel: (title: string): string => `Acknowledge ${title}`,
+    done: (by: string, when: string): string =>
+      `Acknowledged · ${by} · ${when}`,
+    initialsTitle: "Your initials",
+    initialsLabel: "Initials",
+    initialsHint:
+      "Saved in the audit log. The demo clears acknowledgements when it restarts.",
+    initialsInvalid: "Enter 1–8 letters.",
+    confirm: "Confirm",
+    saveError: "Couldn't save the acknowledgement.",
+  },
   triage: {
     activeDiagnoses: "Active diagnoses",
     none: "None",
