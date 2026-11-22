@@ -236,6 +236,30 @@ describe("PatientTimeline", () => {
     })
   })
 
+  it("searches title, value and category, together with the type filter", async () => {
+    const user = renderTimeline([timelineMock("pat-amelia-hartwell", EVENTS)])
+    await screen.findByText("Blood glucose")
+    const search = screen.getByRole("searchbox", { name: "Search timeline" })
+
+    await user.type(search, "142/91")
+    expect(items()).toHaveLength(1)
+    expect(screen.getByText("Blood pressure")).toBeInTheDocument()
+    expect(screen.getByRole("status")).toHaveTextContent("1 of 5 entries")
+
+    await user.clear(search)
+    await user.type(search, "laboratory")
+    expect(items()).toHaveLength(1)
+
+    // The recorded FHIR title matches too, not only the translated one.
+    await user.clear(search)
+    await user.type(search, "glucose")
+    expect(items()).toHaveLength(1)
+
+    await user.clear(search)
+    await user.type(search, "nothing like this")
+    expect(screen.getByText("No matching entries")).toBeInTheDocument()
+  })
+
   it("filters by type with the keyboard", async () => {
     const user = renderTimeline([timelineMock("pat-amelia-hartwell", EVENTS)])
     await screen.findByText("Blood glucose")

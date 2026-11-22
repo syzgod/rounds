@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react"
 import { useQuery } from "@apollo/client/react"
 import { AlertCircleIcon, RotateCwIcon, UserXIcon } from "lucide-react"
 
+import { OpenResults } from "@/components/open-results"
 import { SourceDialog } from "@/components/source-dialog"
 import { PatientTimeline } from "@/components/patient-timeline"
 import { ErrorBoundary, ErrorFallback } from "@/components/error-boundary"
@@ -19,7 +20,10 @@ import {
 } from "@/components/ui/empty"
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { PATIENT_QUERY, type PatientSummary } from "@/graphql/patients"
+import { PATIENT_TIMELINE_QUERY } from "@/graphql/timeline"
+import { PATIENT_TRENDS_QUERY } from "@/graphql/trends"
 import { useI18n } from "@/i18n/locale-provider"
 import {
   ageInYears,
@@ -34,6 +38,62 @@ const PatientTrends = lazy(() =>
     default: m.PatientTrends,
   }))
 )
+
+/** Charts in their own chunk, behind an error boundary (a failed chunk must not blank the page). */
+function Trends({
+  patientId,
+  view,
+}: {
+  patientId: string
+  view: "overview" | "all"
+}) {
+  const { t } = useI18n()
+  return (
+    <ErrorBoundary fallback={<ErrorFallback message={t.trends.loadError} />}>
+      <Suspense fallback={<PatientTrendsSkeleton />}>
+        <PatientTrends patientId={patientId} view={view} />
+      </Suspense>
+    </ErrorBoundary>
+  )
+}
+
+/** Übersicht (open results, pinned charts), Verlauf (timeline), Messwerte (all charts). */
+function RecordTabs({ patientId }: { patientId: string }) {
+  const { t } = useI18n()
+  const timeline = useQuery(PATIENT_TIMELINE_QUERY, {
+    variables: { id: patientId },
+  })
+  const trends = useQuery(PATIENT_TRENDS_QUERY, {
+    variables: { id: patientId },
+  })
+  const count = (n: number | undefined) =>
+    n === undefined ? null : (
+      <span className="text-muted-foreground tabular-nums">{n}</span>
+    )
+  return (
+    <Tabs defaultValue="overview" className="gap-4">
+      <TabsList aria-label={t.record.tabsLabel}>
+        <TabsTrigger value="overview">{t.record.overview}</TabsTrigger>
+        <TabsTrigger value="timeline">
+          {t.timeline.title} {count(timeline.data?.patient?.timeline.length)}
+        </TabsTrigger>
+        <TabsTrigger value="measurements">
+          {t.record.measurements} {count(trends.data?.patient?.trends.length)}
+        </TabsTrigger>
+      </TabsList>
+      <TabsContent value="overview" className="flex flex-col gap-6">
+        <OpenResults patientId={patientId} />
+        <Trends patientId={patientId} view="overview" />
+      </TabsContent>
+      <TabsContent value="timeline">
+        <PatientTimeline patientId={patientId} />
+      </TabsContent>
+      <TabsContent value="measurements">
+        <Trends patientId={patientId} view="all" />
+      </TabsContent>
+    </Tabs>
+  )
+}
 
 type PatientSummaryPanelProps = {
   patientId: string
@@ -188,17 +248,7 @@ export function PatientSummaryPanel({
     <div className="flex flex-col gap-6">
       <PatientHeader patient={patient} />
       <Separator />
-      <ErrorBoundary fallback={<ErrorFallback message={t.trends.loadError} />}>
-        <Suspense fallback={<PatientTrendsSkeleton />}>
-          <PatientTrends patientId={patient.id} />
-        </Suspense>
-      </ErrorBoundary>
-      <section className="flex flex-col gap-3">
-        <h3 id="timeline-heading" className="text-sm font-medium">
-          {t.timeline.title}
-        </h3>
-        <PatientTimeline patientId={patient.id} />
-      </section>
+      <RecordTabs patientId={patient.id} />
     </div>
   )
 }

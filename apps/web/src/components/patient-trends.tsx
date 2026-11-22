@@ -1,6 +1,6 @@
-import { useId, useState } from "react"
+import { useState } from "react"
 import { useQuery } from "@apollo/client/react"
-import { AlertCircleIcon, RotateCwIcon } from "lucide-react"
+import { AlertCircleIcon, PinIcon, RotateCwIcon } from "lucide-react"
 import { Line, LineChart, ReferenceArea, YAxis } from "recharts"
 
 import { PatientTrendsSkeleton } from "@/components/patient-trends-skeleton"
@@ -25,12 +25,14 @@ import { Alert, AlertAction, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
 import {
   ChartContainer,
   ChartTooltip,
   type ChartConfig,
 } from "@/components/ui/chart"
 import { PATIENT_TRENDS_QUERY, type Trend } from "@/graphql/trends"
+import { defaultPins, usePinnedCharts } from "@/hooks/use-pinned-charts"
 import { useI18n } from "@/i18n/locale-provider"
 import type { Locale, Messages } from "@/i18n/messages"
 import { formatNumber } from "@/lib/format"
@@ -150,7 +152,13 @@ function TrendChart({ trend }: { trend: Trend }) {
   )
 }
 
-function TrendCard({ trend }: { trend: Trend }) {
+type TrendCardProps = {
+  trend: Trend
+  /** Pin toggle (Messwerte tab); absent on the overview. */
+  pin?: { pinned: boolean; onToggle: () => void }
+}
+
+function TrendCard({ trend, pin }: TrendCardProps) {
   const { locale, t } = useI18n()
   const latest = trend.points[trend.points.length - 1]
   if (!latest) return null
@@ -164,18 +172,32 @@ function TrendCard({ trend }: { trend: Trend }) {
             <h4 className="text-xs text-muted-foreground">
               {trendTitle(trend, t)}
             </h4>
-            <TrendDetailDialog
-              trend={trend}
-              trigger={
+            <div className="flex items-center gap-1">
+              {pin ? (
                 <Button
                   size="xs"
-                  variant="ghost"
-                  aria-label={t.trends.detailsLabel(trendTitle(trend, t))}
-                />
-              }
-            >
-              {t.trends.details}
-            </TrendDetailDialog>
+                  variant={pin.pinned ? "secondary" : "ghost"}
+                  aria-pressed={pin.pinned}
+                  aria-label={t.trends.pinLabel(trendTitle(trend, t))}
+                  onClick={pin.onToggle}
+                >
+                  <PinIcon data-icon="inline-start" />
+                  {pin.pinned ? t.trends.pinned : t.trends.pin}
+                </Button>
+              ) : null}
+              <TrendDetailDialog
+                trend={trend}
+                trigger={
+                  <Button
+                    size="xs"
+                    variant="ghost"
+                    aria-label={t.trends.detailsLabel(trendTitle(trend, t))}
+                  />
+                }
+              >
+                {t.trends.details}
+              </TrendDetailDialog>
+            </div>
           </div>
           <div className="flex items-start justify-between gap-2">
             <div className="flex min-w-0 flex-col">
@@ -206,87 +228,99 @@ function TrendCard({ trend }: { trend: Trend }) {
   )
 }
 
-const VISIBLE_KEY = "trends-visible"
-
-/** Only "true" and "false" are accepted; anything else (or blocked storage) means visible. */
-function readVisible(): boolean {
-  try {
-    return window.localStorage.getItem(VISIBLE_KEY) !== "false"
-  } catch {
-    return true
-  }
+type PatientTrendsProps = {
+  patientId: string
+  /** overview: pinned charts only. all: every chart, with search and pins. */
+  view: "overview" | "all"
 }
 
-type PatientTrendsProps = { patientId: string }
-
-export function PatientTrends({ patientId }: PatientTrendsProps) {
+export function PatientTrends({ patientId, view }: PatientTrendsProps) {
   const { t } = useI18n()
-  const [visible, setVisible] = useState(readVisible)
-  const panelId = useId()
+  const [search, setSearch] = useState("")
+  const { pins, toggle } = usePinnedCharts()
   const { data, loading, error, refetch } = useQuery(PATIENT_TRENDS_QUERY, {
     variables: { id: patientId },
   })
   const trends = data?.patient?.trends ?? []
   const pending = loading && !data
+  const shown = pins ?? defaultPins(trends)
 
-  if (!error && !pending && trends.length === 0) return null
+  if (error) {
+    return (
+      <Alert variant="destructive">
+        <AlertCircleIcon />
+        <AlertTitle>{t.trends.loadError}</AlertTitle>
+        <AlertAction>
+          <Button size="xs" variant="outline" onClick={() => void refetch()}>
+            <RotateCwIcon data-icon="inline-start" />
+            {t.common.retry}
+          </Button>
+        </AlertAction>
+      </Alert>
+    )
+  }
+  if (pending) return <PatientTrendsSkeleton />
 
-  function toggle() {
-    const next = !visible
-    setVisible(next)
-    try {
-      window.localStorage.setItem(VISIBLE_KEY, String(next))
-    } catch {
-      // Not persisted when storage is blocked; the choice still applies this session.
-    }
+  if (view === "overview") {
+    const pinned = trends.filter((trend) => shown.includes(trend.code))
+    if (pinned.length === 0) return null
+    return (
+      <section className="flex flex-col gap-2" aria-labelledby="pinned-heading">
+        <h3 id="pinned-heading" className="text-sm font-medium">
+          {t.trends.pinnedTitle}
+        </h3>
+        <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {pinned.map((trend) => (
+            <TrendCard key={trend.id} trend={trend} />
+          ))}
+        </ul>
+        <p className="text-xs text-muted-foreground">{t.trends.pinnedHint}</p>
+      </section>
+    )
   }
 
+  if (trends.length === 0) {
+    return (
+      <p className="py-6 text-center text-sm text-muted-foreground">
+        {t.trends.none}
+      </p>
+    )
+  }
+  const query = search.trim().toLowerCase()
+  const matches = query
+    ? trends.filter((trend) =>
+        // Shown name and recorded name ("Blutzucker" and "Glucose").
+        `${trendTitle(trend, t)} ${trend.title}`.toLowerCase().includes(query)
+      )
+    : trends
   return (
-    <section className="flex flex-col gap-2" aria-labelledby="trends-heading">
-      <div className="flex items-center justify-between gap-2">
-        <h3 id="trends-heading" className="text-sm font-medium">
-          {t.trends.title}
-        </h3>
-        {!error && !pending ? (
-          <Button
-            size="xs"
-            variant="ghost"
-            aria-expanded={visible}
-            aria-controls={panelId}
-            onClick={toggle}
-          >
-            {visible ? t.trends.hide : t.trends.show}
-          </Button>
-        ) : null}
-      </div>
-      {error ? (
-        <Alert variant="destructive">
-          <AlertCircleIcon />
-          <AlertTitle>{t.trends.loadError}</AlertTitle>
-          <AlertAction>
-            <Button size="xs" variant="outline" onClick={() => void refetch()}>
-              <RotateCwIcon data-icon="inline-start" />
-              {t.common.retry}
-            </Button>
-          </AlertAction>
-        </Alert>
-      ) : pending ? (
-        <PatientTrendsSkeleton />
+    <div className="flex flex-col gap-3">
+      <Input
+        type="search"
+        value={search}
+        onChange={(event) => setSearch(event.target.value)}
+        placeholder={t.trends.searchPlaceholder}
+        aria-label={t.trends.searchLabel}
+        className="sm:max-w-xs"
+      />
+      {matches.length === 0 ? (
+        <p className="py-6 text-center text-sm text-muted-foreground">
+          {t.trends.noMatch}
+        </p>
       ) : (
-        <div id={panelId}>
-          {visible ? (
-            <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {trends.map((trend) => (
-                <TrendCard key={trend.id} trend={trend} />
-              ))}
-            </ul>
-          ) : (
-            <p className="text-xs text-muted-foreground">
-              {t.trends.hidden(trends.length)}
-            </p>
-          )}
-        </div>
+        <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {matches.map((trend) => (
+            <TrendCard
+              key={trend.id}
+              trend={trend}
+              pin={{
+                pinned: shown.includes(trend.code),
+                onToggle: () => toggle(trend.code, shown),
+              }}
+            />
+          ))}
+        </ul>
       )}
-    </section>
+    </div>
   )
 }
