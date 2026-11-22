@@ -192,3 +192,26 @@ describe("PatientSummaryPanel", () => {
     expect(screen.queryByLabelText("Loading patient")).not.toBeInTheDocument()
   })
 })
+
+describe("PatientSummaryPanel live loading note", () => {
+  it.each([
+    ["en", "Loading the record from the test server…"],
+    ["de", "Patientenakte wird vom Testserver geladen…"],
+  ] as const)("shows the %s test server note for a live id", (locale, text) => {
+    const live = { ...fixture("pat-amelia-hartwell"), id: "live-123" }
+    render(
+      <TestLocale locale={locale}>
+        <MockedProvider mocks={[patientMock(live.id, live)]}>
+          <PatientSummaryPanel patientId={live.id} onClearSelection={vi.fn()} />
+        </MockedProvider>
+      </TestLocale>
+    )
+    expect(screen.getByRole("status")).toHaveTextContent(text)
+  })
+
+  it("shows no live note for a demo id", () => {
+    const amelia = fixture("pat-amelia-hartwell")
+    renderSummary(amelia.id, [patientMock(amelia.id, amelia)])
+    expect(screen.getByRole("status")).toBeEmptyDOMElement()
+  })
+})
