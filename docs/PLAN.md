@@ -74,7 +74,7 @@ Proves the whole chain works: the web app (Apollo Client v4) calls the API (Nest
 - Focus is trapped while the Dialog is open, Escape closes it, and focus returns to the button that opened it.
 
 **Done when**
-- [ ] E2E: `JSON.parse(rawJson)` deep-equals the matching fixture resource, for one Patient and one event of each kind.
+- [x] E2E: `JSON.parse(rawJson)` deep-equals the matching fixture resource, for one Patient and one event of each kind. `test/raw-json.e2e-spec.ts`
 - [ ] Directory and timeline query documents don't select `rawJson`. Asserted in a web test.
 - [ ] Web tests: the Dialog opens from the keyboard, shows the formatted JSON, closes on Escape and returns focus to its trigger, and the Copy button calls the clipboard.
 

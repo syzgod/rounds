@@ -50,6 +50,7 @@ describe('toPatientDto', () => {
       gender: Gender.FEMALE,
       birthDate: '1985-12-10',
       mrn: 'MRN-1',
+      rawJson: JSON.stringify(patient),
     });
   });
 
@@ -66,6 +67,7 @@ describe('toPatientDto', () => {
       gender: null,
       birthDate: null,
       mrn: null,
+      rawJson: JSON.stringify(patient),
     });
   });
 
