@@ -41,6 +41,9 @@ type Patient {
   The patient's Encounters, Conditions and Observations, newest first; undated events last.
   """
   timeline: [TimelineEvent!]!
+
+  """Numeric measurements with at least two dated values, for charts."""
+  trends: [Trend!]!
 }
 
 type Query {
@@ -107,4 +110,44 @@ enum TimelineEventKind {
   CONDITION
   ENCOUNTER
   OBSERVATION
+}
+
+"""
+A numeric measurement series for one patient (e.g. HbA1c), oldest to newest, for charts.
+"""
+type Trend {
+  """LOINC code identifying the measurement."""
+  code: String!
+
+  """"<patientId>/<LOINC code>", unique per patient and series."""
+  id: ID!
+
+  """Measurements sorted oldest to newest; at least two."""
+  points: [TrendPoint!]!
+
+  """Human-readable name, e.g. "Hemoglobin A1c" or "Blood pressure"."""
+  title: String!
+
+  """Display unit shared by every point, e.g. "%" or "mmHg"."""
+  unit: String
+}
+
+"""One dated numeric measurement in a Trend."""
+type TrendPoint {
+  """
+  FHIR dateTime the measurement was taken (Observation.effectiveDateTime).
+  """
+  date: String!
+  flag: ObservationFlag
+
+  """"Observation/<id>" of the source Observation."""
+  id: ID!
+
+  """
+  The diastolic pressure for blood pressure panels; null for other measurements.
+  """
+  secondaryValue: Float
+
+  """The measured value; the systolic pressure for blood pressure panels."""
+  value: Float!
 }

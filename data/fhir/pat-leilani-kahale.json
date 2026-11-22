@@ -411,6 +411,350 @@
         "method": "POST",
         "url": "Observation"
       }
+    },
+    {
+      "fullUrl": "urn:uuid:d7929eef-30c3-4e26-841f-98e02fdd9a9f",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-leilani-weight-2023-11-14",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "29463-7",
+              "display": "Body weight"
+            }
+          ],
+          "text": "Body weight"
+        },
+        "subject": {
+          "reference": "urn:uuid:bf87d958-c63d-575c-be78-d0c2ca747693"
+        },
+        "effectiveDateTime": "2023-11-14T14:20:00Z",
+        "valueQuantity": {
+          "value": 18.9,
+          "unit": "kg",
+          "system": "http://unitsofmeasure.org",
+          "code": "kg"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:31c507d5-719b-45ac-b550-8ab7e21e9b19",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-leilani-weight-2024-03-05",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "29463-7",
+              "display": "Body weight"
+            }
+          ],
+          "text": "Body weight"
+        },
+        "subject": {
+          "reference": "urn:uuid:bf87d958-c63d-575c-be78-d0c2ca747693"
+        },
+        "effectiveDateTime": "2024-03-05T10:40:00Z",
+        "valueQuantity": {
+          "value": 19.6,
+          "unit": "kg",
+          "system": "http://unitsofmeasure.org",
+          "code": "kg"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:4bd97dac-3971-46a7-8f78-b523641e704f",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-leilani-weight-2025-03-18",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "29463-7",
+              "display": "Body weight"
+            }
+          ],
+          "text": "Body weight"
+        },
+        "subject": {
+          "reference": "urn:uuid:bf87d958-c63d-575c-be78-d0c2ca747693"
+        },
+        "effectiveDateTime": "2025-03-18T15:10:00Z",
+        "valueQuantity": {
+          "value": 21.3,
+          "unit": "kg",
+          "system": "http://unitsofmeasure.org",
+          "code": "kg"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:33c5505c-b431-4643-89d5-0551cf1d59d1",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-leilani-weight-2025-09-09",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "29463-7",
+              "display": "Body weight"
+            }
+          ],
+          "text": "Body weight"
+        },
+        "subject": {
+          "reference": "urn:uuid:bf87d958-c63d-575c-be78-d0c2ca747693"
+        },
+        "effectiveDateTime": "2025-09-09T09:30:00Z",
+        "valueQuantity": {
+          "value": 22.4,
+          "unit": "kg",
+          "system": "http://unitsofmeasure.org",
+          "code": "kg"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:c82ea4aa-9c08-4bd3-915a-60c150dd3970",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-leilani-height-2023-11-14",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8302-2",
+              "display": "Body height"
+            }
+          ],
+          "text": "Body height"
+        },
+        "subject": {
+          "reference": "urn:uuid:bf87d958-c63d-575c-be78-d0c2ca747693"
+        },
+        "effectiveDateTime": "2023-11-14T14:20:00Z",
+        "valueQuantity": {
+          "value": 107.2,
+          "unit": "cm",
+          "system": "http://unitsofmeasure.org",
+          "code": "cm"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:812c3f5d-06f6-4a96-93d6-af1a2301081b",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-leilani-height-2024-03-05",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8302-2",
+              "display": "Body height"
+            }
+          ],
+          "text": "Body height"
+        },
+        "subject": {
+          "reference": "urn:uuid:bf87d958-c63d-575c-be78-d0c2ca747693"
+        },
+        "effectiveDateTime": "2024-03-05T10:40:00Z",
+        "valueQuantity": {
+          "value": 109.4,
+          "unit": "cm",
+          "system": "http://unitsofmeasure.org",
+          "code": "cm"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:3b87934c-b300-4626-88e7-c5fe00caaccc",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-leilani-height-2025-03-18",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8302-2",
+              "display": "Body height"
+            }
+          ],
+          "text": "Body height"
+        },
+        "subject": {
+          "reference": "urn:uuid:bf87d958-c63d-575c-be78-d0c2ca747693"
+        },
+        "effectiveDateTime": "2025-03-18T15:10:00Z",
+        "valueQuantity": {
+          "value": 115.1,
+          "unit": "cm",
+          "system": "http://unitsofmeasure.org",
+          "code": "cm"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:947a4ea5-8668-435e-906e-917c640168d8",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-leilani-height-2025-09-09",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8302-2",
+              "display": "Body height"
+            }
+          ],
+          "text": "Body height"
+        },
+        "subject": {
+          "reference": "urn:uuid:bf87d958-c63d-575c-be78-d0c2ca747693"
+        },
+        "effectiveDateTime": "2025-09-09T09:30:00Z",
+        "valueQuantity": {
+          "value": 118,
+          "unit": "cm",
+          "system": "http://unitsofmeasure.org",
+          "code": "cm"
+        }
+      },
+      "request": {
+        "method": "POST",
+        "url": "Observation"
+      }
     }
   ]
 }
