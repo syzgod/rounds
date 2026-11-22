@@ -85,6 +85,36 @@ describe('toTrendReading', () => {
         secondaryValue: null,
         flag: ObservationFlag.HIGH,
       },
+      reference: null,
+      secondaryReference: null,
+    });
+  });
+
+  it('reads the reference range when its unit matches', () => {
+    const withRange = (unit: string): Identified<Observation> => ({
+      ...quantity('o1', '4548-4', 'Hemoglobin A1c', '2024-01-01', 7.4, '%'),
+      referenceRange: [{ low: { value: 4, unit }, high: { value: 5.6, unit } }],
+    });
+    expect(toTrendReading(withRange('%'))?.reference).toEqual({
+      low: 4,
+      high: 5.6,
+    });
+    expect(toTrendReading(withRange('mg/dL'))?.reference).toBeNull();
+  });
+
+  it('reads blood pressure ranges from the components', () => {
+    const panel = bp('b1', '2024-01-09T14:35:00Z', 142, 91);
+    const [systolic, diastolic] = panel.component ?? [];
+    if (!systolic || !diastolic) throw new Error('fixture');
+    systolic.referenceRange = [
+      { low: { value: 90, unit: 'mmHg' }, high: { value: 120, unit: 'mmHg' } },
+    ];
+    diastolic.referenceRange = [
+      { low: { value: 60, unit: 'mmHg' }, high: { value: 80, unit: 'mmHg' } },
+    ];
+    expect(toTrendReading(panel)).toMatchObject({
+      reference: { low: 90, high: 120 },
+      secondaryReference: { low: 60, high: 80 },
     });
   });
 
@@ -163,6 +193,39 @@ describe('buildTrends', () => {
       'Observation/a2',
     ]);
     expect(trends[0]).toMatchObject({ code: '4548-4', unit: '%' });
+  });
+
+  it('takes the range from the latest point, null when absent', () => {
+    const ranged = (
+      id: string,
+      date: string,
+      high: number,
+    ): Identified<Observation> => ({
+      ...quantity(id, '4548-4', 'Hemoglobin A1c', date, 7, '%'),
+      referenceRange: [{ low: { value: 4, unit: '%' }, high: { value: high } }],
+    });
+    const [trend] = buildTrends(
+      'pat-1',
+      readings(
+        ranged('a1', '2023-01-01', 5),
+        ranged('a2', '2024-01-01', 5.6),
+      ),
+    );
+    expect(trend).toMatchObject({
+      referenceLow: 4,
+      referenceHigh: 5.6,
+      secondaryReferenceLow: null,
+      secondaryReferenceHigh: null,
+    });
+    const [plain] = buildTrends(
+      'pat-1',
+      readings(
+        quantity('w1', '29463-7', 'Body weight', '2023-03-14', 90, 'kg'),
+        quantity('w2', '29463-7', 'Body weight', '2023-09-14', 88, 'kg'),
+      ),
+    );
+    expect(plain?.referenceLow).toBeNull();
+    expect(plain?.referenceHigh).toBeNull();
   });
 
   it('includes blood pressure with secondaryValue', () => {

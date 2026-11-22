@@ -133,6 +133,26 @@ type Trend {
   """Measurements sorted oldest to newest; at least two."""
   points: [TrendPoint!]!
 
+  """
+  Upper bound of the normal range from the latest measurement (systolic for blood pressure), in the series unit; null when unknown.
+  """
+  referenceHigh: Float
+
+  """
+  Lower bound of the normal range from the latest measurement (systolic for blood pressure), in the series unit; null when unknown.
+  """
+  referenceLow: Float
+
+  """
+  Upper bound of the normal range of the diastolic pressure; null for other measurements or when unknown.
+  """
+  secondaryReferenceHigh: Float
+
+  """
+  Lower bound of the normal range of the diastolic pressure; null for other measurements or when unknown.
+  """
+  secondaryReferenceLow: Float
+
   """Human-readable name, e.g. "Hemoglobin A1c" or "Blood pressure"."""
   title: String!
 

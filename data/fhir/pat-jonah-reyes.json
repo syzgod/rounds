@@ -328,7 +328,34 @@
           "unit": "%",
           "system": "http://unitsofmeasure.org",
           "code": "%"
-        }
+        },
+        "referenceRange": [
+          {
+            "low": {
+              "value": 95,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            },
+            "high": {
+              "value": 100,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            }
+          }
+        ],
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "L",
+                "display": "Low"
+              }
+            ]
+          }
+        ]
       }
     },
     {
@@ -371,6 +398,22 @@
           "system": "http://unitsofmeasure.org",
           "code": "%"
         },
+        "referenceRange": [
+          {
+            "low": {
+              "value": 95,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            },
+            "high": {
+              "value": 100,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            }
+          }
+        ],
         "interpretation": [
           {
             "coding": [
@@ -424,6 +467,22 @@
           "system": "http://unitsofmeasure.org",
           "code": "/min"
         },
+        "referenceRange": [
+          {
+            "low": {
+              "value": 12,
+              "unit": "/min",
+              "system": "http://unitsofmeasure.org",
+              "code": "/min"
+            },
+            "high": {
+              "value": 20,
+              "unit": "/min",
+              "system": "http://unitsofmeasure.org",
+              "code": "/min"
+            }
+          }
+        ],
         "interpretation": [
           {
             "coding": [
@@ -476,7 +535,34 @@
           "unit": "%",
           "system": "http://unitsofmeasure.org",
           "code": "%"
-        }
+        },
+        "referenceRange": [
+          {
+            "low": {
+              "value": 95,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            },
+            "high": {
+              "value": 100,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            }
+          }
+        ],
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "L",
+                "display": "Low"
+              }
+            ]
+          }
+        ]
       }
     },
     {
@@ -516,6 +602,22 @@
           "system": "http://unitsofmeasure.org",
           "code": "%"
         },
+        "referenceRange": [
+          {
+            "low": {
+              "value": 95,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            },
+            "high": {
+              "value": 100,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            }
+          }
+        ],
         "interpretation": [
           {
             "coding": [
@@ -565,7 +667,34 @@
           "unit": "%",
           "system": "http://unitsofmeasure.org",
           "code": "%"
-        }
+        },
+        "referenceRange": [
+          {
+            "low": {
+              "value": 95,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            },
+            "high": {
+              "value": 100,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            }
+          }
+        ],
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ]
       }
     },
     {
@@ -604,7 +733,34 @@
           "unit": "%",
           "system": "http://unitsofmeasure.org",
           "code": "%"
-        }
+        },
+        "referenceRange": [
+          {
+            "low": {
+              "value": 95,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            },
+            "high": {
+              "value": 100,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            }
+          }
+        ],
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "L",
+                "display": "Low"
+              }
+            ]
+          }
+        ]
       }
     },
     {
@@ -644,6 +800,22 @@
           "system": "http://unitsofmeasure.org",
           "code": "%"
         },
+        "referenceRange": [
+          {
+            "low": {
+              "value": 95,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            },
+            "high": {
+              "value": 100,
+              "unit": "%",
+              "system": "http://unitsofmeasure.org",
+              "code": "%"
+            }
+          }
+        ],
         "interpretation": [
           {
             "coding": [
@@ -694,6 +866,22 @@
           "system": "http://unitsofmeasure.org",
           "code": "/min"
         },
+        "referenceRange": [
+          {
+            "low": {
+              "value": 12,
+              "unit": "/min",
+              "system": "http://unitsofmeasure.org",
+              "code": "/min"
+            },
+            "high": {
+              "value": 20,
+              "unit": "/min",
+              "system": "http://unitsofmeasure.org",
+              "code": "/min"
+            }
+          }
+        ],
         "interpretation": [
           {
             "coding": [
@@ -744,6 +932,22 @@
           "system": "http://unitsofmeasure.org",
           "code": "/min"
         },
+        "referenceRange": [
+          {
+            "low": {
+              "value": 12,
+              "unit": "/min",
+              "system": "http://unitsofmeasure.org",
+              "code": "/min"
+            },
+            "high": {
+              "value": 20,
+              "unit": "/min",
+              "system": "http://unitsofmeasure.org",
+              "code": "/min"
+            }
+          }
+        ],
         "interpretation": [
           {
             "coding": [
@@ -793,7 +997,34 @@
           "unit": "/min",
           "system": "http://unitsofmeasure.org",
           "code": "/min"
-        }
+        },
+        "referenceRange": [
+          {
+            "low": {
+              "value": 12,
+              "unit": "/min",
+              "system": "http://unitsofmeasure.org",
+              "code": "/min"
+            },
+            "high": {
+              "value": 20,
+              "unit": "/min",
+              "system": "http://unitsofmeasure.org",
+              "code": "/min"
+            }
+          }
+        ],
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ]
       }
     },
     {
@@ -832,7 +1063,34 @@
           "unit": "/min",
           "system": "http://unitsofmeasure.org",
           "code": "/min"
-        }
+        },
+        "referenceRange": [
+          {
+            "low": {
+              "value": 12,
+              "unit": "/min",
+              "system": "http://unitsofmeasure.org",
+              "code": "/min"
+            },
+            "high": {
+              "value": 20,
+              "unit": "/min",
+              "system": "http://unitsofmeasure.org",
+              "code": "/min"
+            }
+          }
+        ],
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ]
       }
     },
     {
@@ -872,6 +1130,22 @@
           "system": "http://unitsofmeasure.org",
           "code": "/min"
         },
+        "referenceRange": [
+          {
+            "low": {
+              "value": 12,
+              "unit": "/min",
+              "system": "http://unitsofmeasure.org",
+              "code": "/min"
+            },
+            "high": {
+              "value": 20,
+              "unit": "/min",
+              "system": "http://unitsofmeasure.org",
+              "code": "/min"
+            }
+          }
+        ],
         "interpretation": [
           {
             "coding": [

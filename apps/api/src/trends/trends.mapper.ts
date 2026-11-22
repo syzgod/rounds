@@ -2,6 +2,8 @@ import type {
   CodeableConcept,
   Observation,
   ObservationComponent,
+  Quantity,
+  Range,
 } from 'fhir/r4.js';
 import type { Identified } from '../fhir/fhir-guards.js';
 import { conceptLabel, observationFlag } from '../timeline/timeline.mapper.js';
@@ -12,24 +14,68 @@ const LOINC_SYSTOLIC = '8480-6';
 const LOINC_DIASTOLIC = '8462-4';
 const BLOOD_PRESSURE_UNIT = 'mmHg';
 
+/** Lower and upper bound of a normal range, either of which may be open. */
+export interface ReferenceBounds {
+  low: number | null;
+  high: number | null;
+}
+
 /** A numeric reading extracted from one Observation, before grouping. */
 export interface TrendReading {
   code: string;
   title: string;
   unit: string | null;
   point: TrendPointDto;
+  reference: ReferenceBounds | null;
+  secondaryReference: ReferenceBounds | null;
+}
+
+function quantityValue(
+  quantity: Quantity | undefined,
+  unit: string | null,
+): number | null {
+  const value = quantity?.value;
+  if (value === undefined || !Number.isFinite(value)) return null;
+  const quantityUnit = quantity?.unit?.trim() || quantity?.code?.trim();
+  if (quantityUnit && unit !== null && quantityUnit !== unit) {
+    // Also accept the UCUM code when the display unit differs.
+    if (quantity?.code?.trim() !== unit) return null;
+  }
+  return value;
+}
+
+/**
+ * The first reference range as bounds; null when absent, empty, or when its
+ * unit differs from the series unit.
+ */
+function referenceBounds(
+  ranges: readonly Range[] | undefined,
+  unit: string | null,
+): ReferenceBounds | null {
+  const range = ranges?.[0];
+  if (!range) return null;
+  const low = quantityValue(range.low, unit);
+  const high = quantityValue(range.high, unit);
+  if (low === null && high === null) return null;
+  return { low, high };
 }
 
 function loincCode(concept: CodeableConcept | undefined): string | undefined {
   return concept?.coding?.find((c) => c.system === LOINC && c.code)?.code;
 }
 
+function findComponent(
+  components: readonly ObservationComponent[] | undefined,
+  code: string,
+): ObservationComponent | undefined {
+  return components?.find((c) => loincCode(c.code) === code);
+}
+
 function componentValue(
   components: readonly ObservationComponent[] | undefined,
   code: string,
 ): number | undefined {
-  return components?.find((c) => loincCode(c.code) === code)?.valueQuantity
-    ?.value;
+  return findComponent(components, code)?.valueQuantity?.value;
 }
 
 /**
@@ -46,6 +92,8 @@ export function toTrendReading(
   let value: number | undefined;
   let secondaryValue: number | null = null;
   let unit: string | null = null;
+  let reference: ReferenceBounds | null = null;
+  let secondaryReference: ReferenceBounds | null = null;
 
   const systolic = componentValue(observation.component, LOINC_SYSTOLIC);
   const diastolic = componentValue(observation.component, LOINC_DIASTOLIC);
@@ -53,12 +101,21 @@ export function toTrendReading(
     value = systolic;
     secondaryValue = diastolic;
     unit = BLOOD_PRESSURE_UNIT;
+    reference = referenceBounds(
+      findComponent(observation.component, LOINC_SYSTOLIC)?.referenceRange,
+      unit,
+    );
+    secondaryReference = referenceBounds(
+      findComponent(observation.component, LOINC_DIASTOLIC)?.referenceRange,
+      unit,
+    );
   } else if (observation.valueQuantity?.value !== undefined) {
     value = observation.valueQuantity.value;
     unit =
       observation.valueQuantity.unit?.trim() ||
       observation.valueQuantity.code?.trim() ||
       null;
+    reference = referenceBounds(observation.referenceRange, unit);
   } else if (observation.valueInteger !== undefined) {
     value = observation.valueInteger;
   }
@@ -75,6 +132,8 @@ export function toTrendReading(
       secondaryValue,
       flag: observationFlag(observation),
     },
+    reference,
+    secondaryReference,
   };
 }
 
@@ -100,31 +159,37 @@ export function buildTrends(
   );
   const groups = new Map<
     string,
-    { first: TrendReading; points: TrendPointDto[] }
+    { first: TrendReading; readings: TrendReading[] }
   >();
   for (const reading of ordered) {
     const group = groups.get(reading.code);
     if (!group) {
-      groups.set(reading.code, { first: reading, points: [reading.point] });
+      groups.set(reading.code, { first: reading, readings: [reading] });
     } else if (reading.unit === group.first.unit) {
-      group.points.push(reading.point);
+      group.readings.push(reading);
     }
   }
 
   const trends: TrendDto[] = [];
-  for (const { first, points } of groups.values()) {
-    if (points.length < 2) continue;
+  for (const { first, readings: series } of groups.values()) {
+    if (series.length < 2) continue;
+    const latest = series[series.length - 1];
+    const points = series.map((r) => r.point);
     trends.push({
       id: `${patientId}/${first.code}`,
       code: first.code,
       title: first.title,
       unit: first.unit,
+      referenceLow: latest?.reference?.low ?? null,
+      referenceHigh: latest?.reference?.high ?? null,
+      secondaryReferenceLow: latest?.secondaryReference?.low ?? null,
+      secondaryReferenceHigh: latest?.secondaryReference?.high ?? null,
       points,
     });
   }
-  const latest = (trend: TrendDto): number =>
+  const latestTime = (trend: TrendDto): number =>
     timeOf(trend.points[trend.points.length - 1]?.date ?? '');
   return trends.sort(
-    (a, b) => latest(b) - latest(a) || a.title.localeCompare(b.title, 'en'),
+    (a, b) => latestTime(b) - latestTime(a) || a.title.localeCompare(b.title, 'en'),
   );
 }

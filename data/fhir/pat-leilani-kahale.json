@@ -395,6 +395,22 @@
           "system": "http://unitsofmeasure.org",
           "code": "Cel"
         },
+        "referenceRange": [
+          {
+            "low": {
+              "value": 36.1,
+              "unit": "°C",
+              "system": "http://unitsofmeasure.org",
+              "code": "Cel"
+            },
+            "high": {
+              "value": 37.2,
+              "unit": "°C",
+              "system": "http://unitsofmeasure.org",
+              "code": "Cel"
+            }
+          }
+        ],
         "interpretation": [
           {
             "coding": [
