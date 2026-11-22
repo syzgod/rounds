@@ -116,4 +116,24 @@ export const de: Messages = {
       unknown: "Unbekannt",
     },
   },
+  trends: {
+    title: "Messwerte",
+    loading: "Messwerte werden geladen",
+    loadError: "Messwerte konnten nicht geladen werden.",
+    systolic: "Systolisch",
+    diastolic: "Diastolisch",
+    names: {
+      "4548-4": "HbA1c",
+      "85354-9": "Blutdruck",
+      "29463-7": "Gewicht",
+      "8302-2": "Größe",
+      "59408-5": "Sauerstoffsättigung",
+      "9279-1": "Atemfrequenz",
+      "8867-4": "Herzfrequenz",
+      "19935-6": "Peak-Flow",
+      "72514-3": "Schmerzskala",
+    },
+    summary: (title, count, from, to, latest, range) =>
+      `${title}, ${count} Werte vom ${from} bis ${to}, zuletzt ${latest}, Bereich ${range}`,
+  },
 }

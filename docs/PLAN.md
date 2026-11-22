@@ -86,6 +86,7 @@ Proves the whole chain works: the web app (Apollo Client v4) calls the API (Nest
 - [x] Mapper specs cover grouping, blood pressure `secondaryValue`, the two-point minimum, unit-mismatch skipping, ordering and flags. `src/trends/trends.mapper.spec.ts`
 - [x] E2E: `pat-amelia-hartwell` returns the HbA1c, blood pressure and weight trends with ordered points. `test/trends.e2e-spec.ts`
 - [x] E2E: `pat-okafor-minimal` returns `trends: []`, and `pat-jonah-reyes` (Type/id bundle) returns SpO2 and respiratory rate. `test/trends.e2e-spec.ts`
+- [x] Web: one trend card per series with localized title, latest value, date and flag badge, a small keyboard-accessible line chart with a text alternative, and no section for patients without trends. `apps/web/src/components/patient-trends.test.tsx`
 
 ## M5: Tests + polish
 

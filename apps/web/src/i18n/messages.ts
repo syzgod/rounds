@@ -30,3 +30,10 @@ export function isKnownStatus(
 ): code is keyof Messages["timeline"]["status"] {
   return Object.prototype.hasOwnProperty.call(en.timeline.status, code)
 }
+
+/** LOINC codes that have a localized trend name; anything else falls back to the API title. */
+export function isKnownTrendCode(
+  code: string
+): code is keyof Messages["trends"]["names"] {
+  return Object.prototype.hasOwnProperty.call(en.trends.names, code)
+}

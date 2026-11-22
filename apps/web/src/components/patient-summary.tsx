@@ -2,6 +2,7 @@ import { useQuery } from "@apollo/client/react"
 import { AlertCircleIcon, RotateCwIcon, UserXIcon } from "lucide-react"
 
 import { PatientTimeline } from "@/components/patient-timeline"
+import { PatientTrends } from "@/components/patient-trends"
 
 import { Alert, AlertAction, AlertTitle } from "@/components/ui/alert"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -155,6 +156,7 @@ export function PatientSummaryPanel({
     <div className="flex flex-col gap-6">
       <PatientHeader patient={patient} />
       <Separator />
+      <PatientTrends patientId={patient.id} />
       <section className="flex flex-col gap-3">
         <h3 id="timeline-heading" className="text-sm font-medium">
           {t.timeline.title}

@@ -122,6 +122,33 @@ const messages = {
       unknown: "Unknown",
     },
   },
+  trends: {
+    title: "Trends",
+    loading: "Loading trends",
+    loadError: "Couldn't load trends.",
+    systolic: "Systolic",
+    diastolic: "Diastolic",
+    names: {
+      "4548-4": "HbA1c",
+      "85354-9": "Blood pressure",
+      "29463-7": "Weight",
+      "8302-2": "Height",
+      "59408-5": "Oxygen saturation",
+      "9279-1": "Respiratory rate",
+      "8867-4": "Heart rate",
+      "19935-6": "Peak flow",
+      "72514-3": "Pain score",
+    },
+    summary: (
+      title: string,
+      count: number,
+      from: string,
+      to: string,
+      latest: string,
+      range: string
+    ): string =>
+      `${title}, ${count} values from ${from} to ${to}, latest ${latest}, range ${range}`,
+  },
 }
 
 export type Messages = Widen<typeof messages>
