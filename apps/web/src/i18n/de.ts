@@ -44,6 +44,13 @@ export const de: Messages = {
     online: "Online",
     offline: "Offline",
   },
+  dataSource: {
+    label: "Datenquelle der Patienten",
+    local: "Demo-Patienten",
+    live: "Testserver",
+    liveNote:
+      "Synthetische Daten vom öffentlichen SMART-Testserver, ohne Normbereiche und Bewertungen.",
+  },
   directory: {
     navLabel: "Patientenverzeichnis",
     title: "Patienten",

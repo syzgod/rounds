@@ -31,6 +31,7 @@ paths:
 
 - One hand-written R4 `Bundle` per patient (`collection` or `transaction`), with real code systems (LOINC, SNOMED CT, HL7 categories) and stable, readable ids that tests assert on.
 - Only `FhirRepositoryService` reads files. Type parsed bundles as `Bundle<FhirResource>`.
+- The live source (`LiveFhirService`) is read-only. Services pick the source from the id (`live-` prefix, `src/fhir/data-source.ts`) and prefix every DTO id they return.
 - References come as `Patient/<id>` or `urn:uuid:<uuid>` (matches `fullUrl`, differs from `id`). Resolve both through `FhirRepositoryService.resolve`; unknown → `null`.
 
 ## Testing (Vitest, globals on)

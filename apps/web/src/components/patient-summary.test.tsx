@@ -159,7 +159,7 @@ describe("PatientSummaryPanel", () => {
     // Only the list query is mocked: any network request for patient(id) would error.
     const mocks = [
       {
-        request: { query: PATIENTS_QUERY },
+        request: { query: PATIENTS_QUERY, variables: { source: "LOCAL" } },
         result: { data: { patients: PATIENTS } },
       },
       trendsMock("pat-jonah-reyes"),
