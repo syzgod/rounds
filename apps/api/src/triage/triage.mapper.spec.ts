@@ -151,6 +151,16 @@ describe('abnormalResultCount', () => {
     ).toBe(1);
   });
 
+  it('skips a latest flagged reading that was acknowledged', () => {
+    const observations = [
+      observation('a1', '1', '2024-01-01', 'H'),
+      observation('b1', '2', '2024-01-01', 'L'),
+    ];
+    expect(
+      abnormalResultCount(observations, (id) => id === 'Observation/a1'),
+    ).toBe(1);
+  });
+
   it('returns 0 for no observations', () => {
     expect(abnormalResultCount([])).toBe(0);
   });

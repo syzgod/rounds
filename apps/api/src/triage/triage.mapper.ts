@@ -58,10 +58,12 @@ function measurementCode(concept: CodeableConcept | undefined): string | null {
 
 /**
  * Number of distinct observation codes whose latest dated Observation is
- * flagged high, low or abnormal. Undated Observations are ignored.
+ * flagged high, low or abnormal and not acknowledged. Undated Observations
+ * are ignored.
  */
 export function abnormalResultCount(
   observations: readonly Identified<Observation>[],
+  isAcknowledged: (eventId: string) => boolean = () => false,
 ): number {
   const latest = new Map<
     string,
@@ -80,7 +82,9 @@ export function abnormalResultCount(
     ) {
       latest.set(code, {
         time,
-        flagged: observationFlag(observation) !== null,
+        flagged:
+          observationFlag(observation) !== null &&
+          !isAcknowledged(`Observation/${observation.id}`),
         id: observation.id,
       });
     }

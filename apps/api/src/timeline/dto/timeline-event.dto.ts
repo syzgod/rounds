@@ -96,6 +96,20 @@ export class TimelineEventDto {
   @Field(() => String, {
     nullable: true,
     description:
+      'ISO date-time when a clinician acknowledged this flagged result; null when open.',
+  })
+  acknowledgedAt!: string | null;
+
+  @Field(() => String, {
+    nullable: true,
+    description:
+      'Initials of the clinician who acknowledged it (not verified).',
+  })
+  acknowledgedBy!: string | null;
+
+  @Field(() => String, {
+    nullable: true,
+    description:
       'The original FHIR resource as JSON. For the Resource Inspector only; do not read business fields from it.',
   })
   rawJson!: string | null;

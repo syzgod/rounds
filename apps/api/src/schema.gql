@@ -2,12 +2,43 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+"""What a clinician did to a result."""
+enum AuditAction {
+  ACKNOWLEDGED
+}
+
+"""
+One append-only audit record. In-memory for the demo: it resets when the API restarts.
+"""
+type AuditEntry {
+  action: AuditAction!
+
+  """ISO 8601 date-time of the action."""
+  at: String!
+
+  """Initials the clinician entered. Not verified (no accounts)."""
+  by: String!
+
+  """Sequential id, e.g. "audit-1"."""
+  id: ID!
+
+  """Timeline event id of the result, "Observation/<id>"."""
+  resourceId: ID!
+}
+
 """FHIR R4 administrative gender."""
 enum Gender {
   FEMALE
   MALE
   OTHER
   UNKNOWN
+}
+
+type Mutation {
+  """
+  Acknowledges a flagged result ("Observation/<id>") and writes an audit entry. Repeating it changes nothing.
+  """
+  acknowledgeResult(id: ID!, initials: String!): TimelineEvent
 }
 
 """Out-of-range result flag derived from Observation.interpretation."""
@@ -20,12 +51,15 @@ enum ObservationFlag {
 """A patient, flattened from a FHIR R4 Patient resource."""
 type Patient {
   """
-  Distinct measurements whose latest value is flagged high, low or abnormal.
+  Distinct measurements whose latest value is flagged high, low or abnormal and not yet acknowledged.
   """
   abnormalResultCount: Int!
 
   """Labels of active, recurring or relapsed Conditions, newest first."""
   activeDiagnoses: [String!]!
+
+  """Audit entries for this patient, newest first."""
+  auditLog: [AuditEntry!]!
 
   """FHIR date: YYYY, YYYY-MM or YYYY-MM-DD."""
   birthDate: String
@@ -74,6 +108,14 @@ type Query {
 One clinical event (Encounter, Condition or Observation), flattened for display.
 """
 type TimelineEvent {
+  """
+  ISO date-time when a clinician acknowledged this flagged result; null when open.
+  """
+  acknowledgedAt: String
+
+  """Initials of the clinician who acknowledged it (not verified)."""
+  acknowledgedBy: String
+
   """
   Encounter class, Condition category or Observation category, e.g. "Emergency" or "Vital signs".
   """

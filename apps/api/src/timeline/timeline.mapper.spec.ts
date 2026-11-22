@@ -77,6 +77,8 @@ describe('encounterToEvent', () => {
       categoryCode: 'EMER',
       status: 'finished',
       flag: null,
+      acknowledgedAt: null,
+      acknowledgedBy: null,
       rawJson: JSON.stringify(encounter),
     });
   });
@@ -227,6 +229,8 @@ describe('observationToEvent', () => {
       categoryCode: 'laboratory',
       status: 'final',
       flag: ObservationFlag.LOW,
+      acknowledgedAt: null,
+      acknowledgedBy: null,
       rawJson: JSON.stringify(glucose),
     });
   });
@@ -331,6 +335,8 @@ describe('compareTimelineEvents', () => {
     categoryCode: null,
     status: null,
     flag: null,
+    acknowledgedAt: null,
+    acknowledgedBy: null,
     rawJson: null,
   });
 
