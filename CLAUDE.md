@@ -6,7 +6,7 @@ Rounds is a 3-day interview MVP: a read-only explorer for synthetic FHIR R4 pati
 
 The users are clinicians doing fast-paced work. Code and its names are for developers; everything a user sees is for clinicians.
 
-- **Wording:** use clinical words, not FHIR or technical ones. Write "Visits", not "Encounters". Never show "API", "GraphQL", "fixtures" or a raw resource id, except in the Inspector.
+- **Wording:** use the words clinicians see in their EHR, in English and German (German users first). Never show "API", "GraphQL", "fixtures" or a raw resource id, except in the Inspector.
 - **Minimal UI:** each view does one obvious thing with the fewest controls. The most-used information shows first, without clicks. Leave out anything that doesn't earn its place.
 - **Errors:** messages say what happened and what to do next, such as "Retry", in one line.
 
