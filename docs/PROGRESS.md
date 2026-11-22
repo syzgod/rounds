@@ -24,7 +24,7 @@ Kept short. Read this at the start of a session and update it at the end. Milest
 
 ## Start here (next session)
 
-1. **Split the main JS chunk** (cmdk, dialog). Error boundaries (#24) and the polish PR are done.
+1. **Release:** merge `develop` into `main` (deploys to Render).
 2. **Visual check with the Playwright MCP** (`.mcp.json`), running `pnpm dev` locally or using the live demo. No one has looked at the UI in a real browser yet. Check, in light and dark mode, German and English, and at narrow and wide widths:
    - **Charts:**
      - Do the min/max labels line up when the normal band widens the y-range?
@@ -45,11 +45,11 @@ Kept short. Read this at the start of a session and update it at the end. Milest
 
 ## Bugs found (open)
 
-- The main JS chunk is 649 kB (205 kB gzipped), and the build warns about it. Recharts is already split out. Next candidates for splitting are cmdk and the dialog.
 - Agent worktree isolation fails on Windows (`d:` vs `D:`). **Workaround:** manual `git worktree add` to `D:/Developer/Projects/rounds-wt-*`.
 
 ## Fixed
 
+- Bundle: libraries split into react/apollo/ui chunks; app code is 58 kB. No size warning.
 - Polish: "Sep" not "Sept"; theme toggle has a text label; dialog close label is translated; header tagline hidden on phones (it overflowed).
 - Error boundaries around the chart strip and the app (#24).
 - A stacked PR merged into its base branch, not `main` (#4). Auto-delete of merged branches is now on.
