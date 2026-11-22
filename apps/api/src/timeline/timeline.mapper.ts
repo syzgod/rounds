@@ -153,6 +153,7 @@ export function encounterToEvent(
       sentenceCase(encounter.class?.display ?? null),
     status: encounter.status ?? null,
     flag: null,
+    rawJson: JSON.stringify(encounter),
   };
 }
 
@@ -169,6 +170,7 @@ export function conditionToEvent(
     category: sentenceCase(conceptLabel(condition.category?.[0])),
     status: firstCoding(condition.clinicalStatus)?.code ?? null,
     flag: null,
+    rawJson: JSON.stringify(condition),
   };
 }
 
@@ -185,6 +187,7 @@ export function observationToEvent(
     category: sentenceCase(conceptLabel(observation.category?.[0])),
     status: observation.status,
     flag: observationFlag(observation),
+    rawJson: JSON.stringify(observation),
   };
 }
 

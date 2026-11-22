@@ -33,6 +33,11 @@ type Patient {
   mrn: String
 
   """
+  The original FHIR resource as JSON. For the Resource Inspector only; do not read business fields from it.
+  """
+  rawJson: String
+
+  """
   The patient's Encounters, Conditions and Observations, newest first; undated events last.
   """
   timeline: [TimelineEvent!]!
@@ -47,6 +52,11 @@ type Query {
 
   """All patients, sorted by display name."""
   patients: [Patient!]!
+
+  """
+  One timeline event by "<ResourceType>/<id>"; null when no such event exists.
+  """
+  timelineEvent(id: ID!): TimelineEvent
 }
 
 """
@@ -77,6 +87,11 @@ type TimelineEvent {
   """
   id: ID!
   kind: TimelineEventKind!
+
+  """
+  The original FHIR resource as JSON. For the Resource Inspector only; do not read business fields from it.
+  """
+  rawJson: String
 
   """
   FHIR status code: Encounter.status, Condition clinical status, Observation.status.

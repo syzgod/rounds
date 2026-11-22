@@ -62,5 +62,6 @@ export function toPatientDto(patient: Identified<Patient>): PatientDto {
     gender: patient.gender ? GENDER_BY_CODE[patient.gender] : null,
     birthDate: patient.birthDate ?? null,
     mrn: findMrn(patient.identifier),
+    rawJson: JSON.stringify(patient),
   };
 }

@@ -40,4 +40,11 @@ export class PatientDto {
     description: 'Medical record number (identifier of type MR).',
   })
   mrn!: string | null;
+
+  @Field(() => String, {
+    nullable: true,
+    description:
+      'The original FHIR resource as JSON. For the Resource Inspector only; do not read business fields from it.',
+  })
+  rawJson!: string | null;
 }

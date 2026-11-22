@@ -74,6 +74,7 @@ describe('encounterToEvent', () => {
       category: 'Emergency',
       status: 'finished',
       flag: null,
+      rawJson: JSON.stringify(encounter),
     });
   });
 
@@ -195,6 +196,7 @@ describe('observationToEvent', () => {
       category: 'Laboratory',
       status: 'final',
       flag: ObservationFlag.LOW,
+      rawJson: JSON.stringify(glucose),
     });
   });
 
@@ -252,6 +254,7 @@ describe('compareTimelineEvents', () => {
     category: null,
     status: null,
     flag: null,
+    rawJson: null,
   });
 
   it('sorts newest first, partial dates included, with undated events last', () => {
@@ -287,5 +290,19 @@ describe('compareTimelineEvents', () => {
       'Observation/a',
       'Observation/b',
     ]);
+  });
+});
+
+describe('rawJson', () => {
+  it('carries the original Condition resource as JSON', () => {
+    const condition: Identified<Condition> = {
+      resourceType: 'Condition',
+      id: 'cond-raw',
+      subject: { reference: 'Patient/pat-1' },
+      code: { text: 'Hypertension' },
+    };
+    expect(JSON.parse(conditionToEvent(condition).rawJson ?? '')).toEqual(
+      condition,
+    );
   });
 });
