@@ -149,6 +149,22 @@
     /* Native UI (scrollbars, form controls, canvas) follows the theme. The
        ThemeProvider sets .light/.dark on <html>; before that, follow the OS. */
     color-scheme: light dark;
+    /* Root size grows with the screen; everything in rem (text, spacing)
+       scales with it. --text-scale is the user's choice (TextSizeSwitch). */
+    --base-size: 100%;
+    font-size: calc(var(--base-size) * var(--text-scale, 1));
+    @media (width >= 48rem) {
+      --base-size: 112.5%;
+    }
+    @media (width >= 80rem) {
+      --base-size: 125%;
+    }
+  }
+  html[data-text-size="large"] {
+    --text-scale: 1.125;
+  }
+  html[data-text-size="larger"] {
+    --text-scale: 1.25;
   }
   html.light {
     color-scheme: light;

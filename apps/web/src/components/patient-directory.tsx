@@ -182,16 +182,17 @@ export function PatientDirectory({
                       {initials(patient.displayName)}
                     </AvatarFallback>
                   </Avatar>
+                  {/* Wrap, never truncate: name and MRN identify the patient. */}
                   <span className="flex min-w-0 flex-col">
-                    <span className="truncate font-medium">
+                    <span className="font-medium break-words">
                       {patient.displayName}
                     </span>
-                    <span className="truncate text-xs text-muted-foreground">
+                    <span className="text-xs break-words text-muted-foreground">
                       {patientMeta(patient, t)}
                     </span>
                   </span>
                   {patient.abnormalResultCount > 0 ? (
-                    <Badge variant="warning" className="ml-auto">
+                    <Badge variant="warning" className="ml-auto shrink-0">
                       <span aria-hidden="true">
                         {t.triage.abnormalShort(patient.abnormalResultCount)}
                       </span>

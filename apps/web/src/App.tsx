@@ -61,9 +61,9 @@ export function App() {
         {t.app.skipLink}
       </a>
       <AppHeader />
-      <div className="grid min-h-0 flex-1 grid-rows-[minmax(0,16rem)_1fr] md:grid-cols-[20rem_1fr] md:grid-rows-1">
+      <div className="grid min-h-0 flex-1 grid-rows-[minmax(0,16rem)_1fr] lg:grid-cols-[20rem_1fr] lg:grid-rows-1 xl:grid-cols-[24rem_1fr]">
         {/* Plain wrapper: the <nav> inside is the landmark (an <aside> would add a second one). */}
-        <div className="flex min-h-0 flex-col border-b bg-sidebar text-sidebar-foreground md:border-r md:border-b-0">
+        <div className="flex min-h-0 flex-col border-b bg-sidebar text-sidebar-foreground lg:border-r lg:border-b-0">
           <PatientDirectory selectedId={selectedId} onSelect={setSelectedId} />
         </div>
         <main

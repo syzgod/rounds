@@ -2,6 +2,7 @@ import { HeartPulseIcon } from "lucide-react"
 
 import { LocaleSwitch } from "@/components/locale-switch"
 import { HealthStatus } from "@/components/health-status"
+import { TextSizeSwitch } from "@/components/text-size-switch"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { useI18n } from "@/i18n/locale-provider"
 
@@ -25,6 +26,10 @@ export function AppHeader() {
       </div>
       <div className="flex items-center gap-2">
         <HealthStatus />
+        {/* Phones have pinch zoom, and the header has no room for it there. */}
+        <div className="hidden sm:block">
+          <TextSizeSwitch />
+        </div>
         <LocaleSwitch />
         <ThemeToggle />
       </div>
