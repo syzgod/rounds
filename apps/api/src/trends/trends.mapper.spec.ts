@@ -206,10 +206,7 @@ describe('buildTrends', () => {
     });
     const [trend] = buildTrends(
       'pat-1',
-      readings(
-        ranged('a1', '2023-01-01', 5),
-        ranged('a2', '2024-01-01', 5.6),
-      ),
+      readings(ranged('a1', '2023-01-01', 5), ranged('a2', '2024-01-01', 5.6)),
     );
     expect(trend).toMatchObject({
       referenceLow: 4,

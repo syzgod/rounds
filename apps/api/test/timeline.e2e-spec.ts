@@ -7,7 +7,7 @@ import { AppModule } from './../src/app.module.js';
 const TIMELINE_QUERY = `query Timeline($id: ID!) {
   patient(id: $id) {
     id
-    timeline { id kind date endDate title detail category status flag }
+    timeline { id kind date endDate title detail category code categoryCode status flag }
   }
 }`;
 
@@ -17,6 +17,8 @@ type TimelineEvent = {
   date: string | null;
   title: string;
   detail: string | null;
+  code: string | null;
+  categoryCode: string | null;
   flag: string | null;
 };
 
@@ -83,8 +85,14 @@ describe('Patient timeline GraphQL (e2e)', () => {
       {
         detail: '52 mg/dL',
         flag: 'LOW',
+        code: '2339-0',
+        categoryCode: 'laboratory',
       },
     );
+    expect(byId.get('Encounter/enc-amelia-2025-02-03')).toMatchObject({
+      code: null,
+      categoryCode: 'EMER',
+    });
     expect(byId.get('Observation/obs-amelia-bp-2024-01-09')?.detail).toBe(
       '142/91 mmHg',
     );
