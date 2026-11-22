@@ -17,6 +17,10 @@ export type TimelineEvent = {
   title: string
   detail: string | null
   category: string | null
+  /** LOINC code of an Observation; translates `title`. */
+  code: string | null
+  /** Code behind `category` (Encounter class or category code); translates it. */
+  categoryCode: string | null
   status: string | null
   flag: ObservationFlag | null
 }
@@ -30,6 +34,8 @@ export const TIMELINE_EVENT_FIELDS = gql`
     title
     detail
     category
+    code
+    categoryCode
     status
     flag
   }

@@ -105,6 +105,24 @@ const messages = {
     entryCount: (n: number): string => (n === 1 ? "1 entry" : `${n} entries`),
     entryCountFiltered: (shown: number, total: number): string =>
       `${shown} of ${total} entries`,
+    /** By code: Observation and Condition categories, Encounter classes. */
+    category: {
+      laboratory: "Laboratory",
+      "vital-signs": "Vital signs",
+      "social-history": "Social history",
+      survey: "Survey",
+      exam: "Exam",
+      imaging: "Imaging",
+      "problem-list-item": "Problem list",
+      "encounter-diagnosis": "Encounter diagnosis",
+      AMB: "Outpatient",
+      EMER: "Emergency",
+      IMP: "Inpatient",
+      ACUTE: "Inpatient",
+      HH: "Home visit",
+      VR: "Virtual",
+      OBSENC: "Observation stay",
+    },
     kind: {
       ENCOUNTER: "Encounter",
       CONDITION: "Diagnosis",
@@ -142,6 +160,22 @@ const messages = {
       unknown: "Unknown",
     },
   },
+  /** Measurement names by LOINC code (trend cards and timeline). */
+  measurements: {
+    "4548-4": "HbA1c",
+    "85354-9": "Blood pressure",
+    "29463-7": "Weight",
+    "8302-2": "Height",
+    "59408-5": "Oxygen saturation",
+    "9279-1": "Respiratory rate",
+    "8867-4": "Heart rate",
+    "19935-6": "Peak flow",
+    "72514-3": "Pain score",
+    "39156-5": "BMI",
+    "2339-0": "Blood glucose",
+    "8310-5": "Body temperature",
+    "72166-2": "Smoking status",
+  },
   trends: {
     title: "Trends",
     loading: "Loading trends",
@@ -162,17 +196,6 @@ const messages = {
     show: "Show",
     hidden: (n: number): string =>
       n === 1 ? "1 measurement hidden" : `${n} measurements hidden`,
-    names: {
-      "4548-4": "HbA1c",
-      "85354-9": "Blood pressure",
-      "29463-7": "Weight",
-      "8302-2": "Height",
-      "59408-5": "Oxygen saturation",
-      "9279-1": "Respiratory rate",
-      "8867-4": "Heart rate",
-      "19935-6": "Peak flow",
-      "72514-3": "Pain score",
-    },
     summary: (
       title: string,
       count: number,

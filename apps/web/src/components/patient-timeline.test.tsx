@@ -18,6 +18,8 @@ function event(
     title: partial.id,
     detail: null,
     category: null,
+    code: null,
+    categoryCode: null,
     status: null,
     flag: null,
     ...partial,
@@ -33,6 +35,8 @@ const EVENTS: TimelineEvent[] = [
     title: "Blood glucose",
     detail: "52 mg/dL",
     category: "Laboratory",
+    code: "2339-0",
+    categoryCode: "laboratory",
     status: "final",
     flag: "LOW",
   }),
@@ -43,6 +47,7 @@ const EVENTS: TimelineEvent[] = [
     endDate: "2025-02-04T01:30:00Z",
     title: "Emergency visit",
     category: "Emergency",
+    categoryCode: "EMER",
     status: "finished",
   }),
   event({
@@ -52,6 +57,7 @@ const EVENTS: TimelineEvent[] = [
     endDate: "2025-02-04T01:30:00Z",
     title: "Hypoglycemia",
     category: "Encounter diagnosis",
+    categoryCode: "encounter-diagnosis",
     status: "resolved",
   }),
   event({
@@ -61,6 +67,8 @@ const EVENTS: TimelineEvent[] = [
     title: "Blood pressure",
     detail: "142/91 mmHg",
     category: "Vital signs",
+    code: "85354-9",
+    categoryCode: "vital-signs",
     status: "final",
   }),
   event({
@@ -83,9 +91,12 @@ function timelineMock(
   }
 }
 
-function renderTimeline(mocks: ReadonlyArray<MockLink.MockedResponse>) {
+function renderTimeline(
+  mocks: ReadonlyArray<MockLink.MockedResponse>,
+  locale: "en" | "de" = "en"
+) {
   render(
-    <TestLocale>
+    <TestLocale locale={locale}>
       <MockedProvider mocks={mocks}>
         <PatientTimeline patientId="pat-amelia-hartwell" />
       </MockedProvider>
@@ -133,6 +144,21 @@ describe("PatientTimeline", () => {
     expect(
       screen.getByText("Type 2 diabetes mellitus").closest("li")
     ).toHaveTextContent("Active")
+  })
+
+  it("translates coded names and categories, and keeps recorded text", async () => {
+    renderTimeline([timelineMock("pat-amelia-hartwell", EVENTS)], "de")
+
+    expect(await screen.findByText("Blutzucker")).toBeInTheDocument()
+    expect(screen.getByText("Blutdruck")).toBeInTheDocument()
+    expect(screen.getByText(/Labor ·/)).toBeInTheDocument()
+    expect(screen.getByText(/Notfall ·/)).toBeInTheDocument()
+    expect(screen.getByText(/Behandlungsdiagnose/)).toBeInTheDocument()
+    // Free text and SNOMED diagnoses stay as recorded.
+    expect(screen.getByText("Emergency visit")).toBeInTheDocument()
+    expect(screen.getByText("Hypoglycemia")).toBeInTheDocument()
+    // No code: the API's category is shown.
+    expect(screen.getByText(/Problem list item/)).toBeInTheDocument()
   })
 
   it("filters by type with the keyboard", async () => {

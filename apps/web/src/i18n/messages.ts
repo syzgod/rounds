@@ -31,9 +31,16 @@ export function isKnownStatus(
   return Object.prototype.hasOwnProperty.call(en.timeline.status, code)
 }
 
-/** LOINC codes that have a localized trend name; anything else falls back to the API title. */
-export function isKnownTrendCode(
+/** LOINC codes that have a localized name; anything else falls back to the API title. */
+export function isKnownMeasurementCode(
   code: string
-): code is keyof Messages["trends"]["names"] {
-  return Object.prototype.hasOwnProperty.call(en.trends.names, code)
+): code is keyof Messages["measurements"] {
+  return Object.prototype.hasOwnProperty.call(en.measurements, code)
+}
+
+/** Category and Encounter class codes that have a localized label. */
+export function isKnownCategoryCode(
+  code: string
+): code is keyof Messages["timeline"]["category"] {
+  return Object.prototype.hasOwnProperty.call(en.timeline.category, code)
 }
