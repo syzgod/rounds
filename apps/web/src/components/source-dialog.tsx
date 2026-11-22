@@ -25,8 +25,7 @@ import {
 import { useI18n } from "@/i18n/locale-provider"
 
 export type SourceTarget =
-  | { kind: "patient"; id: string }
-  | { kind: "timelineEvent"; id: string }
+  { kind: "patient"; id: string } | { kind: "timelineEvent"; id: string }
 
 type SourceDialogProps = {
   target: SourceTarget
@@ -195,7 +194,11 @@ export function SourceDialog({
       >
         {label}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-2xl" showCloseButton>
+      <DialogContent
+        className="sm:max-w-2xl"
+        showCloseButton
+        closeLabel={t.common.close}
+      >
         <DialogHeader>
           <DialogTitle>{t.source.title}</DialogTitle>
           <DialogDescription>

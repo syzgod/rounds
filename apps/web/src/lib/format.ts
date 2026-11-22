@@ -4,7 +4,10 @@ import type { Locale, Messages } from "@/i18n/messages"
 /** Intl locales: en-GB gives "10 Dec 1985", de-DE gives "10.12.1985"; both use 24h time. */
 const INTL_LOCALE: Record<Locale, string> = { en: "en-GB", de: "de-DE" }
 
-export function formatGender(gender: Gender | null, t: Messages): string | null {
+export function formatGender(
+  gender: Gender | null,
+  t: Messages
+): string | null {
   return gender ? t.sex[gender] : null
 }
 
@@ -75,7 +78,13 @@ export function formatFhirDate(
     month: numeric ? "2-digit" : "short",
     ...(parts.day ? { day: numeric ? "2-digit" : "numeric" } : {}),
   }
-  return new Intl.DateTimeFormat(INTL_LOCALE[locale], options).format(date)
+  // en-GB writes September as "Sept"; clinical records use three letters.
+  return new Intl.DateTimeFormat(INTL_LOCALE[locale], options)
+    .formatToParts(date)
+    .map((part) =>
+      part.type === "month" && part.value === "Sept" ? "Sep" : part.value
+    )
+    .join("")
 }
 
 /** Up to two initials from the first and last word of a name. */
@@ -106,7 +115,10 @@ export function dayKey(value: string | null): string | null {
 }
 
 /** Local 24h "HH:MM" for a FHIR dateTime; null for date-only values. */
-export function formatTime(value: string | null, locale: Locale): string | null {
+export function formatTime(
+  value: string | null,
+  locale: Locale
+): string | null {
   const date = value ? localDate(value) : null
   if (!date) return null
   return new Intl.DateTimeFormat(INTL_LOCALE[locale], {

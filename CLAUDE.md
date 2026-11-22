@@ -43,6 +43,7 @@ Run these from the repo root. Each one delegates to the apps with `pnpm --filter
 - The main chat is the orchestrator. Delegate implementation, research and reviews to subagents, and choose `model` and `effort` per task: `haiku`/low for mechanical edits, `sonnet`/medium for well-specified features, `opus`/high for plans and tricky debugging.
 - When a task is vague, have a stronger model write the plan, then let a cheaper model execute it as a subagent.
 - Prefer scripts, MCP tools and skills to manual, multi-step token-heavy work.
+- Take Playwright screenshots only to check a visible UI change (layout, colour, overflow). Screenshots cost many tokens. For other checks, use `browser_snapshot` or tests.
 - Now and then, trim the `.md` files the agents load (`CLAUDE.md`, `.claude/rules/**`) to cut tokens.
 - **Branches:** start feature branches from `develop` and open PRs into `develop`. Only `main` deploys to Render. A release is a PR from `develop` into `main`, made when the user asks.
 - Keep PRs small, with a short description: a summary of 1–3 bullets and how it was tested.

@@ -266,7 +266,11 @@ export function TrendDetailDialog({
   return (
     <Dialog>
       <DialogTrigger render={trigger}>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-2xl" showCloseButton>
+      <DialogContent
+        className="sm:max-w-2xl"
+        showCloseButton
+        closeLabel={t.common.close}
+      >
         <DialogHeader>
           <DialogTitle>{trendTitle(trend, t)}</DialogTitle>
           <DialogDescription>
