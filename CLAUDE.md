@@ -7,7 +7,7 @@ Rounds is a 3-day interview MVP: a read-only explorer for synthetic FHIR R4 pati
 The users are clinicians doing fast-paced work. Code and its names are for developers; everything a user sees is for clinicians.
 
 - **Wording:** use the words clinicians see in their EHR, in English and German (German users first). Never show "API", "GraphQL", "fixtures" or a raw resource id, except in the Inspector.
-- **Minimal UI:** each view does one obvious thing with the fewest controls. The most-used information shows first, without clicks. Leave out anything that doesn't earn its place.
+- **Minimal UI:** some users have never used an EHR. Each view does one obvious thing with the fewest controls, and controls carry text labels, not icons alone. The most-used information shows first, without clicks. Leave out anything that doesn't earn its place.
 - **Errors:** messages say what happened and what to do next, such as "Retry", in one line.
 
 ## Commands
@@ -33,6 +33,7 @@ Run these from the repo root. Each one delegates to the apps with `pnpm --filter
 
 ## Agent workflow (token efficiency)
 
+- At the start of a session, read [docs/PROGRESS.md](docs/PROGRESS.md). At the end, update it with what was done, what comes next, bugs, fixes and suggestions.
 - The main chat is the orchestrator. Delegate implementation, research and reviews to subagents, and choose `model` and `effort` per task: `haiku`/low for mechanical edits, `sonnet`/medium for well-specified features, `opus`/high for plans and tricky debugging.
 - When a task is vague, have a stronger model write the plan, then let a cheaper model execute it as a subagent.
 - Prefer scripts, MCP tools and skills to manual, multi-step token-heavy work.
