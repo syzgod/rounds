@@ -19,6 +19,14 @@ enum ObservationFlag {
 
 """A patient, flattened from a FHIR R4 Patient resource."""
 type Patient {
+  """
+  Distinct measurements whose latest value is flagged high, low or abnormal.
+  """
+  abnormalResultCount: Int!
+
+  """Labels of active, recurring or relapsed Conditions, newest first."""
+  activeDiagnoses: [String!]!
+
   """FHIR date: YYYY, YYYY-MM or YYYY-MM-DD."""
   birthDate: String
 
