@@ -51,7 +51,11 @@ test("clinician demo works by keyboard alone, in German", async ({ page }) => {
   await expect(diagnoses.locator("xpath=following-sibling::p")).not.toHaveText(
     "Keine"
   )
-  const trends = page.getByRole("region", { name: "Messwerte" })
+  // Overview tab: open results and the pinned charts.
+  await expect(
+    page.getByRole("region", { name: "Offene Befunde" })
+  ).toBeVisible()
+  const trends = page.getByRole("region", { name: "Angeheftete Messwerte" })
   await expect(trends).toBeVisible()
   await expect(trends.getByText("HbA1c").first()).toBeVisible()
   await expect(trends.getByText("Blutdruck").first()).toBeVisible()
@@ -68,6 +72,15 @@ test("clinician demo works by keyboard alone, in German", async ({ page }) => {
   await page.keyboard.press("Escape")
   await expect(detail).toBeHidden()
   await expect(details).toBeFocused()
+
+  // Tabs: arrow keys move between tabs, Enter opens one.
+  const overviewTab = page.getByRole("tab", { name: "Übersicht" })
+  await tabTo(page, overviewTab)
+  await page.keyboard.press("ArrowRight")
+  const timelineTab = page.getByRole("tab", { name: /^Verlauf/ })
+  await expect(timelineTab).toBeFocused()
+  await page.keyboard.press("Enter")
+  await expect(timelineTab).toHaveAttribute("aria-selected", "true")
 
   // Timeline filter: arrow keys + Space.
   const count = page.getByRole("status").filter({ hasText: /Einträge/ })
@@ -112,7 +125,10 @@ test("minimal patient shows an empty record without trends", async ({
   await expect(
     page.getByRole("heading", { name: "Aktive Diagnosen" })
   ).toBeVisible()
+  await expect(page.getByText("Keine offenen Befunde")).toBeVisible()
+  await expect(
+    page.getByRole("region", { name: "Angeheftete Messwerte" })
+  ).toHaveCount(0)
+  await page.getByRole("tab", { name: /^Verlauf/ }).click()
   await expect(page.getByText("Keine Einträge")).toBeVisible()
-  await expect(page.getByRole("region", { name: "Messwerte" })).toHaveCount(0)
-  await expect(page.getByRole("heading", { name: "Messwerte" })).toHaveCount(0)
 })

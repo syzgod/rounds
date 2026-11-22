@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { DataSource, sourceOf } from '../fhir/data-source.js';
 import { isObservation } from '../fhir/fhir-guards.js';
 import { FhirRepositoryService } from '../fhir/fhir-repository.service.js';
 import { observationFlag } from '../timeline/timeline.mapper.js';
@@ -37,6 +38,9 @@ export class AcknowledgementService {
     const by = initials.trim();
     if (!INITIALS.test(by)) {
       throw new BadRequestException('Initials must be 1–8 letters.');
+    }
+    if (sourceOf(resourceId) === DataSource.LIVE) {
+      throw new BadRequestException('Live data is read-only.');
     }
     const resource = this.fhir.resolve({ reference: resourceId });
     if (!resource || !isObservation(resource)) {

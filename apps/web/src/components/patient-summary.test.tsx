@@ -90,9 +90,7 @@ describe("PatientSummaryPanel", () => {
   it("lists active diagnoses in the header, or 'None'", async () => {
     const amelia = fixture("pat-amelia-hartwell")
     renderSummary(amelia.id, [patientMock(amelia.id, amelia)])
-    expect(
-      await screen.findByText("Active diagnoses")
-    ).toBeInTheDocument()
+    expect(await screen.findByText("Active diagnoses")).toBeInTheDocument()
     expect(
       screen.getByText("Type 2 diabetes mellitus, Essential hypertension")
     ).toBeInTheDocument()
@@ -161,7 +159,7 @@ describe("PatientSummaryPanel", () => {
     // Only the list query is mocked: any network request for patient(id) would error.
     const mocks = [
       {
-        request: { query: PATIENTS_QUERY },
+        request: { query: PATIENTS_QUERY, variables: { source: "LOCAL" } },
         result: { data: { patients: PATIENTS } },
       },
       trendsMock("pat-jonah-reyes"),

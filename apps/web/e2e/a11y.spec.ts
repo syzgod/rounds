@@ -34,9 +34,11 @@ async function openAmelia(page: Page, scheme: Scheme) {
   await expect(
     page.getByRole("heading", { name: "Amelia Rose Hartwell" })
   ).toBeVisible()
-  await expect(page.getByRole("region", { name: "Messwerte" })).toBeVisible()
   await expect(
-    page.getByRole("status").filter({ hasText: /Einträge$/ })
+    page.getByRole("region", { name: "Angeheftete Messwerte" })
+  ).toBeVisible()
+  await expect(
+    page.getByRole("region", { name: "Offene Befunde" })
   ).toBeVisible()
   await expect(page.locator("html")).toHaveClass(new RegExp(scheme))
 }
@@ -50,6 +52,20 @@ for (const scheme of SCHEMES) {
 
     test("Amelia's record", async ({ page }) => {
       await openAmelia(page, scheme)
+      await scan(page)
+    })
+
+    test("Verlauf and Messwerte tabs", async ({ page }) => {
+      await openAmelia(page, scheme)
+      await page.getByRole("tab", { name: /^Verlauf/ }).click()
+      await expect(
+        page.getByRole("status").filter({ hasText: /Einträge$/ })
+      ).toBeVisible()
+      await scan(page)
+      await page.getByRole("tab", { name: /^Messwerte/ }).click()
+      await expect(
+        page.getByRole("searchbox", { name: "Messwerte durchsuchen" })
+      ).toBeVisible()
       await scan(page)
     })
 

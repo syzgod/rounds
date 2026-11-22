@@ -38,6 +38,8 @@ Kept short. Read this at the start of a session and update it at the end. Milest
 
 ## Fixed
 
+- Record tabs for large records: Übersicht (open results with dates, pinned charts), Verlauf (timeline search over shown and recorded names), Messwerte (all charts, search, pin per LOINC code). The chart show/hide toggle is gone.
+- Live FHIR source: switch "Demo-Patienten | Testserver" reads 8 Synthea patients from the SMART sandbox (read-only, 10-min cache, `live-` ids). The sandbox has no flags or normal ranges, so live badges stay empty.
 - Acknowledge open results (user-approved write): initials asked once, in-memory store with an append-only audit log (`Patient.auditLog`), badge counts only open results, button only on the latest flagged reading per measurement.
 - Agent docs trimmed: CLAUDE.md + rules 2,191 → 1,291 words, one source per rule, ASD-STE100 style.
 - GraphQL Code Generator: web operation types come from `schema.gql` (`pnpm --filter web codegen`, `typescript-operations` only, no runtime code). CI fails when they are stale.

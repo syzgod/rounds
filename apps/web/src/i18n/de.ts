@@ -44,6 +44,13 @@ export const de: Messages = {
     online: "Online",
     offline: "Offline",
   },
+  dataSource: {
+    label: "Datenquelle der Patienten",
+    local: "Demo-Patienten",
+    live: "Testserver",
+    liveNote:
+      "Synthetische Daten vom öffentlichen SMART-Testserver, ohne Normbereiche und Bewertungen.",
+  },
   directory: {
     navLabel: "Patientenverzeichnis",
     title: "Patienten",
@@ -90,6 +97,13 @@ export const de: Messages = {
     OTHER: "D",
     UNKNOWN: "U",
   },
+  record: {
+    tabsLabel: "Patientenakte",
+    overview: "Übersicht",
+    measurements: "Messwerte",
+    openResults: "Offene Befunde",
+    noOpenResults: "Keine offenen Befunde",
+  },
   timeline: {
     title: "Verlauf",
     loading: "Verlauf wird geladen",
@@ -97,6 +111,9 @@ export const de: Messages = {
     empty: "Keine Einträge",
     filterLabel: "Verlauf nach Art filtern",
     filterAll: "Alle",
+    searchLabel: "Verlauf durchsuchen",
+    searchPlaceholder: "Verlauf suchen…",
+    noMatch: "Keine passenden Einträge",
     entryCount: (n) => (n === 1 ? "1 Eintrag" : `${n} Einträge`),
     entryCountFiltered: (shown, total) => `${shown} von ${total} Einträgen`,
     category: {
@@ -185,10 +202,15 @@ export const de: Messages = {
     colAssessment: "Bewertung",
     inRange: "Im Normbereich",
     noAssessment: "—",
-    hide: "Ausblenden",
-    show: "Einblenden",
-    hidden: (n) =>
-      n === 1 ? "1 Messwert ausgeblendet" : `${n} Messwerte ausgeblendet`,
+    pinnedTitle: "Angeheftete Messwerte",
+    pinnedHint: "Messwerte im Tab Messwerte anheften oder lösen.",
+    pin: "Anheften",
+    pinned: "Angeheftet",
+    pinLabel: (title) => `An Übersicht anheften: ${title}`,
+    searchLabel: "Messwerte durchsuchen",
+    searchPlaceholder: "Messwerte suchen…",
+    noMatch: "Keine passenden Messwerte",
+    none: "Keine Messwerte mit mindestens zwei Werten",
     summary: (title, count, from, to, latest, range) =>
       `${title}, ${count} Werte vom ${from} bis ${to}, zuletzt ${latest}, Bereich ${range}`,
   },

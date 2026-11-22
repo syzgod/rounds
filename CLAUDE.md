@@ -39,4 +39,4 @@ The users are clinicians doing fast-paced work. Code is for developers; everythi
 
 ## Non-goals
 
-Ask the user before you add any of these: a database, ORM or remote FHIR server (data comes only from `data/fhir/`); authentication or accounts; AI calls at runtime; writes to FHIR data; FHIR versions other than R4; timeline types beyond Encounter, Condition and Observation.
+Ask the user before you add any of these: a database or ORM; a remote FHIR server other than the optional, read-only live source (`FHIR_SERVER_URL`); writes to a remote server; authentication or accounts; AI calls at runtime; writes to FHIR data; FHIR versions other than R4; timeline types beyond Encounter, Condition and Observation.

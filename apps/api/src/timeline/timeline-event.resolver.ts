@@ -13,7 +13,7 @@ export class TimelineEventResolver {
   })
   timelineEvent(
     @Args('id', { type: () => ID }) id: string,
-  ): TimelineEventDto | null {
+  ): Promise<TimelineEventDto | null> {
     return this.timelineService.getEvent(id);
   }
 
@@ -25,7 +25,7 @@ export class TimelineEventResolver {
   acknowledgeResult(
     @Args('id', { type: () => ID }) id: string,
     @Args('initials', { type: () => String }) initials: string,
-  ): TimelineEventDto | null {
+  ): Promise<TimelineEventDto | null> {
     return this.timelineService.acknowledge(id, initials);
   }
 }
