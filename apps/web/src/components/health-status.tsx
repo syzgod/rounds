@@ -1,10 +1,10 @@
-import type { ErrorLike, TypedDocumentNode } from "@apollo/client"
+import type { TypedDocumentNode } from "@apollo/client"
 import { gql } from "@apollo/client"
-import { CombinedGraphQLErrors } from "@apollo/client/errors"
 import { useQuery } from "@apollo/client/react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { useI18n } from "@/i18n/locale-provider"
 
 type HealthQuery = { health: string }
 type HealthQueryVariables = Record<string, never>
@@ -18,32 +18,25 @@ export const HEALTH_QUERY: TypedDocumentNode<
   }
 `
 
-function describeError(error: ErrorLike): string {
-  if (CombinedGraphQLErrors.is(error)) {
-    return error.errors[0]?.message ?? "GraphQL error"
-  }
-  return "API unreachable"
-}
-
 export function HealthStatus() {
+  const { t } = useI18n()
   const { data, loading, error, refetch } = useQuery(HEALTH_QUERY)
+  const online = !error && data?.health === "ok"
 
   // aria-live on a stable wrapper so screen readers announce state transitions.
   return (
     <div role="status" aria-live="polite" className="flex items-center gap-2">
       {loading ? (
-        <Badge variant="secondary">Checking API…</Badge>
-      ) : error ? (
+        <Badge variant="secondary">{t.health.connecting}</Badge>
+      ) : online ? (
+        <Badge variant="default">{t.health.online}</Badge>
+      ) : (
         <>
-          <Badge variant="destructive">{describeError(error)}</Badge>
+          <Badge variant="destructive">{t.health.offline}</Badge>
           <Button size="sm" variant="outline" onClick={() => void refetch()}>
-            Retry
+            {t.common.retry}
           </Button>
         </>
-      ) : data?.health === "ok" ? (
-        <Badge variant="default">API connected</Badge>
-      ) : (
-        <Badge variant="destructive">Unexpected health response</Badge>
       )}
     </div>
   )

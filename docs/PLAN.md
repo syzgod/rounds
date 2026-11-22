@@ -84,6 +84,7 @@ Proves the whole chain works: the web app (Apollo Client v4) calls the API (Nest
 - Consistent loading, error and empty states. Dark mode checked on every view.
 - A root `lint` script (`pnpm --filter api --filter web run lint`), with lint passing.
 - Root `README.md`: what the app is, `pnpm install && pnpm dev`, the fixture format, and a 3-minute demo script.
+- English and German UI (typed dictionaries, `Intl` dates), clinician wording.
 
 **Done when**
 - [ ] `pnpm typecheck`, `pnpm test`, `pnpm test:e2e` and `pnpm lint` all pass.

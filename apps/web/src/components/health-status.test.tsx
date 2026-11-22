@@ -5,12 +5,15 @@ import { render, screen } from "@testing-library/react"
 import { describe, expect, it } from "vitest"
 
 import { HEALTH_QUERY, HealthStatus } from "@/components/health-status"
+import { TestLocale } from "@/test/i18n"
 
 function renderWithMocks(mocks: ReadonlyArray<MockLink.MockedResponse>) {
   return render(
-    <MockedProvider mocks={mocks}>
-      <HealthStatus />
-    </MockedProvider>
+    <TestLocale>
+      <MockedProvider mocks={mocks}>
+        <HealthStatus />
+      </MockedProvider>
+    </TestLocale>
   )
 }
 
@@ -20,20 +23,20 @@ describe("HealthStatus", () => {
       { request: { query: HEALTH_QUERY }, result: { data: { health: "ok" } } },
     ])
 
-    expect(screen.getByRole("status")).toHaveTextContent("Checking API…")
-    expect(await screen.findByText("API connected")).toBeInTheDocument()
+    expect(screen.getByRole("status")).toHaveTextContent("Connecting…")
+    expect(await screen.findByText("Online")).toBeInTheDocument()
   })
 
-  it("shows unreachable and a retry button on a network error", async () => {
+  it("shows offline and a retry button on a network error", async () => {
     renderWithMocks([
       { request: { query: HEALTH_QUERY }, error: new Error("Failed to fetch") },
     ])
 
-    expect(await screen.findByText("API unreachable")).toBeInTheDocument()
+    expect(await screen.findByText("Offline")).toBeInTheDocument()
     expect(screen.getByRole("button", { name: "Retry" })).toBeEnabled()
   })
 
-  it("surfaces the GraphQL error message", async () => {
+  it("never shows raw GraphQL error text", async () => {
     renderWithMocks([
       {
         request: { query: HEALTH_QUERY },
@@ -41,6 +44,8 @@ describe("HealthStatus", () => {
       },
     ])
 
-    expect(await screen.findByText("Schema not ready")).toBeInTheDocument()
+    expect(await screen.findByText("Offline")).toBeInTheDocument()
+    expect(screen.queryByText("Schema not ready")).not.toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Retry" })).toBeEnabled()
   })
 })

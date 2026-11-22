@@ -1,25 +1,18 @@
 import type { Gender } from "@/graphql/patients"
+import type { Locale, Messages } from "@/i18n/messages"
 
-const GENDER_LABELS: Record<Gender, string> = {
-  FEMALE: "Female",
-  MALE: "Male",
-  OTHER: "Other",
-  UNKNOWN: "Unknown",
+/** Intl locales: en-GB gives "10 Dec 1985", de-DE gives "10.12.1985"; both use 24h time. */
+const INTL_LOCALE: Record<Locale, string> = { en: "en-GB", de: "de-DE" }
+
+export function formatGender(gender: Gender | null, t: Messages): string | null {
+  return gender ? t.sex[gender] : null
 }
 
-const GENDER_SHORT: Record<Gender, string> = {
-  FEMALE: "F",
-  MALE: "M",
-  OTHER: "O",
-  UNKNOWN: "U",
-}
-
-export function formatGender(gender: Gender | null): string | null {
-  return gender ? GENDER_LABELS[gender] : null
-}
-
-export function formatGenderShort(gender: Gender | null): string | null {
-  return gender ? GENDER_SHORT[gender] : null
+export function formatGenderShort(
+  gender: Gender | null,
+  t: Messages
+): string | null {
+  return gender ? t.sexShort[gender] : null
 }
 
 type FhirDateParts = { year: number; month: number | null; day: number | null }
@@ -57,30 +50,32 @@ export function ageInYears(
   return age >= 0 ? age : null
 }
 
-const MONTHS = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-]
+const pad = (n: number) => String(n).padStart(2, "0")
 
-/** Clinical display format: "10 Dec 1985", "Dec 1985" or "1985". */
-export function formatFhirDate(value: string | null): string | null {
+/**
+ * Clinical display format by precision. en: "10 Dec 1985", "Dec 1985", "1985";
+ * de: "10.12.1985", "12.1985", "1985". Formatted in UTC from the calendar
+ * parts, so a date-only value never shifts with the time zone.
+ */
+export function formatFhirDate(
+  value: string | null,
+  locale: Locale
+): string | null {
   const parts = parseFhirDate(value)
   if (!parts) return value
-  const month = parts.month ? MONTHS[parts.month - 1] : undefined
-  if (!month) return String(parts.year)
-  return parts.day
-    ? `${parts.day} ${month} ${parts.year}`
-    : `${month} ${parts.year}`
+  if (!parts.month) return String(parts.year)
+  const date = new Date(0)
+  date.setUTCFullYear(parts.year, parts.month - 1, parts.day ?? 1)
+  const numeric = locale === "de"
+  // Intl has no "MM.YYYY" pattern for German month-only dates (it yields "04/2016").
+  if (numeric && !parts.day) return `${pad(parts.month)}.${parts.year}`
+  const options: Intl.DateTimeFormatOptions = {
+    timeZone: "UTC",
+    year: "numeric",
+    month: numeric ? "2-digit" : "short",
+    ...(parts.day ? { day: numeric ? "2-digit" : "numeric" } : {}),
+  }
+  return new Intl.DateTimeFormat(INTL_LOCALE[locale], options).format(date)
 }
 
 /** Up to two initials from the first and last word of a name. */
@@ -90,8 +85,6 @@ export function initials(name: string): string {
   const last = words.length > 1 ? (words[words.length - 1]?.[0] ?? "") : ""
   return (first + last).toUpperCase()
 }
-
-const pad = (n: number) => String(n).padStart(2, "0")
 
 function localDate(value: string): Date | null {
   if (!value.includes("T")) return null
@@ -112,25 +105,32 @@ export function dayKey(value: string | null): string | null {
   return parseFhirDate(value) ? value : null
 }
 
-/** Local "HH:MM" for a FHIR dateTime; null for date-only values. */
-export function formatTime(value: string | null): string | null {
+/** Local 24h "HH:MM" for a FHIR dateTime; null for date-only values. */
+export function formatTime(value: string | null, locale: Locale): string | null {
   const date = value ? localDate(value) : null
-  return date ? `${pad(date.getHours())}:${pad(date.getMinutes())}` : null
+  if (!date) return null
+  return new Intl.DateTimeFormat(INTL_LOCALE[locale], {
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).format(date)
 }
 
 /** "21:10–21:45", "21:10 – 4 Feb 2025 01:30", or the start time alone. */
 export function formatTimeRange(
   start: string | null,
-  end: string | null
+  end: string | null,
+  locale: Locale,
+  t: Messages
 ): string | null {
-  const startTime = formatTime(start)
+  const startTime = formatTime(start, locale)
   if (!end) return startTime
-  const endTime = formatTime(end)
+  const endTime = formatTime(end, locale)
   if (startTime && endTime && dayKey(start) === dayKey(end)) {
     return `${startTime}–${endTime}`
   }
-  const endLabel = [formatFhirDate(dayKey(end)), endTime]
+  const endLabel = [formatFhirDate(dayKey(end), locale), endTime]
     .filter((part): part is string => part !== null)
     .join(" ")
-  return startTime ? `${startTime} – ${endLabel}` : `until ${endLabel}`
+  return startTime ? `${startTime} – ${endLabel}` : t.common.until(endLabel)
 }

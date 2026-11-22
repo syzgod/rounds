@@ -12,17 +12,11 @@ import {
   type LucideIcon,
 } from "lucide-react"
 
-import {
-  Alert,
-  AlertAction,
-  AlertDescription,
-  AlertTitle,
-} from "@/components/ui/alert"
+import { Alert, AlertAction, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Empty,
-  EmptyDescription,
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
@@ -35,6 +29,8 @@ import {
   type TimelineEvent,
   type TimelineEventKind,
 } from "@/graphql/timeline"
+import { useI18n } from "@/i18n/locale-provider"
+import { isKnownStatus, type Locale, type Messages } from "@/i18n/messages"
 import { dayKey, formatFhirDate, formatTimeRange } from "@/lib/format"
 import { cn } from "@/lib/utils"
 
@@ -52,23 +48,17 @@ function isKindFilter(value: unknown): value is KindFilter {
 
 const KIND_META: Record<
   TimelineEventKind,
-  { label: string; plural: string; icon: LucideIcon; tone: string }
+  { icon: LucideIcon; tone: string }
 > = {
   ENCOUNTER: {
-    label: "Encounter",
-    plural: "Encounters",
     icon: StethoscopeIcon,
     tone: "bg-encounter/12 text-encounter",
   },
   CONDITION: {
-    label: "Condition",
-    plural: "Conditions",
     icon: ClipboardListIcon,
     tone: "bg-condition/12 text-condition",
   },
   OBSERVATION: {
-    label: "Observation",
-    plural: "Observations",
     icon: FlaskConicalIcon,
     tone: "bg-observation/12 text-observation",
   },
@@ -76,17 +66,17 @@ const KIND_META: Record<
 
 const FLAG_META: Record<
   ObservationFlag,
-  { label: string; icon: LucideIcon; variant: "warning" | "destructive" }
+  { icon: LucideIcon; variant: "warning" | "destructive" }
 > = {
-  LOW: { label: "Low", icon: ArrowDownIcon, variant: "warning" },
-  HIGH: { label: "High", icon: ArrowUpIcon, variant: "destructive" },
-  ABNORMAL: { label: "Abnormal", icon: TriangleAlertIcon, variant: "warning" },
+  LOW: { icon: ArrowDownIcon, variant: "warning" },
+  HIGH: { icon: ArrowUpIcon, variant: "destructive" },
+  ABNORMAL: { icon: TriangleAlertIcon, variant: "warning" },
 }
 
 /** Statuses worth showing: the "normal" final/finished states are omitted as noise. */
 const HIDDEN_STATUSES = new Set(["final", "finished", "amended", "corrected"])
 
-type DayGroup = { key: string; label: string; events: TimelineEvent[] }
+type DayGroup = { key: string; events: TimelineEvent[] }
 
 /** Groups already-sorted events into consecutive calendar days; undated events last. */
 export function groupByDay(events: readonly TimelineEvent[]): DayGroup[] {
@@ -99,7 +89,6 @@ export function groupByDay(events: readonly TimelineEvent[]): DayGroup[] {
     } else {
       groups.push({
         key,
-        label: key === "undated" ? "Undated" : (formatFhirDate(key) ?? key),
         events: [event],
       })
     }
@@ -111,7 +100,18 @@ function sentence(value: string): string {
   return value.charAt(0).toUpperCase() + value.slice(1)
 }
 
+/** Translated FHIR status; unknown codes fall back to the sentence-cased code. */
+function statusLabel(code: string, t: Messages): string {
+  return isKnownStatus(code) ? t.timeline.status[code] : sentence(code)
+}
+
+function dayLabel(key: string, locale: Locale, t: Messages): string {
+  if (key === "undated") return t.common.undated
+  return formatFhirDate(key, locale) ?? key
+}
+
 function TimelineItem({ event }: { event: TimelineEvent }) {
+  const { locale, t } = useI18n()
   const meta = KIND_META[event.kind]
   const Icon = meta.icon
   const flag = event.flag ? FLAG_META[event.flag] : null
@@ -119,10 +119,12 @@ function TimelineItem({ event }: { event: TimelineEvent }) {
   const when =
     event.kind === "CONDITION"
       ? event.endDate
-        ? `until ${formatFhirDate(dayKey(event.endDate)) ?? event.endDate}`
+        ? t.common.until(
+            formatFhirDate(dayKey(event.endDate), locale) ?? event.endDate
+          )
         : null
-      : formatTimeRange(event.date, event.endDate)
-  const details = [meta.label, event.category, when].filter(
+      : formatTimeRange(event.date, event.endDate, locale, t)
+  const details = [event.category, when].filter(
     (part): part is string => part !== null && part !== ""
   )
 
@@ -143,32 +145,37 @@ function TimelineItem({ event }: { event: TimelineEvent }) {
           {event.detail ? (
             <span className="text-sm tabular-nums">{event.detail}</span>
           ) : null}
-          {flag ? (
+          {flag && event.flag ? (
             <Badge variant={flag.variant}>
               <flag.icon data-icon="inline-start" />
-              {flag.label}
+              {t.timeline.flag[event.flag]}
             </Badge>
           ) : null}
           {showStatus && event.status ? (
             <Badge
               variant={event.status === "active" ? "outline" : "secondary"}
             >
-              {sentence(event.status)}
+              {statusLabel(event.status, t)}
             </Badge>
           ) : null}
         </div>
-        <p className="text-xs text-muted-foreground">{details.join(" · ")}</p>
+        <p className="text-xs text-muted-foreground">
+          {/* The icon is aria-hidden, so screen readers get the kind here. */}
+          <span className="sr-only">{t.timeline.kind[event.kind]}: </span>
+          {details.join(" · ")}
+        </p>
       </div>
     </li>
   )
 }
 
 function TimelineSkeleton() {
+  const { t } = useI18n()
   return (
     <div
       className="flex flex-col gap-4"
       aria-busy="true"
-      aria-label="Loading timeline"
+      aria-label={t.timeline.loading}
     >
       {Array.from({ length: 4 }, (_, index) => (
         <div key={index} className="flex gap-3">
@@ -184,6 +191,7 @@ function TimelineSkeleton() {
 }
 
 export function PatientTimeline({ patientId }: { patientId: string }) {
+  const { locale, t } = useI18n()
   const { data, loading, error, refetch } = useQuery(PATIENT_TIMELINE_QUERY, {
     variables: { id: patientId },
   })
@@ -212,12 +220,11 @@ export function PatientTimeline({ patientId }: { patientId: string }) {
     return (
       <Alert variant="destructive">
         <AlertCircleIcon />
-        <AlertTitle>Couldn’t load the timeline</AlertTitle>
-        <AlertDescription>Check that the API is running.</AlertDescription>
+        <AlertTitle>{t.timeline.loadError}</AlertTitle>
         <AlertAction>
           <Button size="xs" variant="outline" onClick={() => void refetch()}>
             <RotateCwIcon data-icon="inline-start" />
-            Retry
+            {t.common.retry}
           </Button>
         </AlertAction>
       </Alert>
@@ -233,11 +240,7 @@ export function PatientTimeline({ patientId }: { patientId: string }) {
           <EmptyMedia variant="icon">
             <ClipboardListIcon />
           </EmptyMedia>
-          <EmptyTitle>No clinical events recorded</EmptyTitle>
-          <EmptyDescription>
-            This patient has no encounters, conditions or observations in the
-            fixtures.
-          </EmptyDescription>
+          <EmptyTitle>{t.timeline.empty}</EmptyTitle>
         </EmptyHeader>
       </Empty>
     )
@@ -247,7 +250,7 @@ export function PatientTimeline({ patientId }: { patientId: string }) {
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <ToggleGroup
-          aria-label="Filter timeline by type"
+          aria-label={t.timeline.filterLabel}
           variant="outline"
           size="sm"
           value={[filter]}
@@ -258,14 +261,14 @@ export function PatientTimeline({ patientId }: { patientId: string }) {
           }}
         >
           <ToggleGroupItem value="ALL">
-            All{" "}
+            {t.timeline.filterAll}{" "}
             <span className="text-muted-foreground tabular-nums">
               {events.length}
             </span>
           </ToggleGroupItem>
           {KINDS.map((kind) => (
             <ToggleGroupItem key={kind} value={kind}>
-              {KIND_META[kind].plural}{" "}
+              {t.timeline.kindPlural[kind]}{" "}
               <span className="text-muted-foreground tabular-nums">
                 {counts[kind]}
               </span>
@@ -278,16 +281,14 @@ export function PatientTimeline({ patientId }: { patientId: string }) {
           aria-live="polite"
         >
           {visible.length === events.length
-            ? `${events.length} events`
-            : `${visible.length} of ${events.length} events`}
+            ? t.timeline.entryCount(events.length)
+            : t.timeline.entryCountFiltered(visible.length, events.length)}
         </p>
       </div>
 
       {groups.length === 0 ? (
         <p className="py-6 text-center text-sm text-muted-foreground">
-          No{" "}
-          {filter === "ALL" ? "events" : KIND_META[filter].plural.toLowerCase()}{" "}
-          for this patient.
+          {filter === "ALL" ? t.timeline.empty : t.timeline.noneOfKind[filter]}
         </p>
       ) : (
         <div className="flex flex-col gap-5">
@@ -299,7 +300,7 @@ export function PatientTimeline({ patientId }: { patientId: string }) {
                 id={`day-${group.key}`}
                 className="text-xs font-medium tracking-wide text-muted-foreground uppercase"
               >
-                {group.label}
+                {dayLabel(group.key, locale, t)}
               </h4>
               <ol
                 aria-labelledby={`day-${group.key}`}

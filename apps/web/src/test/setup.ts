@@ -6,6 +6,7 @@ import { afterEach } from "vitest"
 afterEach(() => {
   cleanup()
   window.history.replaceState(null, "", "/")
+  window.localStorage.clear()
 })
 
 // jsdom gaps used by cmdk (Command): layout observation and scroll-into-view.
