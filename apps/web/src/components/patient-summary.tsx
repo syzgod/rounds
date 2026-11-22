@@ -4,6 +4,7 @@ import { AlertCircleIcon, RotateCwIcon, UserXIcon } from "lucide-react"
 
 import { SourceDialog } from "@/components/source-dialog"
 import { PatientTimeline } from "@/components/patient-timeline"
+import { ErrorBoundary, ErrorFallback } from "@/components/error-boundary"
 import { PatientTrendsSkeleton } from "@/components/patient-trends-skeleton"
 
 import { Alert, AlertAction, AlertTitle } from "@/components/ui/alert"
@@ -187,9 +188,11 @@ export function PatientSummaryPanel({
     <div className="flex flex-col gap-6">
       <PatientHeader patient={patient} />
       <Separator />
-      <Suspense fallback={<PatientTrendsSkeleton />}>
-        <PatientTrends patientId={patient.id} />
-      </Suspense>
+      <ErrorBoundary fallback={<ErrorFallback message={t.trends.loadError} />}>
+        <Suspense fallback={<PatientTrendsSkeleton />}>
+          <PatientTrends patientId={patient.id} />
+        </Suspense>
+      </ErrorBoundary>
       <section className="flex flex-col gap-3">
         <h3 id="timeline-heading" className="text-sm font-medium">
           {t.timeline.title}

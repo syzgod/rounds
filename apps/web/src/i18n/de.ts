@@ -3,6 +3,8 @@ import type { Messages } from "@/i18n/en"
 export const de: Messages = {
   common: {
     retry: "Erneut versuchen",
+    reload: "Neu laden",
+    unexpectedError: "Ein Fehler ist aufgetreten.",
     notRecorded: "Nicht erfasst",
     undated: "Ohne Datum",
     until: (date) => `bis ${date}`,
