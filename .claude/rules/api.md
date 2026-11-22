@@ -1,54 +1,40 @@
 ---
 paths:
   - "apps/api/**"
+  - "data/fhir/**"
 ---
 
 # apps/api rules
 
-## NestJS 12, native ESM
+## NestJS, native ESM
 
-- Relative imports end in `.js` (`import { X } from './x.service.js'`), including in specs. Package subpaths follow the package's exports (`'supertest/types.js'`, `'fhir/r4.js'`).
-- Use `import.meta.dirname` / `import.meta.url` for file paths. `__dirname` and `require` don't exist here.
-- `main.ts` uses top-level `await`. Keep bootstrap there: CORS (`WEB_ORIGIN`, default `http://localhost:5173`) and `PORT` (default 3000).
-- Organise code as one Nest module per feature folder (`src/health/`, `src/patients/`, …), each imported by `AppModule`. Inject providers through the constructor.
-- Before adding a third-party library, check whether Nest ships a first-party package for the need (see `apps/api/AGENTS.md`).
+- Relative imports end in `.js`, also in specs. Package subpaths follow the package exports (`'fhir/r4.js'`, `'supertest/types.js'`).
+- Use `import.meta.dirname`; `__dirname` and `require` are not available.
+- One Nest module per feature folder, imported by `AppModule`. Bootstrap (CORS from `WEB_ORIGIN`, `PORT`) stays in `main.ts`.
+- Before you add a library, check for a first-party Nest package (`apps/api/AGENTS.md`).
 
-## Code-first GraphQL DTOs
+## Code-first GraphQL
 
-- The schema is generated from decorators into `src/schema.gql` (`autoSchemaFile`, `sortSchema: true`). Treat the generated SDL as the contract, and review its diff with every DTO change.
-- Each DTO is an `@ObjectType()` class in `<feature>/dto/*.dto.ts`, with a GraphQL `description` on the type and on non-obvious fields.
-- Always give `@Field` an explicit type function: `@Field(() => ID) id!: string`, `@Field(() => [ObservationDto])`. ESM plus `isolatedModules` makes reflected metadata unreliable.
-- `id: ID!` is non-null on every type, using the FHIR `Resource.id` (or a stable derived id when the source has none).
-- Mark nullable fields explicitly: `@Field(() => String, { nullable: true }) birthDate!: string | null`. The TS type and the GraphQL nullability must agree.
-- DTOs stay **flat**: scalars, enums, and lists of other flat DTOs. Reduce FHIR shapes to display-ready values (`HumanName[]` → `displayName`, `CodeableConcept` → `code` + `display`).
-- `@Field(() => String, { nullable: true }) rawJson` carries `JSON.stringify(resource)` and exists only for the Resource Inspector. Clients never parse it to read business fields.
-- Resolvers stay thin: they take args, call a service, and return DTOs. They import no `fhir/r4` types.
+- DTOs are `@ObjectType()` classes in `<feature>/dto/*.dto.ts`, with a `description` on the type and on fields that are not obvious.
+- Give every `@Field` an explicit type function (`@Field(() => ID)`): reflected metadata is unreliable under ESM and `isolatedModules`.
+- Nullable fields: `@Field(() => String, { nullable: true }) x!: string | null`. TS type and GraphQL nullability agree.
+- Codes next to display text (`code`, `categoryCode`) let the web app translate; the API stays language-neutral.
+- Review the `schema.gql` diff with every DTO change.
 
-## FHIR R4 boundary (`@types/fhir`)
+## FHIR R4 boundary
 
-- Import R4 types explicitly: `import type { Patient, Bundle, Observation } from 'fhir/r4.js'` (the module behind the `fhir4` namespace). Use R4 only; the r2/r3/r4b/r5 modules are out of scope.
-- FHIR types appear only in `src/fhir/**` (fixture loading, type guards) and in feature services and mappers (`*.service.ts`, `*.mapper.ts`).
-- Fixture JSON enters as `unknown`. Narrow it with type guards such as `isPatient(value): value is Patient` that check `resourceType` before use; casts to FHIR types are not allowed.
-- Mappers are pure functions or services from a FHIR resource to a DTO. Missing optional FHIR data maps to `null`, never to a thrown error.
+- Import R4 types explicitly: `import type { Patient } from 'fhir/r4.js'`. FHIR types appear only in `src/fhir/**`, `*.service.ts` and `*.mapper.ts`.
+- Fixture JSON enters as `unknown` and is narrowed with guards from `src/fhir/fhir-guards.ts`.
+- Mappers are pure. Missing optional FHIR data maps to `null`.
 
-## Fixture bundles (`data/fhir/`)
+## Fixtures (`data/fhir/`)
 
-- Each file is one hand-authored, Synthea-style R4 `Bundle` (`type: "collection"` or `"transaction"`) for one patient: a `Patient` plus that patient's `Encounter`, `Condition` and `Observation` resources.
-- Only the fixture repository service (`src/fhir/`) reads the file system. It loads every bundle once at startup, flattens `entry[].resource`, and serves the resources to the rest of the app. Feature services depend on it, never on `fs`.
-- Resolve the data directory from `FHIR_DATA_DIR`, defaulting to `join(process.cwd(), '../../data/fhir')` (scripts run with cwd `apps/api`).
-- Type parsed bundles as `Bundle<FhirResource>`. A bare `Bundle` defaults to the base `Resource` type and loses every resource-specific field.
-- References come in two forms. `"Patient/<id>"` uses the readable `Resource.id`. `"urn:uuid:<uuid>"` matches an entry's `fullUrl`, and the uuid differs from `Resource.id`. Index entries under both, and resolve through one helper. An unresolvable reference maps to `null`.
-- Fixtures use real code systems (LOINC for Observations, SNOMED CT for Conditions, `http://terminology.hl7.org` for categories) and stable, readable ids. Tests assert on those ids.
+- One hand-written R4 `Bundle` per patient (`collection` or `transaction`), with real code systems (LOINC, SNOMED CT, HL7 categories) and stable, readable ids that tests assert on.
+- Only `FhirRepositoryService` reads files. Type parsed bundles as `Bundle<FhirResource>`.
+- References come as `Patient/<id>` or `urn:uuid:<uuid>` (matches `fullUrl`, differs from `id`). Resolve both through `FhirRepositoryService.resolve`; unknown → `null`.
 
-## Testing (Vitest 4)
+## Testing (Vitest, globals on)
 
-- Unit specs sit beside the code as `*.spec.ts` (run with `pnpm --filter api test`). E2E specs live in `test/*.e2e-spec.ts` (run with `pnpm --filter api test:e2e`).
-- Vitest globals are on (`describe`, `it`, `expect`, `vi`). Mocks are `vi.fn()` / `vi.spyOn()`.
-- Build providers with `Test.createTestingModule`. Swap dependencies with `.overrideProvider(X).useValue(...)`.
-- Every mapper gets focused specs that use small inline FHIR resources: a full resource, a resource with only the minimum fields, and a malformed one.
-- E2E tests send real GraphQL over HTTP: `request(app.getHttpServer()).post('/graphql').send({ query })`, and assert on `{ data }` and `errors`.
-
-## Skills
-
-- Load `nestjs-testing` when writing or fixing specs.
-- Load `graphql-schema` when adding or changing DTOs, arguments or nullability.
+- Unit specs sit beside the code (`*.spec.ts`); e2e specs are `test/*.e2e-spec.ts` and send real GraphQL over HTTP with Supertest.
+- Each mapper gets specs with small inline resources: full, minimal and malformed.
+- Load the `nestjs-testing` skill for specs and `graphql-schema` for DTO or nullability changes.

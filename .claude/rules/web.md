@@ -7,42 +7,36 @@ paths:
 
 ## React 19
 
-- Write function components with named exports and typed props (`type FooProps = { … }`). Pass `ref` as an ordinary prop; `forwardRef` isn't needed.
-- Import app code through the `@/` alias (`@/components/...`, `@/lib/...`).
-- Keep components presentational where possible. GraphQL operations live with the component that uses them, or in `src/graphql/` when several components share them.
+- Function components with named exports and typed props (`type FooProps = { … }`). `ref` is an ordinary prop.
+- Import app code through `@/` (`@/components/...`, `@/lib/...`).
+- GraphQL operations live with their component, or in `src/graphql/` when several components share them.
+- All user-facing text comes from `src/i18n/en.ts` and `de.ts` (`useI18n()`); `de` must match `en` key for key.
 
 ## shadcn/ui on Base UI (`base-nova`)
 
-- Primitives come from `@base-ui/react`, not Radix. To change the rendered element, use the Base UI **`render` prop**: `<Button render={<a href="/x" />}>`. The Radix-era `asChild` prop does not exist here and must not be used.
-- Add components with `pnpm --filter web exec shadcn add <name>`. Files in `src/components/ui/` are generated; customise them through `cva` variants and `className`, and keep their structure as generated.
-- Merge classes with `cn` (from `@/lib/utils`). Style with Tailwind v4 utilities and the theme tokens in `src/index.css` (`bg-background`, `text-muted-foreground`, `bg-destructive/10`, …) rather than raw colour values.
+- Primitives come from `@base-ui/react`. Change the rendered element with the `render` prop: `<Button render={<a href="/x" />}>`.
+- Add components with `pnpm --filter web exec shadcn add <name>`. Customise `src/components/ui/` through `cva` variants, `className` and small props; keep the generated structure.
+- Merge classes with `cn` (`@/lib/utils`). Style with Tailwind v4 utilities and the theme tokens in `src/index.css`.
+- Load the `shadcn` skill before you add, compose or restyle components.
 
 ## Apollo Client v4
 
-- Import core APIs from `@apollo/client` (`ApolloClient`, `InMemoryCache`, `HttpLink`, `gql`) and React APIs from **`@apollo/client/react`** (`ApolloProvider`, `useQuery`, `useMutation`, …).
-- The client is created once in `src/lib/apollo-client.ts` with an explicit `HttpLink` pointing at `import.meta.env.VITE_GRAPHQL_URL` (default `http://localhost:3000/graphql`). Leave the `ApolloClient` constructor without `uri` or `headers` options, because v4 removed them.
-- Type every operation as `TypedDocumentNode<XQuery, XQueryVariables>` with the types from `src/graphql/__generated__/graphql.ts`. Run `pnpm --filter web codegen` after changing an operation or `schema.gql`; never edit the generated file. Handle the case where `data` is undefined.
-- Select `id` (and `__typename`, which Apollo adds automatically) on every object so the default `InMemoryCache` normalizes it. Leave `keyFields` and `typePolicies` alone unless a specific case needs them.
-- Select `rawJson` only in the Resource Inspector's own query. Directory and timeline queries leave it out, so lists stay small and the Inspector fetches it only when opened.
-- `ApolloError` no longer exists. `error` is an `ErrorLike` (`import type { ErrorLike } from "@apollo/client"`); narrow it with the static guards `CombinedGraphQLErrors.is(error)`, `ServerError.is(error)` and `ServerParseError.is(error)` from `@apollo/client/errors`, and fall back to a generic network message.
-- Every query renders explicit **loading**, **error** (with a retry where it makes sense) and **success** states.
-- Tests use `MockedProvider` from `@apollo/client/testing/react`. Its mocks have a realistic 20–50 ms delay by default, so assert the loading state synchronously and wait for the final state with `findBy*`.
+- Core APIs come from `@apollo/client`; React hooks from `@apollo/client/react`. The client lives in `src/lib/apollo-client.ts` with an explicit `HttpLink` to `VITE_GRAPHQL_URL`.
+- Type operations as `TypedDocumentNode<XQuery, XQueryVariables>` from `src/graphql/__generated__/graphql.ts`. Run `pnpm --filter web codegen` after you change an operation or `schema.gql`.
+- Select `id` on every object. Select `rawJson` only in the source viewer's own query.
+- `error` is an `ErrorLike`; narrow it with `CombinedGraphQLErrors.is()` / `ServerError.is()` from `@apollo/client/errors` (`ApolloError` is gone in v4).
+- Every query renders loading, error (one line + Retry) and success states.
+- Load the `apollo-client` skill for operations, cache logic or Apollo tests.
 
 ## Accessible, keyboard-first UI
 
-- Every action is reachable and operable by keyboard alone (Tab, Shift+Tab, Enter, Space, Escape, arrow keys inside composite widgets). Use `<button>` and `<a>` (or Base UI components) for interactive elements; never put click handlers on `div`s.
-- Keep the visible focus ring (`focus-visible:` styles from the shadcn components).
-- Announce async state changes in a `role="status"` / `aria-live="polite"` region that stays mounted.
-- Give every control an accessible name, and use semantic landmarks (`header`, `main`, `nav`) and a sensible heading order.
-- In tests, query by role and accessible name (`getByRole("button", { name: "Retry" })`), with `getByText` as the fallback.
+- Interactive elements are `<button>`, `<a>` or Base UI components, with a visible focus ring and an accessible name.
+- Announce async state in a `role="status"` region that stays mounted.
+- Use landmarks (`header`, `main`, `nav`) and a sensible heading order.
 
-## Testing (Vitest + Testing Library)
+## Testing (Vitest + Testing Library, globals off)
 
-- Tests sit beside the code as `src/**/*.test.tsx` and run in jsdom (`pnpm --filter web test`). Setup is in `src/test/setup.ts`.
-- Vitest globals are **off**: import `describe`, `it`, `expect` and `vi` from `vitest`.
-
-## Skills
-
-- Load `shadcn` before adding, composing or restyling components.
-- Load `apollo-client` when writing operations, cache logic or Apollo tests.
-- Load `graphql-operations` when organizing queries and fragments.
+- Tests sit beside the code as `*.test.tsx`; import `describe`, `it`, `expect`, `vi` from `vitest`.
+- Query by role and accessible name; `getByText` is the fallback.
+- `MockedProvider` (`@apollo/client/testing/react`) delays mocks by 20–50 ms: assert loading synchronously, then `findBy*`.
+- Wrap renders in `TestLocale` (`@/test/i18n`) to pin the language.
