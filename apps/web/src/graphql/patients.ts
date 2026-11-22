@@ -1,22 +1,18 @@
 import type { TypedDocumentNode } from "@apollo/client"
 import { gql } from "@apollo/client"
 
-/** Mirrors `enum Gender` in apps/api/src/schema.gql. */
-export type Gender = "FEMALE" | "MALE" | "OTHER" | "UNKNOWN"
+import type {
+  Gender,
+  PatientQuery,
+  PatientQueryVariables,
+  PatientsQuery,
+  PatientsQueryVariables,
+  PatientSummaryFieldsFragment,
+} from "@/graphql/__generated__/graphql"
 
-/** Mirrors `type Patient` in apps/api/src/schema.gql (no rawJson: Inspector only). */
-export type PatientSummary = {
-  __typename: "Patient"
-  id: string
-  displayName: string
-  gender: Gender | null
-  birthDate: string | null
-  mrn: string | null
-  /** Labels of active conditions, newest first. */
-  activeDiagnoses: string[]
-  /** Distinct measurements whose latest value is flagged. */
-  abnormalResultCount: number
-}
+export type { Gender }
+/** A patient in the directory and the record header (no rawJson: Inspector only). */
+export type PatientSummary = PatientSummaryFieldsFragment
 
 export const PATIENT_SUMMARY_FIELDS = gql`
   fragment PatientSummaryFields on Patient {
@@ -31,8 +27,8 @@ export const PATIENT_SUMMARY_FIELDS = gql`
 `
 
 export const PATIENTS_QUERY: TypedDocumentNode<
-  { patients: PatientSummary[] },
-  Record<string, never>
+  PatientsQuery,
+  PatientsQueryVariables
 > = gql`
   query Patients {
     patients {
@@ -43,8 +39,8 @@ export const PATIENTS_QUERY: TypedDocumentNode<
 `
 
 export const PATIENT_QUERY: TypedDocumentNode<
-  { patient: PatientSummary | null },
-  { id: string }
+  PatientQuery,
+  PatientQueryVariables
 > = gql`
   query Patient($id: ID!) {
     patient(id: $id) {

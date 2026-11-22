@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:browser": "playwright test"
+    "test:browser": "playwright test",
+    "codegen": "graphql-codegen"
   },
   "dependencies": {
     "@apollo/client": "^4.3.8",
@@ -35,6 +36,8 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
     "@eslint/js": "^10",
+    "@graphql-codegen/cli": "^8.0.0",
+    "@graphql-codegen/typescript-operations": "^7.0.1",
     "@playwright/test": "^1.65.1",
     "@testing-library/jest-dom": "^8.0.0",
     "@testing-library/react": "^16.3.3",
