@@ -12,7 +12,7 @@ export class PatientTrendsResolver {
     description:
       'Numeric measurements with at least two dated values, for charts.',
   })
-  trends(@Parent() patient: PatientDto): TrendDto[] {
+  trends(@Parent() patient: PatientDto): Promise<TrendDto[]> {
     return this.trendsService.getTrends(patient.id);
   }
 }

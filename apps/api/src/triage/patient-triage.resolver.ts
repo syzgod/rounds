@@ -12,7 +12,7 @@ export class PatientTriageResolver {
     description:
       'Labels of active, recurring or relapsed Conditions, newest first.',
   })
-  activeDiagnoses(@Parent() patient: PatientDto): string[] {
+  activeDiagnoses(@Parent() patient: PatientDto): Promise<string[]> {
     return this.triageService.getActiveDiagnoses(patient.id);
   }
 
@@ -20,7 +20,7 @@ export class PatientTriageResolver {
     description:
       'Distinct measurements whose latest value is flagged high, low or abnormal and not yet acknowledged.',
   })
-  abnormalResultCount(@Parent() patient: PatientDto): number {
+  abnormalResultCount(@Parent() patient: PatientDto): Promise<number> {
     return this.triageService.getAbnormalResultCount(patient.id);
   }
 }
