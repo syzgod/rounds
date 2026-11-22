@@ -24,7 +24,7 @@ Kept short. Read this at the start of a session and update it at the end. Milest
 
 ## Start here (next session)
 
-1. **Chart dialog polish:** round y-axis ticks and show the flag diamonds as on the cards.
+1. **GraphQL Code Generator** for the web query types (today a schema change needs manual type edits).
 2. **Clean up** the leftover worktrees `D:/Developer/Projects/rounds-wt-contrast` and `rounds-wt-ranges` (both merged and clean).
 
 ## Next
@@ -34,10 +34,12 @@ Kept short. Read this at the start of a session and update it at the end. Milest
 
 ## Bugs found (open)
 
+- On Windows, stopping a background `pnpm dev` task leaves the API and Vite running on :3000/:5173. A new `pnpm dev` then serves old code (EADDRINUSE). **Workaround:** after stopping, stop the project's processes that still listen on those ports.
 - Agent worktree isolation fails on Windows (`d:` vs `D:`). **Workaround:** manual `git worktree add` to `D:/Developer/Projects/rounds-wt-*`.
 
 ## Fixed
 
+- Chart dialog: round y-axis ticks, flag diamonds, hover tooltip, and a hovered table row marks its point on the chart.
 - German timeline: measurement names, categories and encounter classes are translated from codes (`code`, `categoryCode` on TimelineEvent). Visit names and SNOMED diagnoses stay as recorded.
 - Visual check done (dark mode, chart dialog, source viewer, phone/tablet/desktop). Fixed: alert Retry covered German text; JSON overflowed the dialog at 375 px; timeline filters overflowed; offline header overflowed on phones.
 - API coverage pass (M5): 51 → 71 unit tests; 99.6% lines, 94.8% branches. Notes for untested branches in PLAN.md.
@@ -54,7 +56,7 @@ Kept short. Read this at the start of a session and update it at the end. Milest
 ## Suggestions
 
 - A long diagnosis list is untested: the fixtures have at most 2 active diagnoses.
-- Have a German clinician sanity-check the terms (Verlauf, Befunde, Erhöht/Erniedrigt, auffällig).
+- Have a German clinician sanity-check the terms (Verlauf, Befunde, Erhöht/Erniedrigt, auffällig, Vitalwerte vs. Vitalzeichen, Behandlungsdiagnose).
 - GraphQL Code Generator instead of hand-written client types.
 - Index resources by subject, or add DataLoader, if the data grows.
 - PR preview deploys on Render. These need the API to accept preview origins for CORS.

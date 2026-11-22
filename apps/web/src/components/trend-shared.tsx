@@ -7,6 +7,7 @@ import {
 
 import type { ObservationFlag } from "@/graphql/timeline"
 import type { Trend, TrendPoint } from "@/graphql/trends"
+import { useI18n } from "@/i18n/locale-provider"
 import {
   isKnownMeasurementCode,
   type Locale,
@@ -150,5 +151,111 @@ export function inBand(band: Band, value: number): boolean {
   return (
     (band.low === null || value >= band.low) &&
     (band.high === null || value <= band.high)
+  )
+}
+
+type DotProps = {
+  cx?: number
+  cy?: number
+  index?: number
+  payload?: Datum
+  stroke?: string
+}
+
+type DotOptions = {
+  /** Diastolic line: hollow dots. */
+  secondary: boolean
+  /** Index of the latest point; it always gets a dot. */
+  lastIndex: number
+  /** Dot on every point (dialog), not only the latest (card). */
+  everyPoint?: boolean
+}
+
+/** Flagged points are diamonds in the flag colour; other points get a dot per `DotOptions`. */
+export function makeDot({
+  secondary,
+  lastIndex,
+  everyPoint = false,
+}: DotOptions) {
+  return function Dot({ cx, cy, index, payload, stroke }: DotProps) {
+    if (cx === undefined || cy === undefined) return <g />
+    const flag = payload?.flag ?? null
+    if (flag) {
+      return (
+        <rect
+          x={cx - 4.5}
+          y={cy - 4.5}
+          width={9}
+          height={9}
+          transform={`rotate(45 ${cx} ${cy})`}
+          fill={FLAG_META[flag].color}
+          stroke="var(--background)"
+          strokeWidth={1.5}
+        />
+      )
+    }
+    if (!everyPoint && index !== lastIndex) return <g />
+    return (
+      <circle
+        cx={cx}
+        cy={cy}
+        r={3}
+        fill={secondary ? "var(--background)" : stroke}
+        stroke={stroke}
+        strokeWidth={1.5}
+      />
+    )
+  }
+}
+
+/**
+ * Round y-axis ticks that cover `lo`..`hi`: steps of 1, 2, 2.5 or 5 × 10ⁿ,
+ * at most `maxTicks` + 1 ticks. The first and last tick are the axis domain.
+ */
+export function niceTicks(lo: number, hi: number, maxTicks = 6): number[] {
+  const spread = hi - lo || Math.abs(hi) * 0.1 || 1
+  const raw = spread / (maxTicks - 1)
+  const magnitude = 10 ** Math.floor(Math.log10(raw))
+  const step =
+    [1, 2, 2.5, 5, 10]
+      .map((m) => m * magnitude)
+      .find((candidate) => candidate >= raw) ?? 10 * magnitude
+  const start = Math.floor(lo / step) * step
+  const end = Math.max(Math.ceil(hi / step) * step, start + step)
+  const ticks: number[] = []
+  // toFixed removes float noise such as 0.30000000000000004.
+  for (let v = start; v <= end + step / 2; v += step) {
+    ticks.push(Number(v.toFixed(10)))
+  }
+  return ticks
+}
+
+type TooltipBodyProps = {
+  active?: boolean
+  payload?: ReadonlyArray<{ payload?: Datum }>
+  trend: Trend
+}
+
+/** Chart tooltip: date, reading and flag of the hovered point. */
+export function TrendTooltip({ active, payload, trend }: TooltipBodyProps) {
+  const { locale, t } = useI18n()
+  const datum = payload?.[0]?.payload
+  if (!active || !datum) return null
+  return (
+    <div className="grid gap-1 rounded-lg border bg-background px-2.5 py-1.5 text-xs shadow-xl">
+      <div className="text-muted-foreground">
+        {formatDay(datum.date, locale)}
+      </div>
+      <div className="font-medium tabular-nums">
+        {formatReading(
+          trend,
+          { value: datum.value, secondaryValue: datum.secondary },
+          locale
+        )}
+      </div>
+      {datum.flag ? (
+        <div className="font-medium">{t.timeline.flag[datum.flag]}</div>
+      ) : null}
+    </div>
   )
 }
