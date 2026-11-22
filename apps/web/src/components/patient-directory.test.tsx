@@ -104,6 +104,56 @@ describe("PatientDirectory", () => {
     expect(onSelect).toHaveBeenCalledWith("pat-jonah-reyes")
   })
 
+  it("flags patients with abnormal results, in English", async () => {
+    renderDirectory()
+    await screen.findByText("Amelia Rose Hartwell")
+
+    const amelia = screen.getByRole("option", { name: /Amelia/ })
+    expect(amelia).toHaveTextContent("2 abnormal")
+    expect(
+      within(amelia).getByText("2 abnormal results")
+    ).toBeInTheDocument()
+    const jonah = screen.getByRole("option", { name: /Jonah/ })
+    expect(jonah).toHaveTextContent("1 abnormal")
+    expect(within(jonah).getByText("1 abnormal result")).toBeInTheDocument()
+    // Nothing at 0.
+    const priya = screen.getByRole("option", { name: /Priya/ })
+    expect(priya).not.toHaveTextContent("abnormal")
+    expect(screen.getByRole("option", { name: /Okafor/ })).not.toHaveTextContent(
+      "abnormal"
+    )
+  })
+
+  it("flags abnormal results in German", async () => {
+    render(
+      <TestLocale locale="de">
+        <MockedProvider mocks={[ok]}>
+          <PatientDirectory selectedId={null} onSelect={vi.fn()} />
+        </MockedProvider>
+      </TestLocale>
+    )
+    const amelia = (await screen.findByText("Amelia Rose Hartwell")).closest(
+      "[role=option]"
+    ) as HTMLElement
+    expect(amelia).toHaveTextContent("2 auffällig")
+    expect(within(amelia).getByText("2 auffällige Werte")).toBeInTheDocument()
+    const jonah = screen
+      .getByText("Jonah Miguel Reyes")
+      .closest("[role=option]") as HTMLElement
+    expect(within(jonah).getByText("1 auffälliger Wert")).toBeInTheDocument()
+  })
+
+  it("keeps keyboard selection working on rows with badges", async () => {
+    const { user, onSelect } = renderDirectory()
+    await screen.findByText("Amelia Rose Hartwell")
+    await user.keyboard("/")
+    await user.keyboard("{ArrowDown}{Enter}")
+    // Jonah has a badge; he is the highlighted row after one ArrowDown.
+    expect(onSelect).toHaveBeenCalledWith("pat-jonah-reyes")
+    await user.keyboard("{ArrowUp}{Enter}")
+    expect(onSelect).toHaveBeenLastCalledWith("pat-amelia-hartwell")
+  })
+
   it("marks the selected patient", async () => {
     renderDirectory([ok], "pat-priya-natarajan")
     const priya = (await screen.findByText("Priya Natarajan")).closest(

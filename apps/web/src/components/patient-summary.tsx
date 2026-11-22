@@ -84,6 +84,20 @@ function PatientHeader({ patient }: { patient: PatientSummary }) {
         />
         <Fact label={t.patient.mrn} value={patient.mrn} />
       </dl>
+      <div className="flex flex-col gap-1">
+        <h3 className="text-xs text-muted-foreground">
+          {t.triage.activeDiagnoses}
+        </h3>
+        <p className="text-sm font-medium">
+          {patient.activeDiagnoses.length > 0 ? (
+            patient.activeDiagnoses.join(", ")
+          ) : (
+            <span className="font-normal text-muted-foreground">
+              {t.triage.none}
+            </span>
+          )}
+        </p>
+      </div>
     </header>
   )
 }
