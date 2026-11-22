@@ -1,3 +1,4 @@
+import { useId, useState } from "react"
 import { useQuery } from "@apollo/client/react"
 import {
   AlertCircleIcon,
@@ -7,7 +8,7 @@ import {
   TriangleAlertIcon,
   type LucideIcon,
 } from "lucide-react"
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
+import { Line, LineChart, YAxis } from "recharts"
 
 import { PatientTrendsSkeleton } from "@/components/patient-trends-skeleton"
 import { Alert, AlertAction, AlertTitle } from "@/components/ui/alert"
@@ -124,13 +125,14 @@ function summarize(trend: Trend, t: Messages, locale: Locale): string {
 type DotProps = {
   cx?: number
   cy?: number
+  index?: number
   payload?: Datum
   stroke?: string
 }
 
-/** Round dot; a flagged point is a larger diamond in the flag colour, so the shape carries the flag too. */
-function makeDot(secondary: boolean) {
-  return function Dot({ cx, cy, payload, stroke }: DotProps) {
+/** Dot only on the latest point and on flagged points; a flagged point is a diamond in the flag colour. */
+function makeDot(secondary: boolean, lastIndex: number) {
+  return function Dot({ cx, cy, index, payload, stroke }: DotProps) {
     if (cx === undefined || cy === undefined) return <g />
     const flag = payload?.flag ?? null
     if (flag) {
@@ -147,6 +149,7 @@ function makeDot(secondary: boolean) {
         />
       )
     }
+    if (index !== lastIndex) return <g />
     return (
       <circle
         cx={cx}
@@ -159,9 +162,6 @@ function makeDot(secondary: boolean) {
     )
   }
 }
-
-const SystolicDot = makeDot(false)
-const DiastolicDot = makeDot(true)
 
 type TooltipBodyProps = {
   active?: boolean
@@ -193,7 +193,7 @@ function TrendTooltip({ active, payload, trend }: TooltipBodyProps) {
 }
 
 function TrendChart({ trend }: { trend: Trend }) {
-  const { locale, t } = useI18n()
+  const { t } = useI18n()
   const data = trend.points.map(toDatum)
   const isPressure = trend.code === BLOOD_PRESSURE
   const values = allValues(data)
@@ -204,39 +204,21 @@ function TrendChart({ trend }: { trend: Trend }) {
     value: { label: t.trends.systolic, color: "var(--observation)" },
     secondary: { label: t.trends.diastolic, color: "var(--observation)" },
   }
+  const lastIndex = data.length - 1
+  const SystolicDot = makeDot(false, lastIndex)
+  const DiastolicDot = makeDot(true, lastIndex)
   return (
     <ChartContainer
       config={config}
-      className="aspect-auto h-32 w-full"
-      initialDimension={{ width: 320, height: 128 }}
+      className="aspect-auto h-10 w-full"
+      initialDimension={{ width: 240, height: 40 }}
     >
       <LineChart
         accessibilityLayer
         data={data}
-        margin={{ top: 8, right: 8, bottom: 0, left: 0 }}
+        margin={{ top: 6, right: 6, bottom: 4, left: 6 }}
       >
-        <CartesianGrid vertical={false} />
-        <XAxis
-          dataKey="time"
-          type="number"
-          scale="time"
-          domain={["dataMin", "dataMax"]}
-          tickCount={3}
-          padding={{ left: 8, right: 8 }}
-          tickLine={false}
-          tickMargin={6}
-          tickFormatter={(time: number) =>
-            formatDay(new Date(time).toISOString(), locale)
-          }
-        />
-        <YAxis
-          width={36}
-          tickCount={3}
-          axisLine={false}
-          tickLine={false}
-          domain={[min - pad, max + pad]}
-          tickFormatter={(v: number) => formatNumber(v, locale, 0)}
-        />
+        <YAxis hide domain={[min - pad, max + pad]} />
         <ChartTooltip
           isAnimationActive={false}
           content={<TrendTooltip trend={trend} />}
@@ -248,7 +230,7 @@ function TrendChart({ trend }: { trend: Trend }) {
           strokeWidth={2}
           isAnimationActive={false}
           dot={SystolicDot}
-          activeDot={{ r: 5 }}
+          activeDot={{ r: 4 }}
         />
         {isPressure ? (
           <Line
@@ -259,7 +241,7 @@ function TrendChart({ trend }: { trend: Trend }) {
             strokeDasharray="5 3"
             isAnimationActive={false}
             dot={DiastolicDot}
-            activeDot={{ r: 5 }}
+            activeDot={{ r: 4 }}
           />
         ) : null}
       </LineChart>
@@ -275,13 +257,13 @@ function TrendCard({ trend }: { trend: Trend }) {
   return (
     <li>
       <Card size="sm" className="h-full">
-        <CardContent className="flex flex-col gap-2">
+        <CardContent className="flex flex-col gap-1">
           <div className="flex items-start justify-between gap-2">
             <div className="flex min-w-0 flex-col">
               <h4 className="text-xs text-muted-foreground">
                 {trendTitle(trend, t)}
               </h4>
-              <p className="text-2xl font-semibold tabular-nums">
+              <p className="text-xl leading-tight font-semibold tabular-nums">
                 {formatReading(trend, latest, locale)}
               </p>
               <p className="text-xs text-muted-foreground">
@@ -295,24 +277,6 @@ function TrendCard({ trend }: { trend: Trend }) {
               </Badge>
             ) : null}
           </div>
-          {trend.code === BLOOD_PRESSURE ? (
-            <p className="flex gap-3 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1.5">
-                <span
-                  className="w-4 border-t-2 border-current"
-                  aria-hidden="true"
-                />
-                {t.trends.systolic}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span
-                  className="w-4 border-t-2 border-dashed border-current"
-                  aria-hidden="true"
-                />
-                {t.trends.diastolic}
-              </span>
-            </p>
-          ) : null}
           <p className="sr-only">{summarize(trend, t, locale)}</p>
           <TrendChart trend={trend} />
         </CardContent>
@@ -321,10 +285,23 @@ function TrendCard({ trend }: { trend: Trend }) {
   )
 }
 
+const VISIBLE_KEY = "trends-visible"
+
+/** Only "true" and "false" are accepted; anything else (or blocked storage) means visible. */
+function readVisible(): boolean {
+  try {
+    return window.localStorage.getItem(VISIBLE_KEY) !== "false"
+  } catch {
+    return true
+  }
+}
+
 type PatientTrendsProps = { patientId: string }
 
 export function PatientTrends({ patientId }: PatientTrendsProps) {
   const { t } = useI18n()
+  const [visible, setVisible] = useState(readVisible)
+  const panelId = useId()
   const { data, loading, error, refetch } = useQuery(PATIENT_TRENDS_QUERY, {
     variables: { id: patientId },
   })
@@ -333,11 +310,34 @@ export function PatientTrends({ patientId }: PatientTrendsProps) {
 
   if (!error && !pending && trends.length === 0) return null
 
+  function toggle() {
+    const next = !visible
+    setVisible(next)
+    try {
+      window.localStorage.setItem(VISIBLE_KEY, String(next))
+    } catch {
+      // Not persisted when storage is blocked; the choice still applies this session.
+    }
+  }
+
   return (
-    <section className="flex flex-col gap-3" aria-labelledby="trends-heading">
-      <h3 id="trends-heading" className="text-sm font-medium">
-        {t.trends.title}
-      </h3>
+    <section className="flex flex-col gap-2" aria-labelledby="trends-heading">
+      <div className="flex items-center justify-between gap-2">
+        <h3 id="trends-heading" className="text-sm font-medium">
+          {t.trends.title}
+        </h3>
+        {!error && !pending ? (
+          <Button
+            size="xs"
+            variant="ghost"
+            aria-expanded={visible}
+            aria-controls={panelId}
+            onClick={toggle}
+          >
+            {visible ? t.trends.hide : t.trends.show}
+          </Button>
+        ) : null}
+      </div>
       {error ? (
         <Alert variant="destructive">
           <AlertCircleIcon />
@@ -352,11 +352,19 @@ export function PatientTrends({ patientId }: PatientTrendsProps) {
       ) : pending ? (
         <PatientTrendsSkeleton />
       ) : (
-        <ul className="grid gap-3 md:grid-cols-2">
-          {trends.map((trend) => (
-            <TrendCard key={trend.id} trend={trend} />
-          ))}
-        </ul>
+        <div id={panelId}>
+          {visible ? (
+            <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {trends.map((trend) => (
+                <TrendCard key={trend.id} trend={trend} />
+              ))}
+            </ul>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              {t.trends.hidden(trends.length)}
+            </p>
+          )}
+        </div>
       )}
     </section>
   )

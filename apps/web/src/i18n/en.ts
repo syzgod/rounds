@@ -139,6 +139,10 @@ const messages = {
     loadError: "Couldn't load trends.",
     systolic: "Systolic",
     diastolic: "Diastolic",
+    hide: "Hide",
+    show: "Show",
+    hidden: (n: number): string =>
+      n === 1 ? "1 measurement hidden" : `${n} measurements hidden`,
     names: {
       "4548-4": "HbA1c",
       "85354-9": "Blood pressure",
