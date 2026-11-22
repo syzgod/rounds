@@ -1,7 +1,8 @@
 # Render Blueprint for the live demo: the GraphQL API (Node web service) and
 # the web app (static site), both in Frankfurt. Free plan: the API sleeps when
 # idle, so the first request after a pause takes about 30 seconds.
-# Render appends the Blueprint suffix "-ntj2" to service names, hence the URLs below.
+# Service URLs get a random suffix when a name is taken, so the two cross-service
+# URLs are `sync: false`: entered once after creation, never overwritten by syncs.
 # pnpm runs through Corepack, at the version in package.json "packageManager".
 services:
   - type: web
@@ -20,8 +21,8 @@ services:
         value: "24"
       - key: NODE_ENV
         value: production
-      - key: WEB_ORIGIN
-        value: https://rounds-web-ntj2.onrender.com
+      - key: WEB_ORIGIN # https://<web service>.onrender.com
+        sync: false
 
   - type: web
     name: rounds-web
@@ -33,5 +34,5 @@ services:
     envVars:
       - key: NODE_VERSION
         value: "24"
-      - key: VITE_GRAPHQL_URL
-        value: https://rounds-api-ntj2.onrender.com/graphql
+      - key: VITE_GRAPHQL_URL # https://<api service>.onrender.com/graphql
+        sync: false
