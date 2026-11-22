@@ -21,7 +21,7 @@ paths:
 
 - Import core APIs from `@apollo/client` (`ApolloClient`, `InMemoryCache`, `HttpLink`, `gql`) and React APIs from **`@apollo/client/react`** (`ApolloProvider`, `useQuery`, `useMutation`, …).
 - The client is created once in `src/lib/apollo-client.ts` with an explicit `HttpLink` pointing at `import.meta.env.VITE_GRAPHQL_URL` (default `http://localhost:3000/graphql`). Leave the `ApolloClient` constructor without `uri` or `headers` options, because v4 removed them.
-- Type every operation as `TypedDocumentNode<Data, Variables>` and handle the case where `data` is undefined.
+- Type every operation as `TypedDocumentNode<XQuery, XQueryVariables>` with the types from `src/graphql/__generated__/graphql.ts`. Run `pnpm --filter web codegen` after changing an operation or `schema.gql`; never edit the generated file. Handle the case where `data` is undefined.
 - Select `id` (and `__typename`, which Apollo adds automatically) on every object so the default `InMemoryCache` normalizes it. Leave `keyFields` and `typePolicies` alone unless a specific case needs them.
 - Select `rawJson` only in the Resource Inspector's own query. Directory and timeline queries leave it out, so lists stay small and the Inspector fetches it only when opened.
 - `ApolloError` no longer exists. `error` is an `ErrorLike` (`import type { ErrorLike } from "@apollo/client"`); narrow it with the static guards `CombinedGraphQLErrors.is(error)`, `ServerError.is(error)` and `ServerParseError.is(error)` from `@apollo/client/errors`, and fall back to a generic network message.

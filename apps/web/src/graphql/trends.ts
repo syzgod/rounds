@@ -1,45 +1,19 @@
 import type { TypedDocumentNode } from "@apollo/client"
 import { gql } from "@apollo/client"
 
-import type { ObservationFlag } from "@/graphql/timeline"
+import type {
+  PatientTrendsQuery,
+  PatientTrendsQueryVariables,
+} from "@/graphql/__generated__/graphql"
 
-/** Mirrors `type TrendPoint` in apps/api/src/schema.gql. */
-export type TrendPoint = {
-  __typename: "TrendPoint"
-  id: string
-  date: string
-  value: number
-  /** Diastolic pressure for blood pressure (85354-9); null for other series. */
-  secondaryValue: number | null
-  flag: ObservationFlag | null
-}
-
-/** Mirrors `type Trend` in apps/api/src/schema.gql (points oldest to newest, at least two). */
-export type Trend = {
-  __typename: "Trend"
-  id: string
-  /** LOINC code of the series. */
-  code: string
-  title: string
-  unit: string | null
-  /** Normal range from the latest measurement (systolic for blood pressure); null when unknown. */
-  referenceLow: number | null
-  referenceHigh: number | null
-  /** Normal range of the diastolic pressure; null for other series. */
-  secondaryReferenceLow: number | null
-  secondaryReferenceHigh: number | null
-  points: TrendPoint[]
-}
+/** One measurement series; points oldest to newest, at least two. */
+export type Trend = NonNullable<PatientTrendsQuery["patient"]>["trends"][number]
+/** One reading; `secondaryValue` is the diastolic pressure for 85354-9. */
+export type TrendPoint = Trend["points"][number]
 
 export const PATIENT_TRENDS_QUERY: TypedDocumentNode<
-  {
-    patient: {
-      __typename: "Patient"
-      id: string
-      trends: Trend[]
-    } | null
-  },
-  { id: string }
+  PatientTrendsQuery,
+  PatientTrendsQueryVariables
 > = gql`
   query PatientTrends($id: ID!) {
     patient(id: $id) {
