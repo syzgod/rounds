@@ -2,6 +2,11 @@
 type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 /** Internal type. DO NOT USE DIRECTLY. */
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+/** LOCAL: the demo bundles. LIVE: a public FHIR R4 test server (read-only). */
+export type DataSource =
+  | 'LIVE'
+  | 'LOCAL';
+
 /** FHIR R4 administrative gender. */
 export type Gender =
   | 'FEMALE'
@@ -28,7 +33,9 @@ export type HealthQuery = { health: string };
 
 export type PatientSummaryFieldsFragment = { __typename: 'Patient', id: string, displayName: string, gender: Gender | null, birthDate: string | null, mrn: string | null, activeDiagnoses: Array<string>, abnormalResultCount: number };
 
-export type PatientsQueryVariables = Exact<{ [key: string]: never; }>;
+export type PatientsQueryVariables = Exact<{
+  source: DataSource;
+}>;
 
 
 export type PatientsQuery = { patients: Array<{ __typename: 'Patient', id: string, displayName: string, gender: Gender | null, birthDate: string | null, mrn: string | null, activeDiagnoses: Array<string>, abnormalResultCount: number }> };

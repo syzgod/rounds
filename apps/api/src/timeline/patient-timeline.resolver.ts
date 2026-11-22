@@ -12,7 +12,7 @@ export class PatientTimelineResolver {
     description:
       "The patient's Encounters, Conditions and Observations, newest first; undated events last.",
   })
-  timeline(@Parent() patient: PatientDto): TimelineEventDto[] {
+  timeline(@Parent() patient: PatientDto): Promise<TimelineEventDto[]> {
     return this.timelineService.getTimeline(patient.id);
   }
 }

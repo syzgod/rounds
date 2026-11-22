@@ -30,8 +30,8 @@ export const PATIENTS_QUERY: TypedDocumentNode<
   PatientsQuery,
   PatientsQueryVariables
 > = gql`
-  query Patients {
-    patients {
+  query Patients($source: DataSource!) {
+    patients(source: $source) {
       ...PatientSummaryFields
     }
   }

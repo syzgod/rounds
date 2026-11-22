@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/command"
 import { Kbd } from "@/components/ui/kbd"
 import { Skeleton } from "@/components/ui/skeleton"
+import { DataSourceSwitch } from "@/components/data-source-switch"
+import type { DataSource } from "@/graphql/__generated__/graphql"
 import { PATIENTS_QUERY, type PatientSummary } from "@/graphql/patients"
 import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { useI18n } from "@/i18n/locale-provider"
@@ -25,6 +27,9 @@ import { ageInYears, formatGenderShort, initials } from "@/lib/format"
 type PatientDirectoryProps = {
   selectedId: string | null
   onSelect: (id: string) => void
+  /** Demo patients (default) or the live FHIR test server. */
+  source?: DataSource
+  onSourceChange?: (next: DataSource) => void
 }
 
 /** Case-insensitive match on display name or MRN; keeps the API's sort order. */
@@ -79,9 +84,13 @@ function useSlashToFocus(target: React.RefObject<HTMLInputElement | null>) {
 export function PatientDirectory({
   selectedId,
   onSelect,
+  source = "LOCAL",
+  onSourceChange,
 }: PatientDirectoryProps) {
   const { t } = useI18n()
-  const { data, loading, error, refetch } = useQuery(PATIENTS_QUERY)
+  const { data, loading, error, refetch } = useQuery(PATIENTS_QUERY, {
+    variables: { source },
+  })
   const [search, setSearch] = useState("")
   // cmdk's highlighted row; follows the selection (e.g. on Back/Forward).
   const [highlighted, setHighlighted] = useState(selectedId ?? "")
@@ -116,6 +125,9 @@ export function PatientDirectory({
           {t.directory.searchKey} <Kbd>/</Kbd>
         </span>
       </div>
+      {onSourceChange ? (
+        <DataSourceSwitch value={source} onChange={onSourceChange} />
+      ) : null}
 
       <Command
         // cmdk names its input via aria-labelledby -> this (visually hidden) label.

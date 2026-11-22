@@ -48,6 +48,13 @@ const messages = {
     online: "Online",
     offline: "Offline",
   },
+  dataSource: {
+    label: "Patient data source",
+    local: "Demo patients",
+    live: "Test server",
+    liveNote:
+      "Synthetic data from the public SMART test server, without normal ranges or flags.",
+  },
   directory: {
     navLabel: "Patient directory",
     title: "Patients",

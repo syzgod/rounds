@@ -26,6 +26,14 @@ type AuditEntry {
   resourceId: ID!
 }
 
+"""
+LOCAL: the demo bundles. LIVE: a public FHIR R4 test server (read-only).
+"""
+enum DataSource {
+  LIVE
+  LOCAL
+}
+
 """FHIR R4 administrative gender."""
 enum Gender {
   FEMALE
@@ -92,11 +100,15 @@ type Query {
   """Liveness probe used by the web client status badge."""
   health: String!
 
-  """One patient by FHIR id; null when no such patient exists."""
+  """
+  One patient by id ("live-<id>" for the live server); null when no such patient exists.
+  """
   patient(id: ID!): Patient
 
-  """All patients, sorted by display name."""
-  patients: [Patient!]!
+  """
+  All patients of a source, sorted by display name. LIVE reads a public FHIR test server.
+  """
+  patients(source: DataSource! = LOCAL): [Patient!]!
 
   """
   One timeline event by "<ResourceType>/<id>"; null when no such event exists.
