@@ -134,3 +134,14 @@ export function formatTimeRange(
     .join(" ")
   return startTime ? `${startTime} – ${endLabel}` : t.common.until(endLabel)
 }
+
+/** Locale-aware number with at most `digits` decimals: en "7.1", de "7,1". */
+export function formatNumber(
+  value: number,
+  locale: Locale,
+  digits = 1
+): string {
+  return new Intl.NumberFormat(INTL_LOCALE[locale], {
+    maximumFractionDigits: digits,
+  }).format(value)
+}

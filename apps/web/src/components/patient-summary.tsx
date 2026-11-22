@@ -1,7 +1,9 @@
+import { lazy, Suspense } from "react"
 import { useQuery } from "@apollo/client/react"
 import { AlertCircleIcon, RotateCwIcon, UserXIcon } from "lucide-react"
 
 import { PatientTimeline } from "@/components/patient-timeline"
+import { PatientTrendsSkeleton } from "@/components/patient-trends-skeleton"
 
 import { Alert, AlertAction, AlertTitle } from "@/components/ui/alert"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
@@ -23,6 +25,13 @@ import {
   formatGender,
   initials,
 } from "@/lib/format"
+
+// Recharts is heavy: load the trends section (and the library) in its own chunk.
+const PatientTrends = lazy(() =>
+  import("@/components/patient-trends").then((m) => ({
+    default: m.PatientTrends,
+  }))
+)
 
 type PatientSummaryPanelProps = {
   patientId: string
@@ -155,6 +164,9 @@ export function PatientSummaryPanel({
     <div className="flex flex-col gap-6">
       <PatientHeader patient={patient} />
       <Separator />
+      <Suspense fallback={<PatientTrendsSkeleton />}>
+        <PatientTrends patientId={patient.id} />
+      </Suspense>
       <section className="flex flex-col gap-3">
         <h3 id="timeline-heading" className="text-sm font-medium">
           {t.timeline.title}
