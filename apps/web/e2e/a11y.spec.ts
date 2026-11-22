@@ -41,27 +41,19 @@ async function openAmelia(page: Page, scheme: Scheme) {
   await expect(page.locator("html")).toHaveClass(new RegExp(scheme))
 }
 
-// Finding: axe "color-contrast" (serious), light mode only. The highlighted
-// directory row (bg #f5f5f5) renders text-muted-foreground (#737373) at 4.34:1
-// (< 4.5:1): avatar initials, MRN line, and the "/" Kbd hint. Dark mode passes.
-const KNOWN_CONTRAST = "axe color-contrast in light mode: muted text on #f5f5f5"
-
 for (const scheme of SCHEMES) {
   test.describe(`axe, ${scheme} mode`, () => {
     test("empty start view", async ({ page }) => {
-      test.fixme(scheme === "light", KNOWN_CONTRAST)
       await openStart(page, scheme)
       await scan(page)
     })
 
     test("Amelia's record", async ({ page }) => {
-      test.fixme(scheme === "light", KNOWN_CONTRAST)
       await openAmelia(page, scheme)
       await scan(page)
     })
 
     test("source dialog open", async ({ page }) => {
-      test.fixme(scheme === "light", KNOWN_CONTRAST)
       await openAmelia(page, scheme)
       await page
         .getByRole("button", { name: "FHIR-Rohdaten anzeigen", exact: true })

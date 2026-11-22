@@ -66,7 +66,8 @@
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
+  /* 0.52 (not shadcn's 0.556): 4.98:1 on --muted/--accent, WCAG AA; found by axe. */
+  --muted-foreground: oklch(0.52 0 0);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   /* Darkened from shadcn's 0.577 so small red text on its 10% tint meets AA (4.87:1). */
