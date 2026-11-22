@@ -11,6 +11,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty"
 import { Kbd, KbdGroup } from "@/components/ui/kbd"
+import { useDataSource } from "@/hooks/use-data-source"
 import { useSelectedPatient } from "@/hooks/use-selected-patient"
 import { useI18n } from "@/i18n/locale-provider"
 
@@ -50,6 +51,7 @@ function NoPatientSelected() {
 export function App() {
   const { t } = useI18n()
   const [selectedId, setSelectedId] = useSelectedPatient()
+  const [source, setSource] = useDataSource()
 
   return (
     <div className="flex h-svh flex-col">
@@ -64,7 +66,12 @@ export function App() {
       <div className="grid min-h-0 flex-1 grid-rows-[minmax(0,16rem)_1fr] lg:grid-cols-[20rem_1fr] lg:grid-rows-1 xl:grid-cols-[24rem_1fr]">
         {/* Plain wrapper: the <nav> inside is the landmark (an <aside> would add a second one). */}
         <div className="flex min-h-0 flex-col border-b bg-sidebar text-sidebar-foreground lg:border-r lg:border-b-0">
-          <PatientDirectory selectedId={selectedId} onSelect={setSelectedId} />
+          <PatientDirectory
+            selectedId={selectedId}
+            onSelect={setSelectedId}
+            source={source}
+            onSourceChange={setSource}
+          />
         </div>
         <main
           id="main-content"

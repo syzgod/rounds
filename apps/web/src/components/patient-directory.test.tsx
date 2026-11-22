@@ -13,7 +13,7 @@ import { TestLocale } from "@/test/i18n"
 import { PATIENTS } from "@/test/patients.fixtures"
 
 const ok: MockLink.MockedResponse = {
-  request: { query: PATIENTS_QUERY },
+  request: { query: PATIENTS_QUERY, variables: { source: "LOCAL" } },
   result: { data: { patients: PATIENTS } },
 }
 
@@ -110,18 +110,16 @@ describe("PatientDirectory", () => {
 
     const amelia = screen.getByRole("option", { name: /Amelia/ })
     expect(amelia).toHaveTextContent("2 abnormal")
-    expect(
-      within(amelia).getByText("2 abnormal results")
-    ).toBeInTheDocument()
+    expect(within(amelia).getByText("2 abnormal results")).toBeInTheDocument()
     const jonah = screen.getByRole("option", { name: /Jonah/ })
     expect(jonah).toHaveTextContent("1 abnormal")
     expect(within(jonah).getByText("1 abnormal result")).toBeInTheDocument()
     // Nothing at 0.
     const priya = screen.getByRole("option", { name: /Priya/ })
     expect(priya).not.toHaveTextContent("abnormal")
-    expect(screen.getByRole("option", { name: /Okafor/ })).not.toHaveTextContent(
-      "abnormal"
-    )
+    expect(
+      screen.getByRole("option", { name: /Okafor/ })
+    ).not.toHaveTextContent("abnormal")
   })
 
   it("flags abnormal results in German", async () => {
@@ -163,10 +161,47 @@ describe("PatientDirectory", () => {
     expect(priya).toHaveAttribute("aria-selected", "true")
   })
 
+  it("switches to the test server and loads its patients", async () => {
+    const onSourceChange = vi.fn<(next: "LOCAL" | "LIVE") => void>()
+    const live: MockLink.MockedResponse = {
+      request: { query: PATIENTS_QUERY, variables: { source: "LIVE" } },
+      result: {
+        data: {
+          patients: [
+            { ...PATIENTS[0]!, id: "live-p1", displayName: "Juan Stracke" },
+          ],
+        },
+      },
+    }
+    const user = userEvent.setup()
+    const view = (source: "LOCAL" | "LIVE") => (
+      <TestLocale>
+        <MockedProvider mocks={[ok, live]}>
+          <PatientDirectory
+            selectedId={null}
+            onSelect={vi.fn()}
+            source={source}
+            onSourceChange={onSourceChange}
+          />
+        </MockedProvider>
+      </TestLocale>
+    )
+    const { rerender } = render(view("LOCAL"))
+    const group = screen.getByRole("group", { name: "Patient data source" })
+    await user.click(within(group).getByRole("button", { name: "Test server" }))
+    expect(onSourceChange).toHaveBeenCalledWith("LIVE")
+
+    rerender(view("LIVE"))
+    expect(await screen.findByText("Juan Stracke")).toBeInTheDocument()
+    expect(
+      screen.getByText(/Synthetic data from the public SMART test server/)
+    ).toBeInTheDocument()
+  })
+
   it("shows an error with a retry button", async () => {
     renderDirectory([
       {
-        request: { query: PATIENTS_QUERY },
+        request: { query: PATIENTS_QUERY, variables: { source: "LOCAL" } },
         error: new Error("Failed to fetch"),
       },
     ])

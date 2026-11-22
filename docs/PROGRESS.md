@@ -38,6 +38,7 @@ Kept short. Read this at the start of a session and update it at the end. Milest
 
 ## Fixed
 
+- Live FHIR source: switch "Demo-Patienten | Testserver" reads 8 Synthea patients from the SMART sandbox (read-only, 10-min cache, `live-` ids). The sandbox has no flags or normal ranges, so live badges stay empty.
 - Acknowledge open results (user-approved write): initials asked once, in-memory store with an append-only audit log (`Patient.auditLog`), badge counts only open results, button only on the latest flagged reading per measurement.
 - Agent docs trimmed: CLAUDE.md + rules 2,191 → 1,291 words, one source per rule, ASD-STE100 style.
 - GraphQL Code Generator: web operation types come from `schema.gql` (`pnpm --filter web codegen`, `typescript-operations` only, no runtime code). CI fails when they are stale.
@@ -57,6 +58,7 @@ Kept short. Read this at the start of a session and update it at the end. Milest
 
 ## Suggestions
 
+- Live patients show many trend cards (about 29: Synthea records many labs). Consider showing vitals first or the first 6 with "Mehr anzeigen".
 - A long diagnosis list is untested: the fixtures have at most 2 active diagnoses.
 - Have a German clinician sanity-check the terms (Verlauf, Befunde, Erhöht/Erniedrigt, auffällig, Vitalwerte vs. Vitalzeichen, Behandlungsdiagnose).
 - Index resources by subject, or add DataLoader, if the data grows.
