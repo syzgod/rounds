@@ -18,9 +18,13 @@ Kept short. Read this at the start of a session and update it at the end. Milest
 
 - **Charts revised:** normal ranges, min/max and date labels on the cards, and a "Details" dialog with labelled axes and a value table (#19, #20).
 
+- **Favicon** (#22). #19–#22 are merged into `main`.
+- **Branching:** work goes into `develop`. Only `main` deploys to Render.
+- **Agent setup:** removed unused skills; added `vercel-react-best-practices` and `vercel-composition-patterns`.
+
 ## Start here (next session)
 
-1. **Merge #19, then #20.** #19 is the API reference ranges, with lab flags now consistent with them. Triage counts change: Amelia 3, Tomasz 1. #20 is the web chart context, stacked on #19. CI is green on both.
+1. **Error boundary PR** into `develop`: a failed chart chunk must not blank the app.
 2. **Visual check with the Playwright MCP** (`.mcp.json`), running `pnpm dev` locally or using the live demo. No one has looked at the UI in a real browser yet. Check, in light and dark mode, German and English, and at narrow and wide widths:
    - **Charts:**
      - Do the min/max labels line up when the normal band widens the y-range?
@@ -30,7 +34,7 @@ Kept short. Read this at the start of a session and update it at the end. Milest
    - **Measurement strip:** card density at 3 per row, and the position of "Ausblenden".
    - **Triage:** badge wrapping on narrow rows, warning colour contrast, a long diagnosis list.
    - **Source viewer:** how noisy the "FHIR" row buttons are, the header button on narrow widths, the dialog in dark mode, a real clipboard copy.
-3. **Clean up** the leftover worktrees `D:/Developer/Projects/rounds-wt-contrast` and `rounds-wt-ranges` once #19 and #20 are merged.
+3. **Clean up** the leftover worktrees `D:/Developer/Projects/rounds-wt-contrast` and `rounds-wt-ranges` (both merged and clean).
 
 ## Next
 
