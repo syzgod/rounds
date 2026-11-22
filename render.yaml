@@ -1,0 +1,36 @@
+# Render Blueprint for the live demo: the GraphQL API (Node web service) and
+# the web app (static site), both in Frankfurt. Free plan: the API sleeps when
+# idle, so the first request after a pause takes about 30 seconds.
+# pnpm runs through Corepack, at the version in package.json "packageManager".
+services:
+  - type: web
+    name: rounds-api
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: corepack pnpm install --frozen-lockfile && corepack pnpm --filter api run build
+    # cwd apps/api, so FHIR_DATA_DIR defaults to ../../data/fhir.
+    startCommand: cd apps/api && node dist/main
+    healthCheckPath: /
+    buildFilter:
+      paths: [apps/api/**, data/fhir/**, package.json, pnpm-lock.yaml, pnpm-workspace.yaml, render.yaml]
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: NODE_ENV
+        value: production
+      - key: WEB_ORIGIN
+        value: https://rounds-web.onrender.com
+
+  - type: web
+    name: rounds-web
+    runtime: static
+    buildCommand: corepack pnpm install --frozen-lockfile && corepack pnpm --filter web run build
+    staticPublishPath: apps/web/dist
+    buildFilter:
+      paths: [apps/web/**, package.json, pnpm-lock.yaml, pnpm-workspace.yaml, render.yaml]
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: VITE_GRAPHQL_URL
+        value: https://rounds-api.onrender.com/graphql
