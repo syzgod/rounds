@@ -1,6 +1,6 @@
 import { MockedProvider } from "@apollo/client/testing/react"
 import type { MockLink } from "@apollo/client/testing"
-import { render, screen, within } from "@testing-library/react"
+import { render, screen, waitFor, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
@@ -52,7 +52,10 @@ describe("PatientDirectory", () => {
       screen.getByText("F · 39 y · MRN-100001", { exact: false })
     ).toBeTruthy()
     expect(screen.getByText("No details recorded")).toBeInTheDocument()
-    expect(screen.getByRole("status")).toHaveTextContent("4 patients")
+    // The live region is debounced (announced once typing pauses).
+    await waitFor(() =>
+      expect(screen.getByRole("status")).toHaveTextContent("4 patients")
+    )
   })
 
   it("filters by name or MRN as you type", async () => {
@@ -65,7 +68,9 @@ describe("PatientDirectory", () => {
     await user.type(search, "pri")
     expect(options()).toHaveLength(1)
     expect(options()[0]).toHaveTextContent("Priya Natarajan")
-    expect(screen.getByRole("status")).toHaveTextContent("1 of 4 patients")
+    await waitFor(() =>
+      expect(screen.getByRole("status")).toHaveTextContent("1 of 4 patients")
+    )
 
     await user.clear(search)
     await user.type(search, "100002")

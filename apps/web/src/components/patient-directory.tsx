@@ -21,6 +21,7 @@ import {
 import { Kbd } from "@/components/ui/kbd"
 import { Skeleton } from "@/components/ui/skeleton"
 import { PATIENTS_QUERY, type PatientSummary } from "@/graphql/patients"
+import { useDebouncedValue } from "@/hooks/use-debounced-value"
 import { ageInYears, formatGenderShort, initials } from "@/lib/format"
 
 type PatientDirectoryProps = {
@@ -99,6 +100,11 @@ export function PatientDirectory({
     () => filterPatients(patients, search),
     [patients, search]
   )
+  const resultCount =
+    visible.length === patients.length
+      ? `${patients.length} patients`
+      : `${visible.length} of ${patients.length} patients`
+  const announcedCount = useDebouncedValue(resultCount, 500)
 
   return (
     <nav
@@ -194,16 +200,14 @@ export function PatientDirectory({
       </Command>
 
       {data ? (
-        <p
-          className="px-1 text-xs text-muted-foreground"
-          role="status"
-          aria-live="polite"
-        >
-          {visible.length === patients.length
-            ? `${patients.length} patients`
-            : `${visible.length} of ${patients.length} patients`}
+        <p className="px-1 text-xs text-muted-foreground" aria-hidden="true">
+          {resultCount}
         </p>
       ) : null}
+      {/* Always mounted; announces the count once typing pauses, not per keystroke. */}
+      <p className="sr-only" role="status" aria-live="polite">
+        {data ? announcedCount : ""}
+      </p>
     </nav>
   )
 }

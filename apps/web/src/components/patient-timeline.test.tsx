@@ -1,0 +1,208 @@
+import { MockedProvider } from "@apollo/client/testing/react"
+import type { MockLink } from "@apollo/client/testing"
+import { render, screen, within } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
+import { describe, expect, it } from "vitest"
+
+import { PatientTimeline, groupByDay } from "@/components/patient-timeline"
+import { PATIENT_TIMELINE_QUERY, type TimelineEvent } from "@/graphql/timeline"
+
+function event(
+  partial: Partial<TimelineEvent> & Pick<TimelineEvent, "id" | "kind">
+): TimelineEvent {
+  return {
+    __typename: "TimelineEvent",
+    date: null,
+    endDate: null,
+    title: partial.id,
+    detail: null,
+    category: null,
+    status: null,
+    flag: null,
+    ...partial,
+  }
+}
+
+/** A slice of Amelia's timeline (API order: newest first). */
+const EVENTS: TimelineEvent[] = [
+  event({
+    id: "Observation/obs-glucose",
+    kind: "OBSERVATION",
+    date: "2025-02-03T21:25:00Z",
+    title: "Blood glucose",
+    detail: "52 mg/dL",
+    category: "Laboratory",
+    status: "final",
+    flag: "LOW",
+  }),
+  event({
+    id: "Encounter/enc-er",
+    kind: "ENCOUNTER",
+    date: "2025-02-03T21:10:00Z",
+    endDate: "2025-02-04T01:30:00Z",
+    title: "Emergency visit",
+    category: "Emergency",
+    status: "finished",
+  }),
+  event({
+    id: "Condition/cond-hypo",
+    kind: "CONDITION",
+    date: "2025-02-03T21:10:00Z",
+    endDate: "2025-02-04T01:30:00Z",
+    title: "Hypoglycemia",
+    category: "Encounter diagnosis",
+    status: "resolved",
+  }),
+  event({
+    id: "Observation/obs-bp",
+    kind: "OBSERVATION",
+    date: "2024-01-09T14:35:00Z",
+    title: "Blood pressure",
+    detail: "142/91 mmHg",
+    category: "Vital signs",
+    status: "final",
+  }),
+  event({
+    id: "Condition/cond-t2dm",
+    kind: "CONDITION",
+    date: "2019-05-02",
+    title: "Type 2 diabetes mellitus",
+    category: "Problem list item",
+    status: "active",
+  }),
+]
+
+function timelineMock(
+  id: string,
+  timeline: TimelineEvent[]
+): MockLink.MockedResponse {
+  return {
+    request: { query: PATIENT_TIMELINE_QUERY, variables: { id } },
+    result: { data: { patient: { __typename: "Patient", id, timeline } } },
+  }
+}
+
+function renderTimeline(mocks: ReadonlyArray<MockLink.MockedResponse>) {
+  render(
+    <MockedProvider mocks={mocks}>
+      <PatientTimeline patientId="pat-amelia-hartwell" />
+    </MockedProvider>
+  )
+  return userEvent.setup()
+}
+
+const items = () => screen.getAllByRole("listitem")
+const dayHeadings = () =>
+  screen.getAllByRole("heading", { level: 4 }).map((h) => h.textContent)
+
+describe("PatientTimeline", () => {
+  it("shows a loading state, then events grouped by day, newest first", async () => {
+    renderTimeline([timelineMock("pat-amelia-hartwell", EVENTS)])
+
+    expect(screen.getByLabelText("Loading timeline")).toBeInTheDocument()
+    await screen.findByText("Blood glucose")
+
+    expect(dayHeadings()).toEqual(["3 Feb 2025", "9 Jan 2024", "2 May 2019"])
+    const firstDay = screen.getByRole("list", { name: "3 Feb 2025" })
+    expect(within(firstDay).getAllByRole("listitem")).toHaveLength(3)
+    expect(screen.getByRole("status")).toHaveTextContent("5 events")
+  })
+
+  it("shows results, flags, statuses and times", async () => {
+    renderTimeline([timelineMock("pat-amelia-hartwell", EVENTS)])
+    const glucose = (await screen.findByText("Blood glucose")).closest("li")
+    if (!glucose) throw new Error("glucose item not found")
+
+    expect(within(glucose).getByText("52 mg/dL")).toBeInTheDocument()
+    expect(within(glucose).getByText("Low")).toBeInTheDocument()
+    expect(glucose).toHaveTextContent("Observation · Laboratory · 21:25")
+    // "final" is the normal state and is not shown as a badge.
+    expect(within(glucose).queryByText("Final")).not.toBeInTheDocument()
+
+    const er = screen.getByText("Emergency visit").closest("li")
+    expect(er).toHaveTextContent("21:10 – 4 Feb 2025 01:30")
+
+    const hypo = screen.getByText("Hypoglycemia").closest("li")
+    expect(hypo).toHaveTextContent("Resolved")
+    expect(hypo).toHaveTextContent("Encounter diagnosis · until 4 Feb 2025")
+
+    // A date-only onset is never shifted by time zone.
+    expect(
+      screen.getByText("Type 2 diabetes mellitus").closest("li")
+    ).toHaveTextContent("Active")
+  })
+
+  it("filters by type with the keyboard", async () => {
+    const user = renderTimeline([timelineMock("pat-amelia-hartwell", EVENTS)])
+    await screen.findByText("Blood glucose")
+    const group = screen.getByRole("group", { name: "Filter timeline by type" })
+    const all = within(group).getByRole("button", { name: /^All/ })
+    expect(all).toHaveAttribute("aria-pressed", "true")
+
+    // Tab into the toggle group, arrow to "Conditions", press Space.
+    all.focus()
+    await user.keyboard("{ArrowRight}{ArrowRight}")
+    const conditions = within(group).getByRole("button", {
+      name: /^Conditions/,
+    })
+    expect(conditions).toHaveFocus()
+    await user.keyboard(" ")
+
+    expect(conditions).toHaveAttribute("aria-pressed", "true")
+    expect(items()).toHaveLength(2)
+    expect(screen.queryByText("Blood glucose")).not.toBeInTheDocument()
+    expect(screen.getByRole("status")).toHaveTextContent("2 of 5 events")
+
+    // Pressing the active filter again keeps it (single-select, never empty).
+    await user.keyboard(" ")
+    expect(conditions).toHaveAttribute("aria-pressed", "true")
+
+    await user.click(all)
+    expect(items()).toHaveLength(5)
+  })
+
+  it("shows the empty state for a patient with no events (minimal patient)", async () => {
+    render(
+      <MockedProvider mocks={[timelineMock("pat-okafor-minimal", [])]}>
+        <PatientTimeline patientId="pat-okafor-minimal" />
+      </MockedProvider>
+    )
+
+    expect(
+      await screen.findByText("No clinical events recorded")
+    ).toBeInTheDocument()
+    expect(screen.queryByRole("group")).not.toBeInTheDocument()
+  })
+
+  it("shows an error with retry", async () => {
+    renderTimeline([
+      {
+        request: {
+          query: PATIENT_TIMELINE_QUERY,
+          variables: { id: "pat-amelia-hartwell" },
+        },
+        error: new Error("Failed to fetch"),
+      },
+    ])
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Couldn’t load the timeline"
+    )
+    expect(screen.getByRole("button", { name: "Retry" })).toBeEnabled()
+  })
+})
+
+describe("groupByDay", () => {
+  it("groups consecutive days and puts undated events in a final group", () => {
+    const groups = groupByDay([
+      ...EVENTS,
+      event({ id: "Observation/undated", kind: "OBSERVATION" }),
+    ])
+    expect(groups.map((g) => [g.label, g.events.length])).toEqual([
+      ["3 Feb 2025", 3],
+      ["9 Jan 2024", 1],
+      ["2 May 2019", 1],
+      ["Undated", 1],
+    ])
+  })
+})
