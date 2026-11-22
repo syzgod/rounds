@@ -1,4 +1,4 @@
-# FHIR Patient Explorer: MVP plan
+# FHIRside: MVP plan
 
 A 3-day interview MVP. Each milestone ends in a working app that can be checked on its own: its **Done when** list is the definition of done, on top of the project-wide `pnpm typecheck` + `pnpm test` (see `CLAUDE.md`). Finish the milestones in order, and mark one ✅ only after every check in its list passes.
 
