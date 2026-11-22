@@ -8,6 +8,8 @@ export type Widen<T> = T extends (...args: infer A) => string
 const messages = {
   common: {
     retry: "Retry",
+    reload: "Reload",
+    unexpectedError: "Something went wrong.",
     notRecorded: "Not recorded",
     undated: "Undated",
     until: (date: string): string => `until ${date}`,

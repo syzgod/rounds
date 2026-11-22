@@ -4,6 +4,7 @@ import { ApolloProvider } from "@apollo/client/react"
 
 import "./index.css"
 import App from "./App.tsx"
+import { ErrorBoundary, ErrorFallback } from "@/components/error-boundary.tsx"
 import { ThemeProvider } from "@/components/theme-provider.tsx"
 import { LocaleProvider } from "@/i18n/locale-provider.tsx"
 import { TooltipProvider } from "@/components/ui/tooltip.tsx"
@@ -15,7 +16,15 @@ createRoot(document.getElementById("root")!).render(
       <LocaleProvider>
         <ThemeProvider>
           <TooltipProvider>
-            <App />
+            <ErrorBoundary
+              fallback={
+                <div className="p-6">
+                  <ErrorFallback />
+                </div>
+              }
+            >
+              <App />
+            </ErrorBoundary>
           </TooltipProvider>
         </ThemeProvider>
       </LocaleProvider>
