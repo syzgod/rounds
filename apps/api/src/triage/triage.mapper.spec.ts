@@ -65,6 +65,22 @@ describe('activeDiagnosisLabels', () => {
     expect(labels).toEqual(['New', 'Recorded only', 'Old', 'Undated']);
   });
 
+  it('skips unlabelled conditions and breaks date ties by id', () => {
+    const labels = activeDiagnosisLabels([
+      condition('z', 'Undated Z', 'active'),
+      condition('b', 'Same day B', 'active', { onset: '2024-01-01' }),
+      condition('y', 'Undated Y', 'active'),
+      condition('n', '', 'active', { onset: '2025-01-01' }),
+      condition('a', 'Same day A', 'active', { onset: '2024-01-01' }),
+    ]);
+    expect(labels).toEqual([
+      'Same day A',
+      'Same day B',
+      'Undated Y',
+      'Undated Z',
+    ]);
+  });
+
   it('de-duplicates by label and returns [] when nothing is active', () => {
     expect(
       activeDiagnosisLabels([
@@ -106,6 +122,13 @@ describe('abnormalResultCount', () => {
         observation('a2', '1', '2024-06-01', 'L'),
       ]),
     ).toBe(1);
+  });
+
+  it('breaks a same-time tie by the higher id, in any input order', () => {
+    const flagged = observation('o1', '1', '2024-01-01T08:00:00Z', 'H');
+    const normal = observation('o2', '1', '2024-01-01T08:00:00Z', 'N');
+    expect(abnormalResultCount([flagged, normal])).toBe(0);
+    expect(abnormalResultCount([normal, flagged])).toBe(0);
   });
 
   it('ignores undated observations', () => {

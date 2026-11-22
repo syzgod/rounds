@@ -90,7 +90,9 @@ Proves the whole chain works: the web app (Apollo Client v4) calls the API (Nest
 
 ## M5: Tests + polish ✅
 
-- (Open, tracked in PROGRESS.md) Coverage pass over the API mappers and services (`pnpm test:api -- --coverage`); every uncovered branch either gets a test or a note explaining why it's untested.
+- [x] Coverage pass over the API mappers and services (`pnpm --filter api test:cov`). Unit: 99.6% lines, 94.8% branches. Services and resolvers are covered by the e2e suite. Untested branches, and why:
+  - `app.controller.ts:4`, `timeline-event.dto.ts:38`, and the uncovered functions: decorator metadata and `() => Type` callbacks. The compiler emits them; the GraphQL schema build runs them in e2e.
+  - `fhir-repository.service.ts:81` (Bundle without `entry`), `timeline.mapper.ts:129-130,156` (concept without `coding`, Encounter without the required `status`), `trends.mapper.ts:38,116-117,126,142,191` and `triage.mapper.ts:15,56` (non-finite value, unit only in `code`, unlabelled code, unparsable date, empty series): defensive fallbacks for invalid FHIR. The fixtures do not contain such data.
 - Consistent loading, error and empty states. Dark mode checked on every view.
 - A root `lint` script (`pnpm --filter api --filter web run lint`), with lint passing.
 - Root `README.md`: what the app is, `pnpm install && pnpm dev`, the fixture format, and a 3-minute demo script.
