@@ -52,15 +52,23 @@ export function App() {
 
   return (
     <div className="flex h-svh flex-col">
+      {/* Skip link: bypasses the header and the patient list for keyboard users. */}
+      <a
+        href="#main-content"
+        className="sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:top-2 focus-visible:left-2 focus-visible:z-50 focus-visible:rounded-md focus-visible:bg-background focus-visible:px-3 focus-visible:py-2 focus-visible:text-sm focus-visible:ring-2 focus-visible:ring-ring"
+      >
+        Skip to patient record
+      </a>
       <AppHeader />
       <div className="grid min-h-0 flex-1 grid-rows-[minmax(0,16rem)_1fr] md:grid-cols-[20rem_1fr] md:grid-rows-1">
-        <aside className="flex min-h-0 flex-col border-b bg-sidebar text-sidebar-foreground md:border-r md:border-b-0">
+        {/* Plain wrapper: the <nav> inside is the landmark (an <aside> would add a second one). */}
+        <div className="flex min-h-0 flex-col border-b bg-sidebar text-sidebar-foreground md:border-r md:border-b-0">
           <PatientDirectory selectedId={selectedId} onSelect={setSelectedId} />
-        </aside>
+        </div>
         <main
-          className="min-h-0 overflow-y-auto"
-          aria-labelledby={selectedId ? "patient-heading" : undefined}
-          aria-label={selectedId ? undefined : "Patient record"}
+          id="main-content"
+          tabIndex={-1}
+          className="min-h-0 overflow-y-auto outline-none"
         >
           <div className="mx-auto flex h-full max-w-4xl flex-col p-6">
             {selectedId ? (

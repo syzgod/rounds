@@ -7,6 +7,9 @@ import {
   formatGenderShort,
   initials,
   parseFhirDate,
+  dayKey,
+  formatTime,
+  formatTimeRange,
 } from "@/lib/format"
 
 const NOW = new Date(2025, 5, 15) // 15 Jun 2025, local time
@@ -52,5 +55,28 @@ describe("gender and initials", () => {
     expect(initials("Amelia Rose Hartwell")).toBe("AH")
     expect(initials("Okafor")).toBe("O")
     expect(initials("  ")).toBe("")
+  })
+})
+
+describe("dayKey / formatTime / formatTimeRange (TZ=UTC in tests)", () => {
+  it("keys dateTimes by local day and keeps FHIR dates unshifted", () => {
+    expect(dayKey("2025-02-03T21:25:00Z")).toBe("2025-02-03")
+    expect(dayKey("2019-05-02")).toBe("2019-05-02")
+    expect(dayKey("2016-04")).toBe("2016-04")
+    expect(dayKey("garbage")).toBeNull()
+    expect(dayKey(null)).toBeNull()
+  })
+
+  it("formats times and ranges", () => {
+    expect(formatTime("2025-02-03T21:25:00Z")).toBe("21:25")
+    expect(formatTime("2019-05-02")).toBeNull()
+    expect(
+      formatTimeRange("2024-01-09T14:30:00Z", "2024-01-09T15:00:00Z")
+    ).toBe("14:30–15:00")
+    expect(
+      formatTimeRange("2025-02-03T21:10:00Z", "2025-02-04T01:30:00Z")
+    ).toBe("21:10 – 4 Feb 2025 01:30")
+    expect(formatTimeRange("2024-11-18", "2024-12-02")).toBe("until 2 Dec 2024")
+    expect(formatTimeRange("2024-05-11T16:50:00Z", null)).toBe("16:50")
   })
 })

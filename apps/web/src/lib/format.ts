@@ -90,3 +90,47 @@ export function initials(name: string): string {
   const last = words.length > 1 ? (words[words.length - 1]?.[0] ?? "") : ""
   return (first + last).toUpperCase()
 }
+
+const pad = (n: number) => String(n).padStart(2, "0")
+
+function localDate(value: string): Date | null {
+  if (!value.includes("T")) return null
+  const ms = Date.parse(value)
+  return Number.isNaN(ms) ? null : new Date(ms)
+}
+
+/**
+ * Calendar-day key for grouping: "YYYY-MM-DD" in local time for dateTimes;
+ * FHIR dates ("2019-05-02", "2016-04") are kept as-is, never shifted by time zone.
+ */
+export function dayKey(value: string | null): string | null {
+  if (!value) return null
+  const date = localDate(value)
+  if (date) {
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
+  }
+  return parseFhirDate(value) ? value : null
+}
+
+/** Local "HH:MM" for a FHIR dateTime; null for date-only values. */
+export function formatTime(value: string | null): string | null {
+  const date = value ? localDate(value) : null
+  return date ? `${pad(date.getHours())}:${pad(date.getMinutes())}` : null
+}
+
+/** "21:10–21:45", "21:10 – 4 Feb 2025 01:30", or the start time alone. */
+export function formatTimeRange(
+  start: string | null,
+  end: string | null
+): string | null {
+  const startTime = formatTime(start)
+  if (!end) return startTime
+  const endTime = formatTime(end)
+  if (startTime && endTime && dayKey(start) === dayKey(end)) {
+    return `${startTime}–${endTime}`
+  }
+  const endLabel = [formatFhirDate(dayKey(end)), endTime]
+    .filter((part): part is string => part !== null)
+    .join(" ")
+  return startTime ? `${startTime} – ${endLabel}` : `until ${endLabel}`
+}

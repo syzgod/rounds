@@ -6,7 +6,7 @@ A 3-day interview MVP. Each milestone ends in a working app that can be checked 
 |---|---|---|---|
 | M1 | Apollo health check | 1 | ✅ |
 | M2 | FHIR fixtures + Patient Directory | 1 | ✅ |
-| M3 | Patient Details timeline | 2 | ⬜ |
+| M3 | Patient Details timeline | 2 | ✅ |
 | M4 | FHIR Resource Inspector | 2 | ⬜ |
 | M5 | Tests + polish | 3 | ⬜ |
 
@@ -42,7 +42,7 @@ Proves the whole chain works: the web app (Apollo Client v4) calls the API (Nest
 - [x] Web tests: the list renders from `MockedProvider`, typing filters by name, and ArrowDown + Enter selects a patient without the mouse. `src/components/patient-directory.test.tsx`
 - [x] `pnpm dev` shows the 6 patients in the browser.
 
-## M3: Patient Details timeline
+## M3: Patient Details timeline ✅
 
 **API**
 - `src/timeline/`: one mapper per resource type, all producing `TimelineEventDto { id, kind, date, title, detail, status }`, where `kind` is `ENCOUNTER | CONDITION | OBSERVATION`.
@@ -60,7 +60,7 @@ Proves the whole chain works: the web app (Apollo Client v4) calls the API (Nest
 - [x] Each mapper has full, minimal and malformed specs, and the BP Observation maps to `"120/80 mmHg"`. `src/timeline/timeline.mapper.spec.ts`
 - [x] A sort spec covers newest-first order and undated events last. `src/timeline/timeline.mapper.spec.ts`
 - [x] E2E: the timeline for a fixture patient returns the expected event ids in the expected order. `test/timeline.e2e-spec.ts`
-- [ ] Web tests: events render grouped by date, the kind filter hides and shows events, and the empty state shows for the minimal patient.
+- [x] Web tests: events render grouped by date, the kind filter hides and shows events, and the empty state shows for the minimal patient. `src/components/patient-timeline.test.tsx`
 
 ## M4: FHIR Resource Inspector
 

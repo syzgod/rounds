@@ -1,10 +1,7 @@
 import { useQuery } from "@apollo/client/react"
-import {
-  ActivityIcon,
-  AlertCircleIcon,
-  RotateCwIcon,
-  UserXIcon,
-} from "lucide-react"
+import { AlertCircleIcon, RotateCwIcon, UserXIcon } from "lucide-react"
+
+import { PatientTimeline } from "@/components/patient-timeline"
 
 import {
   Alert,
@@ -161,25 +158,11 @@ export function PatientSummaryPanel({
     <div className="flex flex-col gap-6">
       <PatientHeader patient={patient} />
       <Separator />
-      <section
-        aria-labelledby="timeline-heading"
-        className="flex flex-col gap-3"
-      >
+      <section className="flex flex-col gap-3">
         <h3 id="timeline-heading" className="text-sm font-medium">
           Clinical timeline
         </h3>
-        <Empty className="border border-dashed">
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <ActivityIcon />
-            </EmptyMedia>
-            <EmptyTitle>Timeline coming next</EmptyTitle>
-            <EmptyDescription>
-              Encounters, conditions and observations for this patient will
-              appear here.
-            </EmptyDescription>
-          </EmptyHeader>
-        </Empty>
+        <PatientTimeline patientId={patient.id} />
       </section>
     </div>
   )
