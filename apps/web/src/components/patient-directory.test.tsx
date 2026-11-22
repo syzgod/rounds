@@ -223,3 +223,64 @@ describe("filterPatients", () => {
     expect(filterPatients(PATIENTS, "")).toHaveLength(4)
   })
 })
+
+describe("PatientDirectory live loading", () => {
+  const liveMock: MockLink.MockedResponse = {
+    request: { query: PATIENTS_QUERY, variables: { source: "LIVE" } },
+    result: { data: { patients: [PATIENTS[0]] } },
+  }
+
+  it.each([
+    ["en", "Loading patients from the test server…"],
+    ["de", "Patienten werden vom Testserver geladen…"],
+  ] as const)(
+    "shows the %s note and skeleton for LIVE",
+    async (locale, text) => {
+      render(
+        <TestLocale locale={locale}>
+          <MockedProvider mocks={[liveMock]}>
+            <PatientDirectory
+              selectedId={null}
+              onSelect={vi.fn()}
+              source="LIVE"
+            />
+          </MockedProvider>
+        </TestLocale>
+      )
+      expect(screen.getByRole("status")).toHaveTextContent(text)
+      expect(
+        screen.getByRole("navigation").querySelector("[aria-busy]")
+      ).not.toBeNull()
+      expect(
+        await screen.findByText(PATIENTS[0].displayName)
+      ).toBeInTheDocument()
+      expect(screen.queryAllByText(text)).toHaveLength(0)
+    }
+  )
+
+  it("shows no live note for LOCAL", () => {
+    renderDirectory()
+    expect(screen.getByLabelText("Loading patients")).toBeInTheDocument()
+    expect(screen.queryByText(/test server/i)).not.toBeInTheDocument()
+  })
+
+  it("hides the old source's patients after switching source", async () => {
+    function Harness({ source }: { source: "LOCAL" | "LIVE" }) {
+      return (
+        <TestLocale>
+          <MockedProvider mocks={[ok, liveMock]}>
+            <PatientDirectory
+              selectedId={null}
+              onSelect={vi.fn()}
+              source={source}
+            />
+          </MockedProvider>
+        </TestLocale>
+      )
+    }
+    const { rerender } = render(<Harness source="LOCAL" />)
+    await screen.findByText("Amelia Rose Hartwell")
+    rerender(<Harness source="LIVE" />)
+    expect(screen.queryByText("Amelia Rose Hartwell")).not.toBeInTheDocument()
+  })
+})

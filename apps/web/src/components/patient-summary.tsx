@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react"
 import { useQuery } from "@apollo/client/react"
 import { AlertCircleIcon, RotateCwIcon, UserXIcon } from "lucide-react"
 
+import { LoadingNote } from "@/components/loading-note"
 import { OpenResults } from "@/components/open-results"
 import { SourceDialog } from "@/components/source-dialog"
 import { PatientTimeline } from "@/components/patient-timeline"
@@ -58,6 +59,10 @@ function Trends({
 }
 
 /** Übersicht (open results, pinned charts), Verlauf (timeline), Messwerte (all charts). */
+// Same look as the outline toggle: primary border and tint when selected.
+const TAB_CLASS =
+  "border-input bg-transparent data-active:border-primary data-active:bg-primary/10 data-active:shadow-none dark:data-active:border-primary dark:data-active:bg-primary/10";
+
 function RecordTabs({ patientId }: { patientId: string }) {
   const { t } = useI18n()
   const timeline = useQuery(PATIENT_TIMELINE_QUERY, {
@@ -72,12 +77,12 @@ function RecordTabs({ patientId }: { patientId: string }) {
     )
   return (
     <Tabs defaultValue="overview" className="gap-4">
-      <TabsList aria-label={t.record.tabsLabel}>
-        <TabsTrigger value="overview">{t.record.overview}</TabsTrigger>
-        <TabsTrigger value="timeline">
+      <TabsList aria-label={t.record.tabsLabel} className="gap-2 bg-transparent p-0">
+        <TabsTrigger value="overview" className={TAB_CLASS}>{t.record.overview}</TabsTrigger>
+        <TabsTrigger value="timeline" className={TAB_CLASS}>
           {t.timeline.title} {count(timeline.data?.patient?.timeline.length)}
         </TabsTrigger>
-        <TabsTrigger value="measurements">
+        <TabsTrigger value="measurements" className={TAB_CLASS}>
           {t.record.measurements} {count(trends.data?.patient?.trends.length)}
         </TabsTrigger>
       </TabsList>
@@ -223,7 +228,16 @@ export function PatientSummaryPanel({
     )
   }
 
-  if (loading && !data) return <PatientHeaderSkeleton />
+  if (loading && !data) {
+    return (
+      <div className="flex flex-col gap-4">
+        <LoadingNote
+          text={patientId.startsWith("live-") ? t.patient.loadingLive : null}
+        />
+        <PatientHeaderSkeleton />
+      </div>
+    )
+  }
 
   const patient = data?.patient
   if (!patient) {

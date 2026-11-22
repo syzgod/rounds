@@ -58,6 +58,7 @@ export const de: Messages = {
     searchLabel: "Patienten nach Name oder Patientennummer suchen",
     searchPlaceholder: "Nach Name oder Patientennummer suchen…",
     loading: "Patienten werden geladen",
+    loadingLive: "Patienten werden vom Testserver geladen…",
     loadError: "Patienten konnten nicht geladen werden.",
     noDetails: "Keine Angaben",
     noMatch: (query) => `Keine Patienten gefunden für „${query}“.`,
@@ -66,6 +67,7 @@ export const de: Messages = {
   },
   patient: {
     loading: "Patient wird geladen",
+    loadingLive: "Patientenakte wird vom Testserver geladen…",
     loadError: "Patient konnte nicht geladen werden.",
     notFound: "Patient nicht gefunden",
     backToList: "Zurück zur Patientenliste",
