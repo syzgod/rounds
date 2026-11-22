@@ -60,6 +60,11 @@ function renderPatientDialog(
   )
 }
 
+function activeElement(): HTMLElement | null {
+  const active = document.activeElement
+  return active instanceof HTMLElement ? active : null
+}
+
 afterEach(() => {
   vi.restoreAllMocks()
 })
@@ -108,13 +113,8 @@ describe("SourceDialog", () => {
 
     for (let i = 0; i < 6; i += 1) {
       await user.tab()
-      const active = document.activeElement
-      // Base UI's focus guards bounce focus straight back into the popup.
-      const inside =
-        active !== null &&
-        (dialog.contains(active) ||
-          active.hasAttribute("data-base-ui-focus-guard"))
-      expect(inside).toBe(true)
+      // Base UI's focus guards bounce focus back into the popup asynchronously.
+      await waitFor(() => expect(dialog).toContainElement(activeElement()))
     }
   })
 
