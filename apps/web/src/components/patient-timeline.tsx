@@ -47,23 +47,21 @@ function isKindFilter(value: unknown): value is KindFilter {
   return value === "ALL" || KINDS.some((kind) => kind === value)
 }
 
-const KIND_META: Record<
-  TimelineEventKind,
-  { icon: LucideIcon; tone: string }
-> = {
-  ENCOUNTER: {
-    icon: StethoscopeIcon,
-    tone: "bg-encounter/12 text-encounter",
-  },
-  CONDITION: {
-    icon: ClipboardListIcon,
-    tone: "bg-condition/12 text-condition",
-  },
-  OBSERVATION: {
-    icon: FlaskConicalIcon,
-    tone: "bg-observation/12 text-observation",
-  },
-}
+const KIND_META: Record<TimelineEventKind, { icon: LucideIcon; tone: string }> =
+  {
+    ENCOUNTER: {
+      icon: StethoscopeIcon,
+      tone: "bg-encounter/12 text-encounter",
+    },
+    CONDITION: {
+      icon: ClipboardListIcon,
+      tone: "bg-condition/12 text-condition",
+    },
+    OBSERVATION: {
+      icon: FlaskConicalIcon,
+      tone: "bg-observation/12 text-observation",
+    },
+  }
 
 const FLAG_META: Record<
   ObservationFlag,
@@ -263,6 +261,8 @@ export function PatientTimeline({ patientId }: { patientId: string }) {
           aria-label={t.timeline.filterLabel}
           variant="outline"
           size="sm"
+          // Wrap on phones: four German filters do not fit in one row at 375 px.
+          className="flex-wrap"
           value={[filter]}
           onValueChange={(value) => {
             // Single-select: ignore attempts to un-press the active filter.
