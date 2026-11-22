@@ -8,6 +8,7 @@ import { HealthModule } from './health/health.module.js';
 import { PatientsModule } from './patients/patients.module.js';
 import { TimelineModule } from './timeline/timeline.module.js';
 import { TrendsModule } from './trends/trends.module.js';
+import { TriageModule } from './triage/triage.module.js';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { TrendsModule } from './trends/trends.module.js';
     PatientsModule,
     TimelineModule,
     TrendsModule,
+    TriageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
