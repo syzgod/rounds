@@ -2,10 +2,14 @@ import { MockedProvider } from "@apollo/client/testing/react"
 import type { MockLink } from "@apollo/client/testing"
 import { render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
-import { describe, expect, it } from "vitest"
+import { afterEach, describe, expect, it } from "vitest"
 
 import { PatientTimeline, groupByDay } from "@/components/patient-timeline"
-import { PATIENT_TIMELINE_QUERY, type TimelineEvent } from "@/graphql/timeline"
+import {
+  ACKNOWLEDGE_RESULT_MUTATION,
+  PATIENT_TIMELINE_QUERY,
+  type TimelineEvent,
+} from "@/graphql/timeline"
 import { TestLocale } from "@/test/i18n"
 
 function event(
@@ -22,6 +26,9 @@ function event(
     categoryCode: null,
     status: null,
     flag: null,
+    acknowledgedAt: null,
+    acknowledgedBy: null,
+    needsAcknowledgement: false,
     ...partial,
   }
 }
@@ -39,6 +46,7 @@ const EVENTS: TimelineEvent[] = [
     categoryCode: "laboratory",
     status: "final",
     flag: "LOW",
+    needsAcknowledgement: true,
   }),
   event({
     id: "Encounter/enc-er",
@@ -159,6 +167,73 @@ describe("PatientTimeline", () => {
     expect(screen.getByText("Hypoglycemia")).toBeInTheDocument()
     // No code: the API's category is shown.
     expect(screen.getByText(/Problem list item/)).toBeInTheDocument()
+  })
+
+  describe("acknowledging a flagged result", () => {
+    afterEach(() => window.localStorage.clear())
+
+    const glucose = EVENTS[0]!
+    const ackMock = (initials: string): MockLink.MockedResponse => ({
+      request: {
+        query: ACKNOWLEDGE_RESULT_MUTATION,
+        variables: { id: glucose.id, initials },
+      },
+      result: {
+        data: {
+          acknowledgeResult: {
+            ...glucose,
+            acknowledgedAt: "2026-11-22T14:05:00Z",
+            acknowledgedBy: initials,
+            needsAcknowledgement: false,
+          },
+        },
+      },
+    })
+
+    it("asks for initials once, validates them, then shows who and when", async () => {
+      const user = renderTimeline([
+        timelineMock("pat-amelia-hartwell", EVENTS),
+        ackMock("VB"),
+      ])
+      // Only the flagged result offers the action.
+      const buttons = await screen.findAllByRole("button", {
+        name: /^Acknowledge/,
+      })
+      expect(buttons).toHaveLength(1)
+      await user.click(buttons[0]!)
+
+      const dialog = await screen.findByRole("dialog", {
+        name: "Your initials",
+      })
+      const input = within(dialog).getByLabelText("Initials")
+      await user.type(input, "1")
+      await user.click(within(dialog).getByRole("button", { name: "Confirm" }))
+      expect(within(dialog).getByText("Enter 1–8 letters.")).toBeInTheDocument()
+
+      await user.clear(input)
+      await user.type(input, "VB{Enter}")
+      expect(
+        await screen.findByText("Acknowledged · VB · 22 Nov 2026 14:05")
+      ).toBeInTheDocument()
+      expect(window.localStorage.getItem("initials")).toBe("VB")
+    })
+
+    it("uses saved initials without asking", async () => {
+      window.localStorage.setItem("initials", "KM")
+      const user = renderTimeline(
+        [timelineMock("pat-amelia-hartwell", EVENTS), ackMock("KM")],
+        "de"
+      )
+      await user.click(
+        await screen.findByRole("button", {
+          name: "Kenntnis nehmen: Blutzucker",
+        })
+      )
+      expect(
+        await screen.findByText("Kenntnis genommen · KM · 22.11.2026 14:05")
+      ).toBeInTheDocument()
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+    })
   })
 
   it("filters by type with the keyboard", async () => {

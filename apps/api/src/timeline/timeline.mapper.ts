@@ -163,6 +163,9 @@ export function encounterToEvent(
     categoryCode: classCode ?? null,
     status: encounter.status ?? null,
     flag: null,
+    acknowledgedAt: null,
+    acknowledgedBy: null,
+    needsAcknowledgement: false,
     rawJson: JSON.stringify(encounter),
   };
 }
@@ -182,6 +185,9 @@ export function conditionToEvent(
     categoryCode: firstCoding(condition.category?.[0])?.code ?? null,
     status: firstCoding(condition.clinicalStatus)?.code ?? null,
     flag: null,
+    acknowledgedAt: null,
+    acknowledgedBy: null,
+    needsAcknowledgement: false,
     rawJson: JSON.stringify(condition),
   };
 }
@@ -201,6 +207,9 @@ export function observationToEvent(
     categoryCode: firstCoding(observation.category?.[0])?.code ?? null,
     status: observation.status,
     flag: observationFlag(observation),
+    acknowledgedAt: null,
+    acknowledgedBy: null,
+    needsAcknowledgement: false,
     rawJson: JSON.stringify(observation),
   };
 }

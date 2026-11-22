@@ -30,7 +30,7 @@ Anyone who checks on patients and needs information about them fast: doctors on 
 
 | Not built | Why | When it would come |
 |---|---|---|
-| Editing or writing data | Read-only keeps the risk small. Writes in clinical data need authentication, audit trails, validation and FHIR write semantics. | A natural next step. Start with a small, low-risk write, such as acknowledging an abnormal result, with an audit log. |
+| Editing or writing data | Read-only keeps the risk small. Writes in clinical data need authentication, audit trails, validation and FHIR write semantics. | Started: clinicians can acknowledge an open abnormal result. Initials go into an append-only audit log. Still missing for production: real authentication and a persistent store. |
 | Login and permissions | Out of scope for a demo with synthetic data. | First requirement for real data, through the hospital's single sign-on. |
 | AI summaries | Clinical safety: generated text about a patient needs validation and human-in-the-loop design. | Only with a clear safety concept. |
 | Tabs, notes, medications, allergies | With two sections, tabs cost more than they save, and an empty "Notes" tab is worse than none. | Tabs come together with more resource types. |

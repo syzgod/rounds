@@ -54,14 +54,22 @@ export type TimelineEventSourceQueryVariables = Exact<{
 
 export type TimelineEventSourceQuery = { timelineEvent: { __typename: 'TimelineEvent', id: string, rawJson: string | null } | null };
 
-export type TimelineEventFieldsFragment = { __typename: 'TimelineEvent', id: string, kind: TimelineEventKind, date: string | null, endDate: string | null, title: string, detail: string | null, category: string | null, code: string | null, categoryCode: string | null, status: string | null, flag: ObservationFlag | null };
+export type TimelineEventFieldsFragment = { __typename: 'TimelineEvent', id: string, kind: TimelineEventKind, date: string | null, endDate: string | null, title: string, detail: string | null, category: string | null, code: string | null, categoryCode: string | null, status: string | null, flag: ObservationFlag | null, acknowledgedAt: string | null, acknowledgedBy: string | null, needsAcknowledgement: boolean };
 
 export type PatientTimelineQueryVariables = Exact<{
   id: string | number;
 }>;
 
 
-export type PatientTimelineQuery = { patient: { __typename: 'Patient', id: string, timeline: Array<{ __typename: 'TimelineEvent', id: string, kind: TimelineEventKind, date: string | null, endDate: string | null, title: string, detail: string | null, category: string | null, code: string | null, categoryCode: string | null, status: string | null, flag: ObservationFlag | null }> } | null };
+export type PatientTimelineQuery = { patient: { __typename: 'Patient', id: string, timeline: Array<{ __typename: 'TimelineEvent', id: string, kind: TimelineEventKind, date: string | null, endDate: string | null, title: string, detail: string | null, category: string | null, code: string | null, categoryCode: string | null, status: string | null, flag: ObservationFlag | null, acknowledgedAt: string | null, acknowledgedBy: string | null, needsAcknowledgement: boolean }> } | null };
+
+export type AcknowledgeResultMutationVariables = Exact<{
+  id: string | number;
+  initials: string;
+}>;
+
+
+export type AcknowledgeResultMutation = { acknowledgeResult: { __typename: 'TimelineEvent', id: string, kind: TimelineEventKind, date: string | null, endDate: string | null, title: string, detail: string | null, category: string | null, code: string | null, categoryCode: string | null, status: string | null, flag: ObservationFlag | null, acknowledgedAt: string | null, acknowledgedBy: string | null, needsAcknowledgement: boolean } | null };
 
 export type PatientTrendsQueryVariables = Exact<{
   id: string | number;

@@ -18,7 +18,7 @@ export class PatientTriageResolver {
 
   @ResolveField(() => Int, {
     description:
-      'Distinct measurements whose latest value is flagged high, low or abnormal.',
+      'Distinct measurements whose latest value is flagged high, low or abnormal and not yet acknowledged.',
   })
   abnormalResultCount(@Parent() patient: PatientDto): number {
     return this.triageService.getAbnormalResultCount(patient.id);
