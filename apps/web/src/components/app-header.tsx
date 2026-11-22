@@ -14,9 +14,9 @@ export function AppHeader() {
           <HeartPulseIcon className="size-4" />
         </span>
         <div className="flex flex-col leading-tight">
-          <h1 className="text-sm font-semibold">FHIR Patient Explorer</h1>
+          <h1 className="text-sm font-semibold">Rounds</h1>
           <p className="text-xs text-muted-foreground">
-            Synthetic FHIR R4 data
+            Patient history at a glance · FHIR R4
           </p>
         </div>
       </div>

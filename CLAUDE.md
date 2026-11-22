@@ -1,6 +1,14 @@
-# FHIR Patient Explorer
+# Rounds (FHIR Patient Explorer)
 
-A 3-day interview MVP: a read-only explorer for synthetic FHIR R4 patient data. The current milestone and its "Done when" check are in [docs/PLAN.md](docs/PLAN.md). Read [docs/ADR-001-architecture.md](docs/ADR-001-architecture.md) before changing the data flow or the GraphQL contract. Rules for each app load from `.claude/rules/`.
+Rounds is a 3-day interview MVP: a read-only explorer for synthetic FHIR R4 patient data. The current milestone and its "Done when" check are in [docs/PLAN.md](docs/PLAN.md). Read [docs/ADR-001-architecture.md](docs/ADR-001-architecture.md) before changing the data flow or the GraphQL contract. Rules for each app load from `.claude/rules/`.
+
+## Users
+
+The users are clinicians doing fast-paced work. Code and its names are for developers; everything a user sees is for clinicians.
+
+- **Wording:** use the words clinicians see in their EHR, in English and German (German users first). Never show "API", "GraphQL", "fixtures" or a raw resource id, except in the Inspector.
+- **Minimal UI:** some users have never used an EHR. Each view does one obvious thing with the fewest controls, and controls carry text labels, not icons alone. The most-used information shows first, without clicks. Leave out anything that doesn't earn its place.
+- **Errors:** messages say what happened and what to do next, such as "Retry", in one line.
 
 ## Commands
 
@@ -22,6 +30,15 @@ Run these from the repo root. Each one delegates to the apps with `pnpm --filter
 6. **`apps/api/src/schema.gql` is generated.** It's rebuilt from decorators whenever the API or its tests start. Commit it, and never edit it by hand.
 7. **Dependencies stay clean.** `pnpm peers check` must report no issues. `graphql` stays on `^16` in both apps, because `@apollo/server@5` requires it. Each dependency build script is approved or denied in `allowBuilds` in `pnpm-workspace.yaml`, with a comment giving the reason.
 8. **Work scopes.** Backend edits `apps/api/**` and `data/fhir/**`. Frontend edits `apps/web/**`. Review/Testing runs the checks and reports findings, editing only test files unless asked to fix code. `schema.gql` is the handoff between Backend and Frontend: Backend changes the schema first and Frontend uses it afterwards. A change outside your scope goes to its owner as a handoff note. Root files (`package.json`, `pnpm-workspace.yaml`, `CLAUDE.md`, `.claude/**`, `docs/**`) change only with the user's approval.
+
+## Agent workflow (token efficiency)
+
+- At the start of a session, read [docs/PROGRESS.md](docs/PROGRESS.md). At the end, update it with what was done, what comes next, bugs, fixes and suggestions.
+- The main chat is the orchestrator. Delegate implementation, research and reviews to subagents, and choose `model` and `effort` per task: `haiku`/low for mechanical edits, `sonnet`/medium for well-specified features, `opus`/high for plans and tricky debugging.
+- When a task is vague, have a stronger model write the plan, then let a cheaper model execute it as a subagent.
+- Prefer scripts, MCP tools and skills to manual, multi-step token-heavy work.
+- Now and then, trim the `.md` files the agents load (`CLAUDE.md`, `.claude/rules/**`) to cut tokens.
+- Keep PRs small, with a short description: a summary of 1–3 bullets and how it was tested.
 
 ## Non-goals
 
