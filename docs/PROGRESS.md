@@ -24,7 +24,7 @@ Kept short. Read this at the start of a session and update it at the end. Milest
 
 ## Start here (next session)
 
-1. **Trim the agent files** (`CLAUDE.md`, `.claude/rules/**`) to cut tokens.
+1. **MVP list done.** Optional: the write feature in "Next" (needs approval).
 2. **Clean up** the leftover worktrees `D:/Developer/Projects/rounds-wt-contrast` and `rounds-wt-ranges` (both merged and clean).
 
 ## Next
@@ -38,6 +38,7 @@ Kept short. Read this at the start of a session and update it at the end. Milest
 
 ## Fixed
 
+- Agent docs trimmed: CLAUDE.md + rules 2,191 → 1,291 words, one source per rule, ASD-STE100 style.
 - GraphQL Code Generator: web operation types come from `schema.gql` (`pnpm --filter web codegen`, `typescript-operations` only, no runtime code). CI fails when they are stale.
 - Chart dialog: round y-axis ticks, flag diamonds, hover tooltip, and a hovered table row marks its point on the chart.
 - German timeline: measurement names, categories and encounter classes are translated from codes (`code`, `categoryCode` on TimelineEvent). Visit names and SNOMED diagnoses stay as recorded.
