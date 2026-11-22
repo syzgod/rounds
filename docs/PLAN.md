@@ -78,6 +78,15 @@ Proves the whole chain works: the web app (Apollo Client v4) calls the API (Nest
 - [ ] Directory and timeline query documents don't select `rawJson`. Asserted in a web test.
 - [ ] Web tests: the Dialog opens from the keyboard, shows the formatted JSON, closes on Escape and returns focus to its trigger, and the Copy button calls the clipboard.
 
+## M4b: Measurement trends (API)
+
+- `Patient.trends` exposes numeric series (blood pressure, weight, HbA1c, SpO2 and more) with at least two dated points, for charts. Fixtures carry 5-9 follow-up readings per series.
+
+**Done when**
+- [x] Mapper specs cover grouping, blood pressure `secondaryValue`, the two-point minimum, unit-mismatch skipping, ordering and flags. `src/trends/trends.mapper.spec.ts`
+- [x] E2E: `pat-amelia-hartwell` returns the HbA1c, blood pressure and weight trends with ordered points. `test/trends.e2e-spec.ts`
+- [x] E2E: `pat-okafor-minimal` returns `trends: []`, and `pat-jonah-reyes` (Type/id bundle) returns SpO2 and respiratory rate. `test/trends.e2e-spec.ts`
+
 ## M5: Tests + polish
 
 - Coverage pass over the API mappers and services (`pnpm test:api -- --coverage`); every uncovered branch either gets a test or a note explaining why it's untested.

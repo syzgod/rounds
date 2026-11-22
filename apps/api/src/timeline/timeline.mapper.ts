@@ -122,7 +122,9 @@ export function formatObservationValue(
   return formatComponents(observation.component);
 }
 
-function observationFlag(observation: Observation): ObservationFlag | null {
+export function observationFlag(
+  observation: Observation,
+): ObservationFlag | null {
   for (const concept of observation.interpretation ?? []) {
     for (const coding of concept.coding ?? []) {
       const flag = coding.code
