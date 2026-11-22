@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react"
 import { useQuery } from "@apollo/client/react"
 import { AlertCircleIcon, RotateCwIcon, UserXIcon } from "lucide-react"
 
+import { SourceDialog } from "@/components/source-dialog"
 import { PatientTimeline } from "@/components/patient-timeline"
 import { PatientTrendsSkeleton } from "@/components/patient-trends-skeleton"
 
@@ -71,6 +72,14 @@ function PatientHeader({ patient }: { patient: PatientSummary }) {
             {patient.displayName}
           </h2>
         </div>
+        <SourceDialog
+          target={{ kind: "patient", id: patient.id }}
+          name={patient.displayName}
+          label={t.source.open}
+          variant="outline"
+          size="sm"
+          className="ml-auto shrink-0"
+        />
       </div>
       <dl className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <Fact label={t.patient.sex} value={formatGender(patient.gender, t)} />

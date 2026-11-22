@@ -7,7 +7,7 @@ A 3-day interview MVP. Each milestone ends in a working app that can be checked 
 | M1 | Apollo health check | 1 | ✅ |
 | M2 | FHIR fixtures + Patient Directory | 1 | ✅ |
 | M3 | Patient Details timeline | 2 | ✅ |
-| M4 | FHIR Resource Inspector | 2 | ⬜ |
+| M4 | FHIR Resource Inspector | 2 | ✅ |
 | M5 | Tests + polish | 3 | ⬜ |
 
 **Scope decisions.** Fixtures are hand-authored and Synthea-style. The timeline covers Encounter, Condition and Observation. The Directory searches by name on the client, with no pagination. There is no router: the layout is a list beside a details pane, and the selected patient is held in React state.
@@ -62,7 +62,7 @@ Proves the whole chain works: the web app (Apollo Client v4) calls the API (Nest
 - [x] E2E: the timeline for a fixture patient returns the expected event ids in the expected order. `test/timeline.e2e-spec.ts`
 - [x] Web tests: events render grouped by date, the kind filter hides and shows events, and the empty state shows for the minimal patient. `src/components/patient-timeline.test.tsx`
 
-## M4: FHIR Resource Inspector
+## M4: FHIR Resource Inspector ✅
 
 **API**
 - `rawJson: String` on `Patient` and `TimelineEvent`. It holds `JSON.stringify(resource)` of the original FHIR resource.
@@ -75,8 +75,8 @@ Proves the whole chain works: the web app (Apollo Client v4) calls the API (Nest
 
 **Done when**
 - [x] E2E: `JSON.parse(rawJson)` deep-equals the matching fixture resource, for one Patient and one event of each kind. `test/raw-json.e2e-spec.ts`
-- [ ] Directory and timeline query documents don't select `rawJson`. Asserted in a web test.
-- [ ] Web tests: the Dialog opens from the keyboard, shows the formatted JSON, closes on Escape and returns focus to its trigger, and the Copy button calls the clipboard.
+- [x] Directory, patient, timeline and trends query documents don't select `rawJson`. `apps/web/src/components/source-dialog.test.tsx`
+- [x] Web tests: the Dialog opens from the keyboard, shows the formatted JSON, closes on Escape and returns focus to its trigger, and the Copy button calls the clipboard. `apps/web/src/components/source-dialog.test.tsx`
 
 ## M4b: Measurement trends (API)
 
