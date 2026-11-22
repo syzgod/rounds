@@ -13,6 +13,7 @@ import {
   isCondition,
   isEncounter,
 } from '../fhir/fhir-guards.js';
+import { displayNumber, displayUnit } from './display-value.js';
 import {
   ObservationFlag,
   TimelineEventKind,
@@ -75,11 +76,10 @@ function sentenceCase(value: string | null): string | null {
 /** "7.8 %", "52 mg/dL", "28/min" (per-unit rates attach without a space). */
 export function formatQuantity(quantity: Quantity | undefined): string | null {
   if (quantity?.value === undefined) return null;
-  const unit = (quantity.unit ?? quantity.code ?? '').trim();
-  if (!unit) return String(quantity.value);
-  return unit.startsWith('/')
-    ? `${quantity.value}${unit}`
-    : `${quantity.value} ${unit}`;
+  const value = displayNumber(quantity.value);
+  const unit = displayUnit(quantity.unit?.trim() || quantity.code);
+  if (!unit) return value;
+  return unit.startsWith('/') ? `${value}${unit}` : `${value} ${unit}`;
 }
 
 function componentCode(component: ObservationComponent): string | undefined {
@@ -99,8 +99,10 @@ function formatComponents(
     systolic?.valueQuantity?.value !== undefined &&
     diastolic?.valueQuantity?.value !== undefined
   ) {
-    const unit = systolic.valueQuantity.unit ?? diastolic.valueQuantity.unit;
-    const reading = `${systolic.valueQuantity.value}/${diastolic.valueQuantity.value}`;
+    const unit = displayUnit(
+      systolic.valueQuantity.unit ?? diastolic.valueQuantity.unit,
+    );
+    const reading = `${displayNumber(systolic.valueQuantity.value)}/${displayNumber(diastolic.valueQuantity.value)}`;
     return unit ? `${reading} ${unit}` : reading;
   }
   const parts = components
