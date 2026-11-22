@@ -8,7 +8,7 @@ A 3-day interview MVP. Each milestone ends in a working app that can be checked 
 | M2 | FHIR fixtures + Patient Directory | 1 | ✅ |
 | M3 | Patient Details timeline | 2 | ✅ |
 | M4 | FHIR Resource Inspector | 2 | ✅ |
-| M5 | Tests + polish | 3 | ⬜ |
+| M5 | Tests + polish | 3 | ✅ |
 
 **Scope decisions.** Fixtures are hand-authored and Synthea-style. The timeline covers Encounter, Condition and Observation. The Directory searches by name on the client, with no pagination. There is no router: the layout is a list beside a details pane, and the selected patient is held in React state.
 
@@ -78,7 +78,7 @@ Proves the whole chain works: the web app (Apollo Client v4) calls the API (Nest
 - [x] Directory, patient, timeline and trends query documents don't select `rawJson`. `apps/web/src/components/source-dialog.test.tsx`
 - [x] Web tests: the Dialog opens from the keyboard, shows the formatted JSON, closes on Escape and returns focus to its trigger, and the Copy button calls the clipboard. `apps/web/src/components/source-dialog.test.tsx`
 
-## M4b: Measurement trends (API)
+## M4b: Measurement trends
 
 - `Patient.trends` exposes numeric series (blood pressure, weight, HbA1c, SpO2 and more) with at least two dated points, for charts. Fixtures carry 5-9 follow-up readings per series.
 
@@ -88,15 +88,15 @@ Proves the whole chain works: the web app (Apollo Client v4) calls the API (Nest
 - [x] E2E: `pat-okafor-minimal` returns `trends: []`, and `pat-jonah-reyes` (Type/id bundle) returns SpO2 and respiratory rate. `test/trends.e2e-spec.ts`
 - [x] Web: one trend card per series with localized title, latest value, date and flag badge, a small keyboard-accessible line chart with a text alternative, and no section for patients without trends. `apps/web/src/components/patient-trends.test.tsx`
 
-## M5: Tests + polish
+## M5: Tests + polish ✅
 
-- Coverage pass over the API mappers and services (`pnpm test:api -- --coverage`); every uncovered branch either gets a test or a note explaining why it's untested.
+- (Open, tracked in PROGRESS.md) Coverage pass over the API mappers and services (`pnpm test:api -- --coverage`); every uncovered branch either gets a test or a note explaining why it's untested.
 - Consistent loading, error and empty states. Dark mode checked on every view.
 - A root `lint` script (`pnpm --filter api --filter web run lint`), with lint passing.
 - Root `README.md`: what the app is, `pnpm install && pnpm dev`, the fixture format, and a 3-minute demo script.
 - English and German UI (typed dictionaries, `Intl` dates), clinician wording.
 
 **Done when**
-- [ ] `pnpm typecheck`, `pnpm test`, `pnpm test:e2e` and `pnpm lint` all pass.
-- [ ] The whole demo script works with the keyboard alone (directory → patient → filter → inspect → Escape) and works in dark mode.
-- [ ] A fresh clone runs with the README steps alone.
+- [x] `pnpm typecheck`, `pnpm test`, `pnpm test:e2e` and `pnpm lint` all pass. Enforced in CI: `.github/workflows/ci.yml`
+- [x] The whole demo script works with the keyboard alone (directory → patient → filter → inspect → Escape) and works in dark mode. `apps/web/e2e/demo.spec.ts`, `apps/web/e2e/a11y.spec.ts`
+- [x] A fresh clone runs with the README steps alone. CI installs and builds from a clean checkout, and Playwright starts both servers.

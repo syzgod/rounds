@@ -4,38 +4,50 @@ Kept short. Read this at the start of a session and update it at the end. Milest
 
 ## Last session (2026-11-22)
 
-- Published as a public repo, **Rounds** (github.com/syzgod/rounds). The name comes from ward rounds: patient by patient, reviewing each one's history.
-- M3 timeline in the web app (#1). M4 API: `rawJson` and the `timelineEvent(id)` query (#3).
-- English/German UI with clinician wording, built from typed dictionaries plus `Intl` dates (#5). Labels: Encounters/Diagnoses/Results, Kontakte/Diagnosen/Befunde.
-- CLAUDE.md gained the clinician UX rules, the orchestrator/subagent workflow and the small-PR rule (#2, landing on `main` through #4).
+- **Shipped:**
+  - M3 timeline and M4 FHIR source viewer
+  - English/German UI in clinical wording
+  - measurement trends: API plus a compact, collapsible chart strip
+  - needs-attention triage: an "abnormal" badge and active diagnoses
+- **Quality:**
+  - GitHub Actions CI: peers check, typecheck, lint, unit and e2e tests, build, stale-schema check
+  - Playwright keyboard-only demo in German, plus axe scans in light and dark mode
+  - a WCAG AA contrast fix found by axe
+- **Live demo:** https://rounds-web-jsyv.onrender.com, from a Render Blueprint (`render.yaml`) in Frankfurt.
+- **Docs:** README with a demo script, PRODUCT.md, AI-WORKFLOW.md.
 
-## Open PRs (merge in this order)
+## Open PRs
 
-1. #4: lands the #2 commits on `main`.
-2. #5: English/German UI. It is stacked on #4 and retargets to `main` once #4 merges.
-3. Measurement trends API, in progress on `feat/api-trends`.
+- #17: contrast fix. CI is green with the axe light-mode checks re-enabled.
+- The docs PR: README, PRODUCT, AI-WORKFLOW, this log and the PLAN status.
 
 ## Next
 
-1. Charts in the web app, from `Patient.trends`: one small chart each for blood pressure, weight, HbA1c, SpO₂ and so on, using shadcn chart (Recharts). They sit between the patient header and the timeline, and the section is hidden when there are no trends.
-2. M4 web: a "View FHIR JSON" / "FHIR-Rohdaten anzeigen" dialog.
-3. README with a 3-minute demo script: clinician view first, developer setup second.
-4. M5: lint, a coverage pass, and a check of dark mode and keyboard-only use.
-5. Trim the `.md` files the agents load.
+1. A small polish PR with the open bugs below.
+2. A coverage pass over the API mappers and services (M5 bullet).
+3. Optional: one small write feature, such as acknowledging an abnormal result, with an audit log (see PRODUCT.md, Scope).
+4. Trim the `.md` files the agents load.
 
-## Bugs found
+## Bugs found (open)
 
-- Stacked PR #2 merged into its base branch, not `main`. **Fixed:** #4, and auto-delete of merged branches is now on, so stacked PRs retarget.
-- Agent worktree isolation fails on this machine (`d:` vs `D:` paths). **Workaround:** a manual `git worktree add` outside the repo, such as `D:/Developer/Projects/rounds-wt-*`.
-- en-GB dates abbreviate September as "Sept". Clinicians expect "Sep". **Open**, minor.
-- The theme toggle is an icon-only button, which breaks the new "text labels" rule. **Open.**
+- en-GB dates abbreviate September as "Sept". Clinicians expect "Sep".
+- The theme toggle is an icon-only button, which breaks the "text labels" rule.
+- The shared dialog's close button has a hard-coded English screen-reader label, "Close".
+- The main JS chunk is 649 kB (205 kB gzipped), and the build warns about it. Recharts is already split out. Next candidates for splitting are cmdk and the dialog.
+- Agent worktree isolation fails on Windows (`d:` vs `D:`). **Workaround:** manual `git worktree add` to `D:/Developer/Projects/rounds-wt-*`.
 
-## Fixes
+## Fixed
 
-- The CLAUDE.md wording example said "Visits", not "Encounters". Research showed Epic uses "Encounters", so it now points to EHR wording in both languages.
+- A stacked PR merged into its base branch, not `main` (#4). Auto-delete of merged branches is now on.
+- The "Visits" wording was replaced by EHR terms after research.
+- The Render setup with `yarn` and hard-coded URLs was replaced by the Blueprint, with `sync: false` cross-service URLs.
+- The Playwright CI hang: plain `node` servers in CI, plus job and step timeouts.
+- Light-mode muted text contrast: 4.34:1 raised to 4.98:1 (#17).
 
 ## Suggestions
 
-- Chart and observation titles come from the FHIR data and are in English only. Map common LOINC codes to German names in the dictionaries.
-- Have a German clinician sanity-check the terms (Verlauf, Befunde, Erhöht/Erniedrigt).
-- Later: GraphQL Code Generator instead of hand-written types; reference ranges in charts; an index by subject, or DataLoader, if the data grows.
+- Have a German clinician sanity-check the terms (Verlauf, Befunde, Erhöht/Erniedrigt, auffällig).
+- GraphQL Code Generator instead of hand-written client types.
+- Reference ranges in the charts.
+- Index resources by subject, or add DataLoader, if the data grows.
+- PR preview deploys on Render. These need the API to accept preview origins for CORS.
