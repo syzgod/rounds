@@ -12,6 +12,31 @@ export default defineConfig({
       "@": resolve(import.meta.dirname, "./src"),
     },
   },
+  build: {
+    rolldownOptions: {
+      output: {
+        // Libraries the first screen needs, split out so a deploy that changes
+        // only app code keeps them cached. No catch-all group: that would pull
+        // the lazy chart library (recharts) into the first load.
+        codeSplitting: {
+          groups: [
+            {
+              name: "react",
+              test: /[\\/]node_modules[\\/](react|react-dom|scheduler)[\\/]/,
+            },
+            {
+              name: "apollo",
+              test: /[\\/]node_modules[\\/](@apollo|@wry|graphql|optimism|rxjs|tslib|zen-observable)[\\/]/,
+            },
+            {
+              name: "ui",
+              test: /[\\/]node_modules[\\/](@base-ui|@floating-ui|cmdk|cn|class-variance-authority|lucide-react)[\\/]/,
+            },
+          ],
+        },
+      },
+    },
+  },
   test: {
     environment: "jsdom",
     setupFiles: ["./src/test/setup.ts"],
