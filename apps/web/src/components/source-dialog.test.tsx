@@ -149,6 +149,9 @@ describe("SourceDialog", () => {
     expect(
       await screen.findByRole("button", { name: "Kopieren" })
     ).toBeInTheDocument()
+    expect(
+      screen.getByRole("button", { name: "Schließen" })
+    ).toBeInTheDocument()
   })
 
   it("shows a one-line error with Retry that recovers", async () => {

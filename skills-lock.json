@@ -8,68 +8,12 @@
       "skillPath": "skills/apollo-client/SKILL.md",
       "computedHash": "6b6c1f7aaf200477970e397920366de87d9120836b6ddb0461d4f48b106c9c2e"
     },
-    "apollo-connectors": {
-      "source": "apollographql/skills",
-      "commit": "9dda1397730370aeb8df4ff8f2015c34c86b5003",
-      "sourceType": "github",
-      "skillPath": "skills/apollo-connectors/SKILL.md",
-      "computedHash": "4b873587fc0e34d6a2e848efdf6280f5a96773dab65398e2a6137d8b1b7f1699"
-    },
-    "apollo-federation": {
-      "source": "apollographql/skills",
-      "commit": "9dda1397730370aeb8df4ff8f2015c34c86b5003",
-      "sourceType": "github",
-      "skillPath": "skills/apollo-federation/SKILL.md",
-      "computedHash": "e8050344a9dfa0672e2ad0d9cdae82926385dc1437a836c341390c558743fbed"
-    },
-    "apollo-ios": {
-      "source": "apollographql/skills",
-      "commit": "9dda1397730370aeb8df4ff8f2015c34c86b5003",
-      "sourceType": "github",
-      "skillPath": "skills/apollo-ios/SKILL.md",
-      "computedHash": "9b95c6e72d9a8dd873139394fea7eb11aba606e090a7f6cfd5c730d6bad727d7"
-    },
-    "apollo-kotlin": {
-      "source": "apollographql/skills",
-      "commit": "9dda1397730370aeb8df4ff8f2015c34c86b5003",
-      "sourceType": "github",
-      "skillPath": "skills/apollo-kotlin/SKILL.md",
-      "computedHash": "5a394a8ab6c09e8c0c85e4f3dc4a8a667416fd93a39c40afb39796d47bd5f124"
-    },
-    "apollo-mcp-server": {
-      "source": "apollographql/skills",
-      "commit": "9dda1397730370aeb8df4ff8f2015c34c86b5003",
-      "sourceType": "github",
-      "skillPath": "skills/apollo-mcp-server/SKILL.md",
-      "computedHash": "6c99f375cc5a7405039b70818da247a6851eaadda9526e52bf369f02fef87b47"
-    },
-    "apollo-router": {
-      "source": "apollographql/skills",
-      "commit": "9dda1397730370aeb8df4ff8f2015c34c86b5003",
-      "sourceType": "github",
-      "skillPath": "skills/apollo-router/SKILL.md",
-      "computedHash": "6df8364af578eef2b9443d6a3894775452625461ac711ab0921fa6278efb1f04"
-    },
-    "apollo-router-plugin-creator": {
-      "source": "apollographql/skills",
-      "commit": "9dda1397730370aeb8df4ff8f2015c34c86b5003",
-      "sourceType": "github",
-      "skillPath": "skills/apollo-router-plugin-creator/SKILL.md",
-      "computedHash": "f2d349ab57b3a30aac317c20d55ee1b27662d1c5ae30f4b77ae8d20cd354a687"
-    },
     "apollo-server": {
       "source": "apollographql/skills",
       "commit": "9dda1397730370aeb8df4ff8f2015c34c86b5003",
       "sourceType": "github",
       "skillPath": "skills/apollo-server/SKILL.md",
       "computedHash": "1eca761ae31f0b95aed093eb4a98ba5315067fe09401ea1c9f8815d96c8a42f9"
-    },
-    "graphos-factory": {
-      "source": "apollographql/skills",
-      "commit": "9dda1397730370aeb8df4ff8f2015c34c86b5003",
-      "sourceType": "github",
-      "skillPath": "skills/graphos-factory/SKILL.md",
-      "computedHash": "eb85f27bfda24e7d01d6c7efce1d66d64ea62182d833f8ee1e75ef0ae81bc50f"
     },
     "graphql-operations": {
       "source": "apollographql/skills",
@@ -85,20 +29,6 @@
       "skillPath": "skills/graphql-schema/SKILL.md",
       "computedHash": "0b256b74d90106da9be91b2d9bec3090e054fd9c6c11ce70be38f57a3de600ff"
     },
-    "rover": {
-      "source": "apollographql/skills",
-      "commit": "9dda1397730370aeb8df4ff8f2015c34c86b5003",
-      "sourceType": "github",
-      "skillPath": "skills/rover/SKILL.md",
-      "computedHash": "cb9dcdc95bed069c45139cac86c04484a2991bfa63c01e01a792cfcfac6698e9"
-    },
-    "rust-best-practices": {
-      "source": "apollographql/skills",
-      "commit": "9dda1397730370aeb8df4ff8f2015c34c86b5003",
-      "sourceType": "github",
-      "skillPath": "skills/rust-best-practices/SKILL.md",
-      "computedHash": "7e12e68aa50152eb7ba9ea1f88ca5380c846ea0175f8ab6788bb79b7faf12ca0"
-    },
     "shadcn": {
       "source": "shadcn-ui/ui",
       "commit": "bfa64ff4d1cb7317d2403ecb176df6826d4caffc",
@@ -106,12 +36,19 @@
       "skillPath": "skills/shadcn/SKILL.md",
       "computedHash": "388962d16c7a4f13aaeee0d8f128e50a87df8553d42ef7988c39c0e1c74a40e8"
     },
-    "skill-creator": {
-      "source": "apollographql/skills",
-      "commit": "9dda1397730370aeb8df4ff8f2015c34c86b5003",
+    "vercel-composition-patterns": {
+      "source": "vercel-labs/agent-skills",
+      "commit": "5a37a6329fbad3666c3207392a6a7c0110e92efb",
       "sourceType": "github",
-      "skillPath": "skills/skill-creator/SKILL.md",
-      "computedHash": "39353f596a40c4309ac9aa38331ed98f28bb26e1f0d200bcfe089971d68cbee8"
+      "skillPath": "skills/composition-patterns/SKILL.md",
+      "computedHash": "f711ed8b16162eaa712abbcdbbae6c926f86c57e60127735fecc3ad0dd85b3fa"
+    },
+    "vercel-react-best-practices": {
+      "source": "vercel-labs/agent-skills",
+      "commit": "5a37a6329fbad3666c3207392a6a7c0110e92efb",
+      "sourceType": "github",
+      "skillPath": "skills/react-best-practices/SKILL.md",
+      "computedHash": "7991ed4fbecdac23f47c1a40c243e00a212a9e7f3604db93959b3ae11dffe299"
     }
   }
 }

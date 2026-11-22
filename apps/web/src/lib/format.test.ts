@@ -41,6 +41,11 @@ describe("formatFhirDate", () => {
     expect(formatFhirDate(null, "en")).toBeNull()
   })
 
+  it('abbreviates September as "Sep", not "Sept"', () => {
+    expect(formatFhirDate("2024-09-03", "en")).toBe("3 Sep 2024")
+    expect(formatFhirDate("2024-09", "en")).toBe("Sep 2024")
+  })
+
   it("formats German as numeric dates", () => {
     expect(formatFhirDate("1985-12-10", "de")).toBe("10.12.1985")
     expect(formatFhirDate("2019-05-02", "de")).toBe("02.05.2019")

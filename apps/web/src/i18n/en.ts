@@ -8,6 +8,9 @@ export type Widen<T> = T extends (...args: infer A) => string
 const messages = {
   common: {
     retry: "Retry",
+    reload: "Reload",
+    close: "Close",
+    unexpectedError: "Something went wrong.",
     notRecorded: "Not recorded",
     undated: "Undated",
     until: (date: string): string => `until ${date}`,
@@ -30,8 +33,8 @@ const messages = {
     keyTheme: "theme",
   },
   theme: {
-    toLight: "Switch to light theme",
-    toDark: "Switch to dark theme",
+    toLight: "Light",
+    toDark: "Dark",
     toggle: "Toggle theme",
   },
   health: {

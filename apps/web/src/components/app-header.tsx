@@ -18,7 +18,7 @@ export function AppHeader() {
         </span>
         <div className="flex flex-col leading-tight">
           <h1 className="text-sm font-semibold">Rounds</h1>
-          <p className="text-xs text-muted-foreground">
+          <p className="hidden text-xs text-muted-foreground sm:block">
             {t.app.tagline}
           </p>
         </div>

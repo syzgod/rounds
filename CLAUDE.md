@@ -2,6 +2,11 @@
 
 Rounds is a 3-day interview MVP: a read-only explorer for synthetic FHIR R4 patient data. The current milestone and its "Done when" check are in [docs/PLAN.md](docs/PLAN.md). Read [docs/ADR-001-architecture.md](docs/ADR-001-architecture.md) before changing the data flow or the GraphQL contract. Rules for each app load from `.claude/rules/`.
 
+## How to think and write
+
+- Write replies, summaries, PR text and notes in ASD-STE100 Simplified Technical English: short sentences, one instruction per sentence, active voice, simple words. Do not repeat information. Output tokens cost money.
+- Apply KISS, YAGNI, DRY, SOLID, SoC and POLA. Choose the simplest solution that works. Do not add code for a possible future need.
+
 ## Users
 
 The users are clinicians doing fast-paced work. Code and its names are for developers; everything a user sees is for clinicians.
@@ -38,7 +43,9 @@ Run these from the repo root. Each one delegates to the apps with `pnpm --filter
 - The main chat is the orchestrator. Delegate implementation, research and reviews to subagents, and choose `model` and `effort` per task: `haiku`/low for mechanical edits, `sonnet`/medium for well-specified features, `opus`/high for plans and tricky debugging.
 - When a task is vague, have a stronger model write the plan, then let a cheaper model execute it as a subagent.
 - Prefer scripts, MCP tools and skills to manual, multi-step token-heavy work.
+- Take Playwright screenshots only to check a visible UI change (layout, colour, overflow). Screenshots cost many tokens. For other checks, use `browser_snapshot` or tests.
 - Now and then, trim the `.md` files the agents load (`CLAUDE.md`, `.claude/rules/**`) to cut tokens.
+- **Branches:** start feature branches from `develop` and open PRs into `develop`. Only `main` deploys to Render. A release is a PR from `develop` into `main`, made when the user asks.
 - Keep PRs small, with a short description: a summary of 1–3 bullets and how it was tested.
 - Locally, run only the checks for what you changed (`pnpm typecheck` plus the affected test files). The full suite runs in CI: push, then `gh pr checks <n> --watch`, and fix the PR until it is green.
 
