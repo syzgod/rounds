@@ -47,3 +47,6 @@ pnpm-debug.log*
 /.claude/skills/rust-best-practices
 /.claude/skills/shadcn
 /.claude/skills/skill-creator
+
+playwright-report/
+test-results/

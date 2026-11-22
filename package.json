@@ -17,6 +17,7 @@
     "test:api": "pnpm --filter api run test",
     "test:web": "pnpm --filter web run test",
     "test:e2e": "pnpm --filter api run test:e2e",
-    "lint": "pnpm --filter api --filter web run lint"
+    "lint": "pnpm --filter api --filter web run lint",
+    "test:browser": "pnpm --filter web run test:browser"
   }
 }
